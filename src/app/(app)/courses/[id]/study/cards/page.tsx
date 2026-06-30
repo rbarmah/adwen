@@ -530,12 +530,12 @@ export default function StudyCardsPage() {
                   </div>
 
                   {/* BACK */}
-                  <div className="flip-face flip-face-back slide" style={{ position: 'absolute', inset: 0 }}>
-                    <div className="slide-top" style={{ background: 'var(--ink)' }}>
+                  <div className="flip-face flip-face-back slide" style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' }}>
+                    <div className="slide-top" style={{ background: 'var(--ink)', flexShrink: 0 }}>
                       <span className="slide-kicker">Explanation</span>
                       <span className="slide-count">{deckPos + 1} / {deck.length}</span>
                     </div>
-                    <div className="slide-body" style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 320px)' }} onClick={e => e.stopPropagation()}>
+                    <div className="slide-body" style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '24px 20px' }} onClick={e => e.stopPropagation()}>
                       <h2 style={{ marginBottom: '14px', fontSize: 'var(--text-xl)', lineHeight: 1.3 }}>{card.title}</h2>
                       <p style={{ lineHeight: 1.85, marginBottom: '20px' }}>{card.body}</p>
 
