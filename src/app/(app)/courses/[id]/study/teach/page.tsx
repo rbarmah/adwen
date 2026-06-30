@@ -392,33 +392,39 @@ export default function TeachItBackRoom() {
       <div style={{
         position: 'sticky', top: 0, zIndex: 100,
         background: 'var(--paper-2)', borderBottom: '2px solid var(--ink)',
-        padding: '16px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '12px 16px', display: 'flex', alignItems: 'center',
+        justifyContent: 'space-between', gap: '10px', flexWrap: 'wrap',
       }}>
-        <button className="btn btn-ghost" onClick={() => router.back()} style={{ padding: '8px 16px', fontSize: '13px' }}>
-          ← Back to Study Room
+        <button className="btn btn-ghost" onClick={() => router.back()} style={{ padding: '6px 12px', fontSize: '12px', flexShrink: 0 }}>
+          ← Back
         </button>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', flex: 1, minWidth: 0, justifyContent: 'center' }}>
           <div style={{
-            padding: '6px 14px', borderRadius: '999px',
+            padding: '4px 12px', borderRadius: '999px',
             background: 'var(--magenta)', border: '1px solid var(--magenta)',
-            fontSize: '12px', fontWeight: 700, color: 'var(--magenta)', letterSpacing: '0.06em',
+            fontSize: '11px', fontWeight: 700, color: '#fff', letterSpacing: '0.06em',
+            whiteSpace: 'nowrap', flexShrink: 0,
           }}>
             🎤 TEACH IT BACK
           </div>
           {activeTopic && (
-            <span style={{ fontSize: '13px', color: 'var(--muted)', fontWeight: 600 }}>
+            <span style={{
+              fontSize: '12px', color: 'var(--muted)', fontWeight: 600,
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              maxWidth: '180px',
+            }}>
               {activeTopic.name}
             </span>
           )}
         </div>
-        <div style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 600, letterSpacing: '0.05em' }}>
+        <div className="desktop-only" style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600, letterSpacing: '0.05em', flexShrink: 0 }}>
           FEYNMAN TECHNIQUE
         </div>
       </div>
 
       {/* ─────────────── PHASE: TOPIC SELECT ─────────────────── */}
       {phase === 'topic_select' && (
-        <div style={{ maxWidth: '860px', margin: '0 auto', padding: '60px 40px', flex: 1 }}>
+        <div className="responsive-pad" style={{ maxWidth: '860px', margin: '0 auto', padding: '40px', flex: 1 }}>
           <div style={{ textAlign: 'center', marginBottom: '56px' }}>
             <div style={{ fontSize: '3.5rem', marginBottom: '20px' }}>🎓</div>
             <h1 className="h-lg" style={{ justifyContent: 'center', display: 'flex', marginBottom: '16px' }}>
@@ -469,7 +475,7 @@ export default function TeachItBackRoom() {
 
       {/* ─────────────── PHASE: BRIEFING ─────────────────────── */}
       {phase === 'briefing' && activeTopic && (
-        <div style={{ maxWidth: '680px', margin: '0 auto', padding: '60px 40px', flex: 1 }}>
+        <div className="responsive-pad" style={{ maxWidth: '680px', margin: '0 auto', padding: '40px', flex: 1 }}>
           <div style={{ textAlign: 'center', marginBottom: '40px' }}>
             <div style={{ fontSize: '2rem', marginBottom: '12px' }}>📖</div>
             <h2 style={{ fontSize: '1.8rem', fontWeight: 800,  margin: '0 0 8px' }}>
@@ -506,7 +512,7 @@ export default function TeachItBackRoom() {
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, maxWidth: '860px', margin: '0 auto', width: '100%', position: 'relative' }}>
           
           {/* Chat Transcript Area */}
-          <div style={{ flex: 1, padding: '40px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '160px' }}>
+          <div className="responsive-pad" style={{ flex: 1, padding: '24px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '160px' }}>
             {transcript.map((msg, i) => {
               const isUser = msg.role === 'user';
               return (
@@ -574,7 +580,7 @@ export default function TeachItBackRoom() {
           <div style={{
             position: 'absolute', bottom: 0, left: 0, right: 0,
             background: 'linear-gradient(to top, var(--paper) 70%, transparent)',
-            padding: '24px 40px 40px',
+            padding: '16px 16px 24px',
             display: 'flex', flexDirection: 'column', gap: '12px'
           }}>
             
@@ -680,7 +686,7 @@ export default function TeachItBackRoom() {
 
       {/* ─────────────── PHASE: THINKING ─────────────────────── */}
       {phase === 'thinking' && (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '120px 40px', textAlign: 'center', flex: 1 }}>
+        <div className="responsive-pad" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 24px', textAlign: 'center', flex: 1 }}>
           <div style={{
             width: '80px', height: '80px', borderRadius: '50%',
             border: '4px solid var(--line)', borderTop: '4px solid var(--magenta)',
@@ -702,7 +708,7 @@ export default function TeachItBackRoom() {
 
       {/* ─────────────── PHASE: FEEDBACK ─────────────────────── */}
       {phase === 'feedback' && result && (
-        <div style={{ maxWidth: '820px', margin: '0 auto', padding: '40px 40px 80px', flex: 1 }}>
+        <div className="responsive-pad" style={{ maxWidth: '820px', margin: '0 auto', padding: '24px 24px 80px', flex: 1 }}>
           {/* Score hero */}
           <div className="card" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '40px', flexWrap: 'wrap' }}>
             <ScoreCircle score={result.feynman_score} />
