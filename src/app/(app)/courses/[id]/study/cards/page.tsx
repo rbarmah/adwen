@@ -436,24 +436,18 @@ export default function StudyCardsPage() {
 
         {/* ── Main area ─── */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          {/* Mobile settings toggle */}
-          <div className="mobile-only" style={{ marginBottom: '16px' }}>
-            <button onClick={() => setMobileSettingsOpen(true)} style={{
-              display: 'flex', alignItems: 'center', gap: '8px', width: '100%',
-              padding: '12px 16px', borderRadius: '12px', background: 'var(--paper-2)',
-              border: '2px solid var(--ink)', fontFamily: 'var(--font-body)', fontSize: '13px',
-              fontWeight: 700, cursor: 'pointer', color: 'var(--ink)',
-              boxShadow: '0 4px 0 var(--ink)'
-            }}>
-              <span style={{ fontSize: '16px' }}>⚙️</span>
-              <span style={{ flex: 1, textAlign: 'left' }}>Depth & Topic Settings</span>
-              <span style={{ color: 'var(--muted)', fontSize: '16px', fontWeight: 700 }}>+</span>
-            </button>
-          </div>
+
           {/* Topic title + progress dots */}
           <div style={{ marginBottom: '14px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-xl)', textTransform: 'uppercase', margin: 0 }}>{topicName}</h2>
+              <button 
+                onClick={() => setMobileSettingsOpen(true)} 
+                style={{ background: 'none', border: 'none', padding: 0, margin: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', textAlign: 'left' }}
+                aria-label="Change Topic and Depth Settings"
+              >
+                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-xl)', textTransform: 'uppercase', margin: 0 }}>{topicName}</h2>
+                <span className="mobile-only" style={{ color: 'var(--ink)', background: 'var(--line)', borderRadius: '50%', width: 24, height: 24, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>▾</span>
+              </button>
               {cards.length > 0 && !showSummary && (
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', fontWeight: 700, color: 'var(--muted)', letterSpacing: '0.06em' }}>
                   {reviewMode ? `REVIEW ${deckPos + 1}/${deck.length}` : `${deckPos + 1} / ${deck.length}`}
