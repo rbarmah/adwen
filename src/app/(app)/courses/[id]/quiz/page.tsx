@@ -355,7 +355,7 @@ export default function QuizPage() {
           </h1>
         </div>
 
-        <div className="card-premium card-glow" style={{ padding: '40px', textAlign: 'center' }}>
+        <div className="card-premium card-glow" style={{ padding: '28px', textAlign: 'center' }}>
           <div style={{ fontSize: '4rem', marginBottom: '20px' }}>🎯</div>
           <h2 style={{ fontSize: 'var(--text-xl)', fontWeight: 700, marginBottom: '12px' }}>Ready to test your knowledge?</h2>
           <p style={{ color: 'var(--muted)', marginBottom: '28px', lineHeight: 1.7, maxWidth: '400px', margin: '0 auto 28px' }}>
@@ -450,11 +450,11 @@ export default function QuizPage() {
   return (
     <div className="animate-fade-in" style={{ maxWidth: '740px', margin: '0 auto' }}>
       {/* Top progress */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '28px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
         <span style={{ fontSize: 'var(--text-xs)', fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--muted)', flexShrink: 0 }}>
-          Question {quizCount} · adaptive
+          Q{quizCount} · adaptive
         </span>
-        <div style={{ flex: 1, height: '6px', borderRadius: 'var(--radius-pill)', background: 'var(--line)', overflow: 'hidden' }}>
+        <div style={{ flex: 1, minWidth: '80px', height: '6px', borderRadius: 'var(--radius-pill)', background: 'var(--line)', overflow: 'hidden' }}>
           <div style={{
             height: '100%', borderRadius: 'var(--radius-pill)',
             background: 'var(--tangerine)',
@@ -462,17 +462,16 @@ export default function QuizPage() {
             transition: 'width 0.5s ease-out',
           }} />
         </div>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-          <span className="note">Timed</span>
+        <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexShrink: 0 }}>
           <div style={{
-            display: 'flex', alignItems: 'center', gap: '8px',
-            padding: '6px 13px', borderRadius: 'var(--pill)',
-            background: 'var(--ink)', color: '#fff', fontSize: '13px', fontWeight: 700, fontFamily: 'var(--font-mono)'
+            display: 'flex', alignItems: 'center', gap: '6px',
+            padding: '4px 10px', borderRadius: 'var(--pill)',
+            background: 'var(--ink)', color: '#fff', fontSize: '12px', fontWeight: 700, fontFamily: 'var(--font-mono)'
           }}>
             {timerDisplay}
           </div>
-          <Button variant="ghost" onClick={() => setTimed(!timed)} style={{ padding: '6px 12px', fontSize: '11px' }}>
-            Toggle Timer
+          <Button variant="ghost" onClick={() => setTimed(!timed)} style={{ padding: '4px 10px', fontSize: '10px' }}>
+            {timed ? 'Pause' : 'Start'}
           </Button>
         </div>
       </div>
@@ -482,9 +481,9 @@ export default function QuizPage() {
         <div className="tele"><span className="k">Time on Q</span><span className="v live">{liveQTime}</span></div>
         <div className="tele"><span className="k">Avg / Q</span><span className="v">{quizCount > 1 ? `${((totalTime + latencyMs) / (quizCount * 1000)).toFixed(1)}s` : '—'}</span></div>
         <div className="tele"><span className="k">Ability θ</span><span className="v live">{theta >= 0 ? '+' : ''}{theta.toFixed(2)}</span></div>
-        <div className="tele"><span className="k">Conf-but-wrong</span><span className="v">{cbwCount}</span></div>
-        <div className="tele" style={{ marginLeft: 'auto' }}>
-          <span className="k">Difficulty path (adaptive)</span>
+        <div className="tele"><span className="k">CBW</span><span className="v">{cbwCount}</span></div>
+        <div className="tele desktop-only" style={{ marginLeft: 'auto' }}>
+          <span className="k">Difficulty path</span>
           <div className="ladder">
             {difficultyPath.map((p, i) => (
               <div
@@ -503,7 +502,7 @@ export default function QuizPage() {
       </div>
 
       {/* Question Card */}
-      <div className="card-premium" style={{ padding: '40px', position: 'relative', overflow: 'hidden' }}>
+      <div className="card-premium" style={{ padding: '24px', position: 'relative', overflow: 'hidden' }}>
         <div style={{
           position: 'absolute', top: 0, left: 0, right: 0, height: '4px',
           background: 'var(--tangerine)',
@@ -596,13 +595,13 @@ export default function QuizPage() {
             <p style={{ fontSize: 'var(--text-sm)', fontWeight: 700, marginBottom: '12px', color: 'var(--ink)' }}>
               How sure are you?
             </p>
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
               {confidenceOptions.map((cl) => (
                 <button
                   key={cl.value}
                   onClick={() => setConfidence(cl.value)}
                   style={{
-                    flex: 1, padding: '12px 8px',
+                    flex: '1 1 calc(50% - 4px)', minWidth: '80px', padding: '10px 8px',
                     borderRadius: 'var(--radius-sm)',
                     border: `2px solid var(--ink)`,
                     background: confidence === cl.value ? 'var(--lime)' : '#fff',
@@ -610,7 +609,7 @@ export default function QuizPage() {
                     cursor: 'pointer',
                     fontSize: 'var(--text-sm)',
                     fontFamily: 'var(--font-body)',
-                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
                     transition: 'all var(--transition-fast)',
                     color: 'var(--ink)',
                   }}
