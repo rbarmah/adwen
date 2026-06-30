@@ -498,11 +498,11 @@ export default function TeachItBackRoom() {
             </div>
           )}
 
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <button className="btn btn-ghost" onClick={() => setPhase('topic_select')} style={{ flex: 1, justifyContent: 'center' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+            <button className="btn btn-ghost" onClick={() => setPhase('topic_select')} style={{ flex: 1, minWidth: '200px', justifyContent: 'center' }}>
               ← Pick different topic
             </button>
-            <button className="btn btn-primary" onClick={startConversation} style={{ flex: 2, justifyContent: 'center' }}>I'm ready to explain →</button>
+            <button className="btn btn-primary" onClick={startConversation} style={{ flex: 2, minWidth: '200px', justifyContent: 'center' }}>I'm ready to explain →</button>
           </div>
         </div>
       )}
