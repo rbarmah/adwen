@@ -327,8 +327,8 @@ export default function VisualNotesPage() {
         </button>
       </div>
 
-      {/* ─── Diagram type legend ─────────────────────────── */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap' }}>
+      {/* ─── Diagram type legend (desktop only — too crowded on mobile) ─── */}
+      <div className="desktop-only" style={{ display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap' }}>
         {Object.entries(TYPE_LABEL).map(([type, label]) => (
           <div key={type} style={{
             display: 'flex', alignItems: 'center', gap: '5px',
@@ -352,13 +352,13 @@ export default function VisualNotesPage() {
         {/* ── Main area ─── */}
         <div>
           {/* Topic title + version controls */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-xl)', textTransform: 'uppercase', margin: 0 }}>
+          <div style={{ marginBottom: '16px' }}>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-lg)', textTransform: 'uppercase', margin: '0 0 12px 0' }}>
               {topicName}
             </h2>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              {/* Version navigation (only show if we have generations) */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              {/* Version navigation */}
               {generations.length > 0 && !loadingPanels && (
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: '0',
@@ -370,7 +370,7 @@ export default function VisualNotesPage() {
                     disabled={activeVersion <= 0}
                     style={{
                       background: 'none', border: 'none', cursor: activeVersion <= 0 ? 'default' : 'pointer',
-                      padding: '6px 10px', fontSize: '13px', fontWeight: 700,
+                      padding: '5px 8px', fontSize: '13px', fontWeight: 700,
                       color: activeVersion <= 0 ? 'var(--line)' : 'var(--ink)',
                       fontFamily: 'var(--font-body)', transition: 'color 0.15s',
                     }}
@@ -379,13 +379,13 @@ export default function VisualNotesPage() {
                     ←
                   </button>
                   <div style={{
-                    padding: '6px 8px',
+                    padding: '5px 6px',
                     borderLeft: '1.5px solid var(--line)', borderRight: '1.5px solid var(--line)',
-                    fontFamily: 'var(--font-mono)', fontSize: '11px', fontWeight: 700,
+                    fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700,
                     color: 'var(--ink)', letterSpacing: '0.04em',
                     whiteSpace: 'nowrap', userSelect: 'none',
                   }}>
-                    v{generations[activeVersion]?.version ?? 1} of {generations.length}
+                    v{generations[activeVersion]?.version ?? 1}/{generations.length}
                   </div>
                   <button
                     onClick={handleNextVersion}
@@ -393,7 +393,7 @@ export default function VisualNotesPage() {
                     style={{
                       background: 'none', border: 'none',
                       cursor: activeVersion >= generations.length - 1 ? 'default' : 'pointer',
-                      padding: '6px 10px', fontSize: '13px', fontWeight: 700,
+                      padding: '5px 8px', fontSize: '13px', fontWeight: 700,
                       color: activeVersion >= generations.length - 1 ? 'var(--line)' : 'var(--ink)',
                       fontFamily: 'var(--font-body)', transition: 'color 0.15s',
                     }}
@@ -404,28 +404,18 @@ export default function VisualNotesPage() {
                 </div>
               )}
 
-              {/* Generation timestamp */}
-              {currentGen && !loadingPanels && (
-                <span style={{
-                  fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--muted)',
-                  fontWeight: 600, letterSpacing: '0.03em',
-                }}>
-                  {formatTimestamp(currentGen.created_at)}
-                </span>
-              )}
-
               {/* Regenerate button */}
               {!loadingPanels && (
                 <button
                   onClick={handleRegenerate}
                   disabled={regenerating}
                   style={{
-                    display: 'flex', alignItems: 'center', gap: '6px',
-                    padding: '7px 14px', borderRadius: 'var(--pill)',
+                    display: 'flex', alignItems: 'center', gap: '5px',
+                    padding: '5px 12px', borderRadius: 'var(--pill)',
                     border: '2px solid var(--ink)',
                     background: regenerating ? 'var(--paper-2)' : 'var(--magenta)',
                     color: regenerating ? 'var(--muted)' : '#fff',
-                    fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 700,
+                    fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700,
                     cursor: regenerating ? 'not-allowed' : 'pointer',
                     boxShadow: regenerating ? 'none' : '0 2px 0 var(--ink)',
                     transition: 'all 0.15s',
@@ -434,12 +424,12 @@ export default function VisualNotesPage() {
                   {regenerating ? (
                     <>
                       <span style={{
-                        width: '12px', height: '12px',
+                        width: '10px', height: '10px',
                         border: '2px solid var(--muted)', borderTopColor: 'transparent',
                         borderRadius: '50%', display: 'inline-block',
                         animation: 'spin 0.8s linear infinite',
                       }} />
-                      Generating…
+                      …
                     </>
                   ) : (
                     <>✨ Regenerate</>
@@ -447,9 +437,19 @@ export default function VisualNotesPage() {
                 </button>
               )}
 
-              {/* Panel count */}
+              {/* Generation timestamp — desktop only */}
+              {currentGen && !loadingPanels && (
+                <span className="desktop-only" style={{
+                  fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--muted)',
+                  fontWeight: 600, letterSpacing: '0.03em',
+                }}>
+                  {formatTimestamp(currentGen.created_at)}
+                </span>
+              )}
+
+              {/* Panel count — desktop only */}
               {panels.length > 0 && !loadingPanels && (
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', fontWeight: 700, color: 'var(--muted)', letterSpacing: '0.06em' }}>
+                <span className="desktop-only" style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', fontWeight: 700, color: 'var(--muted)', letterSpacing: '0.06em' }}>
                   {panels.length} DIAGRAMS
                 </span>
               )}
@@ -519,29 +519,29 @@ export default function VisualNotesPage() {
                 <div key={i} className="card" style={{ padding: 0, overflow: 'hidden' }}>
                   {/* Panel header */}
                   <div style={{
-                    padding: '12px 22px',
+                    padding: '10px 14px',
                     background: TYPE_COLOR[panel.diagram_type] || 'var(--cobalt)',
                     borderBottom: '2px solid var(--ink)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px',
                   }}>
                     <span style={{
-                      fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 800,
-                      color: '#fff',
+                      fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 800,
+                      color: '#fff', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                     }}>
                       {panel.title}
                     </span>
                     <span style={{
-                      fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700,
+                      fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 700,
                       letterSpacing: '0.1em', textTransform: 'uppercase',
                       background: 'rgba(255,255,255,0.2)', borderRadius: 'var(--pill)',
-                      padding: '3px 10px', color: '#fff',
+                      padding: '3px 8px', color: '#fff', flexShrink: 0,
                     }}>
                       {TYPE_LABEL[panel.diagram_type] || panel.diagram_type}
                     </span>
                   </div>
 
-                  {/* Diagram — scrollable container */}
-                  <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', background: '#fff', padding: '16px 8px' }}>
+                  {/* Diagram */}
+                  <div style={{ background: '#fff', padding: '12px' }}>
                     <MermaidDiagram
                       code={panel.mermaid_code}
                       id={`panel-${i}-${topicName.replace(/\s+/g, '-')}-v${currentGen?.version ?? 1}`}
