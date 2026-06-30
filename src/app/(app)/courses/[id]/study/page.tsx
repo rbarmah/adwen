@@ -88,27 +88,24 @@ export default function StudyRoom() {
         {STUDY_MODES.map((m) => (
           <button
             key={m.id}
-            disabled={m.status === 'soon'}
             onClick={() => {
-              if (m.status === 'soon' || !m.route) return;
+              if (!m.route) return;
               router.push(`/courses/${courseId}${m.route}`);
             }}
             style={{
               padding: '24px',
               borderRadius: 'var(--r)',
               border: '2px solid var(--ink)',
-              borderTop: m.status === 'active' ? `5px solid ${m.accent}` : '2px solid var(--ink)',
+              borderTop: `5px solid ${m.accent}`,
               background: 'var(--paper-2)',
-              cursor: m.status === 'soon' ? 'not-allowed' : 'pointer',
+              cursor: 'pointer',
               textAlign: 'left',
-              opacity: m.status === 'soon' ? 0.55 : 1,
               transition: 'transform var(--transition-fast), box-shadow var(--transition-fast)',
               position: 'relative',
               fontFamily: 'var(--font-body)',
               boxShadow: 'var(--shadow)',
             }}
             onMouseEnter={e => {
-              if (m.status === 'soon') return;
               (e.currentTarget as HTMLElement).style.transform = 'translateY(-3px)';
               (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-hard-lg)';
             }}
@@ -123,11 +120,11 @@ export default function StudyRoom() {
                 position: 'absolute', top: '12px', right: '12px',
                 fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700,
                 letterSpacing: '0.08em',
-                background: m.status === 'soon' ? 'var(--line)' : 'var(--lime)',
+                background: 'var(--lime)',
                 border: `2px solid var(--ink)`,
                 color: 'var(--ink)',
                 padding: '2px 8px', borderRadius: '6px',
-                boxShadow: m.status === 'active' ? '0 2px 0 var(--ink)' : 'none',
+                boxShadow: '0 2px 0 var(--ink)',
               }}>
                 {m.badge}
               </div>
