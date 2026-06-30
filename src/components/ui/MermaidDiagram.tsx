@@ -127,7 +127,13 @@ export default function MermaidDiagram({ code, id, style }: MermaidDiagramProps)
       <div
         className="mermaid-wrapper"
         style={{ overflow: 'auto', WebkitOverflowScrolling: 'touch', ...style }}
-        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(svgHtml, { USE_PROFILES: { svg: true, svgFilters: true } }) }}
+        dangerouslySetInnerHTML={{
+          __html: DOMPurify.sanitize(svgHtml, {
+            USE_PROFILES: { svg: true, svgFilters: true, html: true },
+            ADD_TAGS: ['foreignObject'],
+            ADD_ATTR: ['xmlns', 'xmlns:xlink', 'dominant-baseline', 'text-anchor'],
+          })
+        }}
       />
     );
   }
