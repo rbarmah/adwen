@@ -397,8 +397,8 @@ export default function StudyCardsPage() {
         <button onClick={() => router.push(`/courses/${courseId}/study`)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', fontSize: '13px', fontWeight: 700, fontFamily: 'var(--font-body)', padding: 0 }}>
           ← Study Room
         </button>
-        <span style={{ color: 'var(--line)', fontWeight: 700 }}>·</span>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-2xl)', textTransform: 'uppercase', margin: 0, lineHeight: 1 }}>STUDY CARDS</h1>
+        <span className="desktop-only" style={{ color: 'var(--line)', fontWeight: 700 }}>·</span>
+        <h1 className="desktop-only" style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-2xl)', textTransform: 'uppercase', margin: 0, lineHeight: 1 }}>STUDY CARDS</h1>
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '10px' }}>
           {/* Background generation status */}
           {readyCount < totalTopics && (
@@ -417,7 +417,7 @@ export default function StudyCardsPage() {
       </div>
 
       {/* ─── Keyboard hints ──────────────────────────────── */}
-      <div style={{ display: 'flex', gap: '14px', marginBottom: '24px', flexWrap: 'wrap' }}>
+      <div className="desktop-only" style={{ display: 'flex', gap: '14px', marginBottom: '24px', flexWrap: 'wrap' }}>
         {[['Space', 'Flip'], ['← →', 'Navigate'], ['1', '✅ Know'], ['2', '⚠️ Shaky'], ['3', '❌ No idea']].map(([key, label]) => (
           <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
             <kbd style={{ background: 'var(--paper-2)', border: '2px solid var(--ink)', borderRadius: '5px', padding: '1px 7px', fontFamily: 'var(--font-mono)', fontSize: '11px', fontWeight: 700, boxShadow: '0 2px 0 var(--ink)' }}>{key}</kbd>
@@ -439,20 +439,22 @@ export default function StudyCardsPage() {
 
           {/* Topic title + progress dots */}
           <div style={{ marginBottom: '14px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
+                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-xl)', textTransform: 'uppercase', margin: 0, lineHeight: 1.2 }}>{topicName}</h2>
+                {cards.length > 0 && !showSummary && (
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', fontWeight: 700, color: 'var(--muted)', letterSpacing: '0.06em', whiteSpace: 'nowrap', marginTop: '4px' }}>
+                    {reviewMode ? `REVIEW ${deckPos + 1}/${deck.length}` : `${deckPos + 1} / ${deck.length}`}
+                  </span>
+                )}
+              </div>
               <button 
+                className="mobile-only"
                 onClick={() => setMobileSettingsOpen(true)} 
-                style={{ background: 'none', border: 'none', padding: 0, margin: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', textAlign: 'left' }}
-                aria-label="Change Topic and Depth Settings"
+                style={{ alignSelf: 'flex-start', background: 'var(--paper-2)', border: '2px solid var(--ink)', padding: '6px 14px', borderRadius: '99px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '10.5px', fontWeight: 700, fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.05em' }}
               >
-                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-xl)', textTransform: 'uppercase', margin: 0 }}>{topicName}</h2>
-                <span className="mobile-only" style={{ color: 'var(--ink)', background: 'var(--line)', borderRadius: '50%', width: 24, height: 24, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>▾</span>
+                Topic & Depth <span style={{ color: 'var(--ink)', fontSize: '14px' }}>▾</span>
               </button>
-              {cards.length > 0 && !showSummary && (
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', fontWeight: 700, color: 'var(--muted)', letterSpacing: '0.06em' }}>
-                  {reviewMode ? `REVIEW ${deckPos + 1}/${deck.length}` : `${deckPos + 1} / ${deck.length}`}
-                </span>
-              )}
             </div>
             {cards.length > 0 && !showSummary && (
               <div className="dots" style={{ flexWrap: 'wrap', gap: '5px' }}>
