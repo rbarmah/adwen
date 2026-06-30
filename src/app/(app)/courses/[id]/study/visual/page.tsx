@@ -292,7 +292,7 @@ export default function VisualNotesPage() {
   );
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in" style={{ overflowX: 'hidden' }}>
       {/* ─── Header ─────────────────────────────────────── */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '16px', flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
