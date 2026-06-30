@@ -692,17 +692,42 @@ export default function AnalysisPage() {
 
       {/* ── Deep Course Synthesis ─────────────────── */}
       <div style={{ marginTop: 30, marginBottom: 30 }}>
-        <h2 style={{ fontSize: 'var(--text-lg)', fontWeight: 700, marginBottom: '8px' }}>Deep Course Synthesis</h2>
-        <p style={{ fontSize: 'var(--text-sm)', color: 'var(--muted)', marginBottom: '16px', lineHeight: 1.5 }}>
-          Our AI analyzes this course's specific demands against your cognitive profile and WASSCE background to give you a highly personalized study strategy.
-        </p>
+        <div style={{ marginBottom: '20px' }}>
+          <h2 style={{
+            fontFamily: 'var(--font-display)', fontSize: 'var(--text-xl)',
+            textTransform: 'uppercase', lineHeight: 1.1, margin: '0 0 6px',
+          }}>
+            DEEP{' '}
+            <span style={{ fontFamily: 'var(--font-accent)', textTransform: 'none', color: 'var(--cobalt)', fontSize: '1.1em' }}>
+              Synthesis
+            </span>
+          </h2>
+          <p style={{ fontSize: 'var(--text-sm)', color: 'var(--muted)', lineHeight: 1.6, maxWidth: '520px' }}>
+            AI-powered analysis — cross-referencing this course's demands with your cognitive profile and WASSCE background.
+          </p>
+        </div>
 
         {!report && !loadingReport && (
-          <div style={{ textAlign: 'center', padding: '40px 20px', background: 'var(--surface)', border: '1px dashed var(--line)', borderRadius: 'var(--radius-md)' }}>
-            <div style={{ fontSize: 40, marginBottom: 16 }}>🧠</div>
-            <h3 style={{ fontSize: 'var(--text-base)', fontWeight: 600, marginBottom: 8 }}>Ready for Synthesis</h3>
-            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--muted)', marginBottom: 24, maxWidth: 400, margin: '0 auto 24px' }}>
-              We'll compare {topics.length} course topics against your 6 cognitive dimensions to predict friction points and formulate a strategy.
+          <div className="card" style={{
+            position: 'relative', overflow: 'hidden',
+            textAlign: 'center', padding: '48px 24px',
+          }}>
+            <div style={{
+              position: 'absolute', top: 0, left: 0, right: 0, height: '5px',
+              background: 'var(--cobalt)',
+            }} />
+            <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🧠</div>
+            <h3 style={{
+              fontFamily: 'var(--font-display)', fontSize: 'var(--text-lg)',
+              textTransform: 'uppercase', marginBottom: '8px',
+            }}>
+              Ready for Synthesis
+            </h3>
+            <p style={{
+              fontSize: 'var(--text-sm)', color: 'var(--muted)',
+              marginBottom: '24px', maxWidth: '400px', margin: '0 auto 24px', lineHeight: 1.7,
+            }}>
+              We'll compare <strong>{topics.length} course topics</strong> against your 6 cognitive dimensions to predict friction points and formulate a strategy.
             </p>
             <Button onClick={fetchReport} size="lg" variant="primary">
               Analyze Course Intelligence ⚡
@@ -711,17 +736,40 @@ export default function AnalysisPage() {
         )}
 
         {loadingReport && (
-          <div style={{ textAlign: 'center', padding: '60px 20px', background: 'var(--surface)', borderRadius: 'var(--radius-md)', border: '1px solid var(--line)' }}>
-            <div className="spinner" style={{ margin: '0 auto 20px', width: 30, height: 30, border: '3px solid var(--line)', borderTopColor: 'var(--cobalt)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-            <div style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--ink)' }}>Synthesizing Cognitive Friction...</div>
-            <div style={{ fontSize: 'var(--text-sm)', color: 'var(--muted)', marginTop: 8 }}>Cross-referencing course demands with your WASSCE and cognitive profile...</div>
+          <div className="card" style={{
+            textAlign: 'center', padding: '48px 24px',
+            position: 'relative', overflow: 'hidden',
+          }}>
+            <div style={{
+              position: 'absolute', top: 0, left: 0, right: 0, height: '5px',
+              background: 'var(--cobalt)',
+            }} />
+            <div style={{
+              width: '40px', height: '40px', borderRadius: '50%',
+              border: '3px solid var(--line)', borderTopColor: 'var(--cobalt)',
+              animation: 'spin 1s linear infinite',
+              margin: '0 auto 20px',
+            }} />
+            <div style={{
+              fontFamily: 'var(--font-display)', fontSize: 'var(--text-base)',
+              textTransform: 'uppercase', color: 'var(--ink)', marginBottom: '8px',
+            }}>
+              Synthesizing Cognitive Friction...
+            </div>
+            <div style={{ fontSize: 'var(--text-sm)', color: 'var(--muted)', lineHeight: 1.6 }}>
+              Cross-referencing course demands with your WASSCE and cognitive profile...
+            </div>
           </div>
         )}
 
         {report && !loadingReport && (
-          <div className="animate-fade-in" style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', padding: 24 }}>
+          <div className="card animate-fade-in" style={{ position: 'relative', overflow: 'hidden' }}>
+            <div style={{
+              position: 'absolute', top: 0, left: 0, right: 0, height: '5px',
+              background: 'var(--green)',
+            }} />
             <ExecutiveReport markdown={report} />
-            <div style={{ marginTop: 24, textAlign: 'center' }}>
+            <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '2px solid var(--line)', textAlign: 'center' }}>
               <Button onClick={fetchReport} variant="ghost" size="sm">
                 ↻ Regenerate Synthesis
               </Button>
