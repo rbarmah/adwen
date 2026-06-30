@@ -540,8 +540,8 @@ export default function VisualNotesPage() {
                     </span>
                   </div>
 
-                  {/* Diagram */}
-                  <div style={{ padding: '24px', background: '#fff' }}>
+                  {/* Diagram — scrollable container */}
+                  <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', background: '#fff', padding: '16px 8px' }}>
                     <MermaidDiagram
                       code={panel.mermaid_code}
                       id={`panel-${i}-${topicName.replace(/\s+/g, '-')}-v${currentGen?.version ?? 1}`}
