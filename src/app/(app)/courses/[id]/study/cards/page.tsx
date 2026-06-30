@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { STUDY_DEPTHS } from '@/lib/constants';
 import { createClient } from '@/lib/supabase/client';
+import { CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 type Rating  = 'know' | 'shaky' | 'no-idea' | null;
@@ -56,9 +57,13 @@ function SessionSummary({ cards, ratings, onReviewWeak, onNewTopic, onBack }: {
         </div>
 
         <div style={{ flex: 1, minWidth: '180px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          {([['Know it', know, 'var(--green)', '✅'], ['Shaky', shaky, 'var(--tangerine)', '⚠️'], ['No idea', noIdea, 'var(--magenta)', '❌']] as const).map(([label, count, color, icon]) => (
-            <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <span style={{ fontSize: '18px' }}>{icon}</span>
+          {([
+            ['Know it', know, 'var(--green)', <CheckCircle2 key="k" size={18} />],
+            ['Shaky', shaky, 'var(--tangerine)', <AlertTriangle key="s" size={18} />],
+            ['No idea', noIdea, 'var(--magenta)', <XCircle key="n" size={18} />]
+          ] as const).map(([label, count, color, icon]) => (
+            <div key={label as string} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span style={{ display: 'flex', alignItems: 'center', color }}>{icon}</span>
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
                   <span style={{ fontSize: '13px', fontWeight: 700 }}>{label}</span>
@@ -82,7 +87,9 @@ function SessionSummary({ cards, ratings, onReviewWeak, onNewTopic, onBack }: {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {weakCards.map((c, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', border: '1.5px solid var(--line)', borderRadius: '10px', background: 'var(--surface)' }}>
-                <span>{ratings[cards.indexOf(c)] === 'shaky' ? '⚠️' : '❌'}</span>
+                <span style={{ display: 'flex', alignItems: 'center', color: ratings[cards.indexOf(c)] === 'shaky' ? 'var(--tangerine)' : 'var(--magenta)' }}>
+                  {ratings[cards.indexOf(c)] === 'shaky' ? <AlertTriangle size={16} /> : <XCircle size={16} />}
+                </span>
                 <span style={{ fontSize: '13px', fontWeight: 600 }}>{c.title}</span>
               </div>
             ))}
@@ -418,7 +425,7 @@ export default function StudyCardsPage() {
 
       {/* ─── Keyboard hints ──────────────────────────────── */}
       <div className="desktop-only" style={{ display: 'flex', gap: '14px', marginBottom: '24px', flexWrap: 'wrap' }}>
-        {[['Space', 'Flip'], ['← →', 'Navigate'], ['1', '✅ Know'], ['2', '⚠️ Shaky'], ['3', '❌ No idea']].map(([key, label]) => (
+        {[['Space', 'Flip'], ['← →', 'Navigate'], ['1', 'Know'], ['2', 'Shaky'], ['3', 'No idea']].map(([key, label]) => (
           <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
             <kbd style={{ background: 'var(--paper-2)', border: '2px solid var(--ink)', borderRadius: '5px', padding: '1px 7px', fontFamily: 'var(--font-mono)', fontSize: '11px', fontWeight: 700, boxShadow: '0 2px 0 var(--ink)' }}>{key}</kbd>
             <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600 }}>{label}</span>
@@ -522,8 +529,8 @@ export default function StudyCardsPage() {
                         🔄 Click to reveal
                       </div>
                       {ratings[currentCard] && (
-                        <div style={{ marginTop: '20px', fontSize: '12px', fontWeight: 700, color: ratings[currentCard] === 'know' ? 'var(--green)' : ratings[currentCard] === 'shaky' ? 'var(--tangerine)' : 'var(--magenta)' }}>
-                          {ratings[currentCard] === 'know' ? '✅ Know it' : ratings[currentCard] === 'shaky' ? '⚠️ Shaky' : '❌ No idea'}
+                        <div style={{ marginTop: '20px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, color: ratings[currentCard] === 'know' ? 'var(--green)' : ratings[currentCard] === 'shaky' ? 'var(--tangerine)' : 'var(--magenta)' }}>
+                          {ratings[currentCard] === 'know' ? <><CheckCircle2 size={16} /> Know it</> : ratings[currentCard] === 'shaky' ? <><AlertTriangle size={16} /> Shaky</> : <><XCircle size={16} /> No idea</>}
                         </div>
                       )}
                     </div>
@@ -579,9 +586,13 @@ export default function StudyCardsPage() {
                       {/* Rating buttons */}
                       <div style={{ display: 'flex', gap: '10px', marginTop: '24px', paddingTop: '20px', borderTop: '2px solid var(--ink)' }} onClick={e => e.stopPropagation()}>
                         <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--muted)', display: 'flex', alignItems: 'center', marginRight: '4px', whiteSpace: 'nowrap' }}>Rate:</div>
-                        {([['know', '✅', 'Know it', '1'], ['shaky', '⚠️', 'Shaky', '2'], ['no-idea', '❌', 'No idea', '3']] as const).map(([k, emoji, label, key]) => (
-                          <button key={k} className={`rating-btn ${ratings[currentCard] === k ? k : ''}`} onClick={() => rate(k)}>
-                            <span style={{ fontSize: '18px' }}>{emoji}</span>
+                        {([
+                          ['know', <CheckCircle2 key="k" size={20} />, 'Know it', '1'],
+                          ['shaky', <AlertTriangle key="s" size={20} />, 'Shaky', '2'],
+                          ['no-idea', <XCircle key="n" size={20} />, 'No idea', '3']
+                        ] as const).map(([k, icon, label, key]) => (
+                          <button key={k as string} className={`rating-btn ${ratings[currentCard] === k ? k : ''}`} onClick={() => rate(k as Rating)}>
+                            <span style={{ display: 'flex', alignItems: 'center', marginBottom: '2px' }}>{icon}</span>
                             <span>{label}</span>
                             <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', opacity: 0.5 }}>({key})</span>
                           </button>
