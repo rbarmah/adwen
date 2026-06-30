@@ -36,17 +36,7 @@ const STUDY_MODES = [
     route: '/study/teach',
     badge: 'NEW',
   },
-  {
-    id: 'blitz',
-    icon: '⚡',
-    label: '5-Minute Blitz',
-    description: 'Night-before cram mode — only the 3 things you must know per topic, fast and ruthless.',
-    accent: 'var(--tangerine)',
-    accentSoft: '#FEF3E8',
-    status: 'soon' as const,
-    route: null,
-    badge: 'SOON',
-  },
+
   {
     id: 'visual',
     icon: '🎨',
