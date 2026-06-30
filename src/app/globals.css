@@ -1157,7 +1157,11 @@ input[type=range]::-webkit-slider-thumb {
 }
 
 /* Fix mermaid shrinking to unreadable text on mobile */
+.mermaid-wrapper {
+  -webkit-overflow-scrolling: touch;
+}
 .mermaid-wrapper svg {
-  min-width: 650px !important;
-  height: auto;
+  max-width: none !important;
+  min-width: 600px;
+  height: auto !important;
 }

@@ -125,7 +125,8 @@ export default function MermaidDiagram({ code, id, style }: MermaidDiagramProps)
   if (svgHtml) {
     return (
       <div
-        style={{ display: 'flex', justifyContent: 'center', overflow: 'auto', ...style }}
+        className="mermaid-wrapper"
+        style={{ overflow: 'auto', WebkitOverflowScrolling: 'touch', ...style }}
         dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(svgHtml, { USE_PROFILES: { svg: true, svgFilters: true } }) }}
       />
     );
