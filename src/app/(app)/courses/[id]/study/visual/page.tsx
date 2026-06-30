@@ -82,6 +82,7 @@ export default function VisualNotesPage() {
   const prefetchQueue   = useRef<string[]>([]);
   const isPrefetching   = useRef(false);
   const activeTopicRef  = useRef<string>('');
+  const [mobileTopicsOpen, setMobileTopicsOpen] = useState(false);
 
   // ─── Load topics ───────────────────────────────────────────────────────────
   useEffect(() => {
@@ -256,34 +257,74 @@ export default function VisualNotesPage() {
   const totalTopics = topics.length;
   const currentGen  = generations[activeVersion];
 
+  const renderTopics = () => (
+    <div className="card" style={{ padding: '18px' }}>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: '10px', fontWeight: 700 }}>Topics</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+        {topics.map((topic, i) => {
+          const status = prefetchStatus[topic.name] ?? 'idle';
+          return (
+            <button key={i} onClick={() => { setCurrentTopic(i); setMobileTopicsOpen(false); }} style={{
+              padding: '9px 10px', borderRadius: '10px',
+              border: currentTopic === i ? '2px solid var(--cobalt)' : '2px solid transparent',
+              background: currentTopic === i ? 'var(--cobalt-soft)' : 'transparent',
+              color: currentTopic === i ? 'var(--cobalt-ink)' : 'var(--ink)',
+              cursor: 'pointer', fontSize: '12.5px', fontWeight: currentTopic === i ? 700 : 500,
+              textAlign: 'left', fontFamily: 'var(--font-body)', width: '100%',
+              display: 'flex', alignItems: 'center', gap: '7px', transition: 'all 0.15s',
+            }}>
+              <div style={{
+                width: '7px', height: '7px', borderRadius: '50%', flexShrink: 0,
+                background: status === 'ready' ? 'var(--green)' : status === 'fetching' ? 'var(--tangerine)' : 'var(--line)',
+                animation: status === 'fetching' ? 'pulse 1s ease infinite' : 'none',
+                transition: 'background 0.4s',
+              }} />
+              <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{topic.name}</span>
+              <div style={{ width: '26px', height: '3px', borderRadius: '3px', background: 'var(--line)', flexShrink: 0 }}>
+                <div style={{ height: '100%', borderRadius: '3px', width: `${topic.mastery}%`, background: topic.mastery >= 60 ? 'var(--green)' : topic.mastery >= 30 ? 'var(--cobalt)' : 'var(--tangerine)' }} />
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+
   return (
     <div className="animate-fade-in">
       {/* ─── Header ─────────────────────────────────────── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', flexWrap: 'wrap' }}>
-        <button onClick={() => router.push(`/courses/${courseId}/study`)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', fontSize: '13px', fontWeight: 700, fontFamily: 'var(--font-body)', padding: 0 }}>
-          ← Study Room
-        </button>
-        <span style={{ color: 'var(--line)', fontWeight: 700 }}>·</span>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-2xl)', textTransform: 'uppercase', margin: 0, lineHeight: 1 }}>
-          VISUAL{' '}
-          <span style={{ fontFamily: 'var(--font-accent)', textTransform: 'none', color: 'var(--magenta)', fontSize: '1.15em' }}>
-            notes
-          </span>
-        </h1>
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          {readyCount < totalTopics && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--paper-2)', border: '1.5px solid var(--line)', borderRadius: 'var(--pill)', padding: '4px 12px', fontSize: '11px', fontWeight: 700, color: 'var(--muted)', fontFamily: 'var(--font-mono)' }}>
-              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--tangerine)', display: 'inline-block', animation: 'pulse 1s ease infinite' }} />
-              Preparing {readyCount}/{totalTopics} topics
-            </div>
-          )}
-          {readyCount === totalTopics && totalTopics > 0 && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--green-soft)', border: '1.5px solid var(--green)', borderRadius: 'var(--pill)', padding: '4px 12px', fontSize: '11px', fontWeight: 700, color: 'var(--green)', fontFamily: 'var(--font-mono)' }}>
-              ✓ All {totalTopics} topics ready
-            </div>
-          )}
-          {courseName && <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600, fontFamily: 'var(--font-mono)', letterSpacing: '0.05em' }}>{courseName.toUpperCase()}</span>}
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '16px', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          <button onClick={() => router.push(`/courses/${courseId}/study`)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', fontSize: '13px', fontWeight: 700, fontFamily: 'var(--font-body)', padding: 0 }}>
+            ← Study Room
+          </button>
+          <span className="desktop-only" style={{ color: 'var(--line)', fontWeight: 700 }}>·</span>
+          <h1 className="desktop-only" style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-2xl)', textTransform: 'uppercase', margin: 0, lineHeight: 1 }}>
+            VISUAL{' '}
+            <span style={{ fontFamily: 'var(--font-accent)', textTransform: 'none', color: 'var(--magenta)', fontSize: '1.15em' }}>notes</span>
+          </h1>
+          <div className="desktop-only" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {readyCount < totalTopics && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--paper-2)', border: '1.5px solid var(--line)', borderRadius: 'var(--pill)', padding: '4px 12px', fontSize: '11px', fontWeight: 700, color: 'var(--muted)', fontFamily: 'var(--font-mono)' }}>
+                <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--tangerine)', display: 'inline-block', animation: 'pulse 1s ease infinite' }} />
+                Preparing {readyCount}/{totalTopics} topics
+              </div>
+            )}
+            {readyCount === totalTopics && totalTopics > 0 && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--green-soft)', border: '1.5px solid var(--green)', borderRadius: 'var(--pill)', padding: '4px 12px', fontSize: '11px', fontWeight: 700, color: 'var(--green)', fontFamily: 'var(--font-mono)' }}>
+                ✓ All {totalTopics} topics ready
+              </div>
+            )}
+            {courseName && <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600, fontFamily: 'var(--font-mono)', letterSpacing: '0.05em' }}>{courseName.toUpperCase()}</span>}
+          </div>
         </div>
+        <button 
+          className="mobile-only"
+          onClick={() => setMobileTopicsOpen(true)} 
+          style={{ background: 'var(--paper-2)', border: '2px solid var(--ink)', padding: '6px 14px', borderRadius: '99px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '10.5px', fontWeight: 700, fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.05em' }}
+        >
+          Topics <span style={{ color: 'var(--ink)', fontSize: '14px' }}>▾</span>
+        </button>
       </div>
 
       {/* ─── Diagram type legend ─────────────────────────── */}
@@ -302,40 +343,10 @@ export default function VisualNotesPage() {
       </div>
 
       {/* ─── Main layout ─────────────────────────────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '232px 1fr', gap: '24px', alignItems: 'start' }}>
-
+      <div className="responsive-grid-1" style={{ display: 'grid', gridTemplateColumns: '232px 1fr', gap: '24px', alignItems: 'start' }}>
         {/* ── Left sidebar ─── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div className="card" style={{ padding: '18px' }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: '10px', fontWeight: 700 }}>Topics</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-              {topics.map((topic, i) => {
-                const status = prefetchStatus[topic.name] ?? 'idle';
-                return (
-                  <button key={i} onClick={() => setCurrentTopic(i)} style={{
-                    padding: '9px 10px', borderRadius: '10px',
-                    border: currentTopic === i ? '2px solid var(--cobalt)' : '2px solid transparent',
-                    background: currentTopic === i ? 'var(--cobalt-soft)' : 'transparent',
-                    color: currentTopic === i ? 'var(--cobalt-ink)' : 'var(--ink)',
-                    cursor: 'pointer', fontSize: '12.5px', fontWeight: currentTopic === i ? 700 : 500,
-                    textAlign: 'left', fontFamily: 'var(--font-body)', width: '100%',
-                    display: 'flex', alignItems: 'center', gap: '7px', transition: 'all 0.15s',
-                  }}>
-                    <div style={{
-                      width: '7px', height: '7px', borderRadius: '50%', flexShrink: 0,
-                      background: status === 'ready' ? 'var(--green)' : status === 'fetching' ? 'var(--tangerine)' : 'var(--line)',
-                      animation: status === 'fetching' ? 'pulse 1s ease infinite' : 'none',
-                      transition: 'background 0.4s',
-                    }} />
-                    <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{topic.name}</span>
-                    <div style={{ width: '26px', height: '3px', borderRadius: '3px', background: 'var(--line)', flexShrink: 0 }}>
-                      <div style={{ height: '100%', borderRadius: '3px', width: `${topic.mastery}%`, background: topic.mastery >= 60 ? 'var(--green)' : topic.mastery >= 30 ? 'var(--cobalt)' : 'var(--tangerine)' }} />
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+        <div className="desktop-only" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {renderTopics()}
         </div>
 
         {/* ── Main area ─── */}
@@ -567,6 +578,22 @@ export default function VisualNotesPage() {
           )}
         </div>
       </div>
+
+      {/* ── Mobile Topics Drawer ── */}
+      {mobileTopicsOpen && (
+        <div className="mobile-only">
+          <div className="sidebar-overlay open" onClick={() => setMobileTopicsOpen(false)} style={{ zIndex: 9998 }} />
+          <aside className="sidebar-drawer open" style={{ background: 'var(--surface-2)', padding: '24px 20px', zIndex: 9999 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <span style={{ fontWeight: 800, fontSize: 16 }}>Topics</span>
+              <button onClick={() => setMobileTopicsOpen(false)} style={{ background: 'none', border: 'none', fontSize: 24, cursor: 'pointer', color: 'var(--ink)' }}>✕</button>
+            </div>
+            <div style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 80px)', paddingBottom: '24px' }}>
+              {renderTopics()}
+            </div>
+          </aside>
+        </div>
+      )}
     </div>
   );
 }
