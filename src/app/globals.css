@@ -1128,6 +1128,14 @@ input[type=range]::-webkit-slider-thumb {
     display: none !important;
   }
 
+  /* Specific toggles for sidebars/menus */
+  .mobile-only {
+    display: block !important;
+  }
+  .desktop-only {
+    display: none !important;
+  }
+
   /* Adjust modals / centered dialogs to touch edges on mobile */
   .responsive-modal {
     width: 100% !important;
@@ -1135,5 +1143,12 @@ input[type=range]::-webkit-slider-thumb {
     border-radius: 0 !important;
     border-left: none !important;
     border-right: none !important;
+  }
+}
+
+/* Hide mobile-only elements on desktop by default */
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none !important;
   }
 }

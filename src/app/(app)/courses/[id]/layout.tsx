@@ -146,7 +146,7 @@ export default function CourseLayout({ children }: { children: React.ReactNode }
     <div style={{ display: 'flex', flex: 1, minHeight: 0, overflow: 'hidden' }}>
 
       {/* ── Desktop Sidebar ── */}
-      <aside className="course-sidebar" style={{
+      <aside className="course-sidebar desktop-only" style={{
         width: sidebarOpen ? 232 : 0,
         minWidth: sidebarOpen ? 232 : 0,
         background: 'var(--cobalt-deep)',
@@ -264,15 +264,15 @@ export default function CourseLayout({ children }: { children: React.ReactNode }
         }}>
           {/* Mobile hamburger */}
           <button
-            className="hamburger-btn responsive-hide-desktop"
+            className="mobile-only"
             onClick={() => setMobileOpen(true)}
-            style={{ display: 'none' }}
+            style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center' }}
             aria-label="Open navigation menu"
           >
             ☰
           </button>
           <button
-            className="responsive-hide-mobile"
+            className="desktop-only"
             onClick={() => setSidebarOpen(o => !o)}
             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center', color: 'var(--muted)' }}
             title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
