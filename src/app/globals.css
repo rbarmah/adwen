@@ -1089,6 +1089,9 @@ input[type=range]::-webkit-slider-thumb {
   .responsive-pad {
     padding: 24px 16px !important;
   }
+  .responsive-pad-sm {
+    padding: 16px 10px !important;
+  }
   
   /* Force multiple columns into a single column on mobile */
   .responsive-grid-1 {

@@ -484,7 +484,7 @@ export default function StudyChatPage() {
         {/* Chat area */}
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
           {/* Messages */}
-          <div className="card-premium" style={{ flex: 1, overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: '18px', minHeight: 0 }}>
+          <div className="card-premium responsive-pad-sm" style={{ flex: 1, overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: '18px', minHeight: 0 }}>
             {messages.length === 0 && (
               <div style={{ textAlign: 'center', padding: '40px 16px' }}>
                 <div style={{ fontSize: '3rem', marginBottom: '16px' }}>💬</div>

@@ -290,7 +290,7 @@ export default function CourseLayout({ children }: { children: React.ReactNode }
           </span>
         </div>
 
-        <div style={{ flex: 1, padding: '28px 20px 80px', maxWidth: 980, width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
+        <div className="responsive-container" style={{ flex: 1, padding: '28px 20px 80px', maxWidth: 980, width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
           <div className="animate-fade">
             {children}
           </div>
