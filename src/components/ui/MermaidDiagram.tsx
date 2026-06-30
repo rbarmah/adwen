@@ -123,12 +123,19 @@ export default function MermaidDiagram({ code, id, style }: MermaidDiagramProps)
 
   if (svgHtml) {
     // Mermaid's securityLevel:'strict' already sanitizes the SVG output.
-    // DOMPurify was stripping <foreignObject> elements that contain all text labels.
+    // Strip Mermaid's inline width/max-width so the SVG scales to fit its container.
+    // The viewBox attribute is preserved, ensuring proper aspect-ratio scaling.
+    const processedSvg = svgHtml
+      .replace(/(<svg[^>]*?)(\s+width=["'][^"']*["'])/i, '$1')
+      .replace(/(<svg[^>]*?)(\s+height=["'][^"']*["'])/i, '$1')
+      .replace(/(<svg[^>]*?\s+style=["'][^"']*?)max-width:\s*[^;"']+;?/i, '$1')
+      .replace(/(<svg\b)/i, '$1 width="100%"');
+
     return (
       <div
         className="mermaid-wrapper"
-        style={{ overflow: 'auto', WebkitOverflowScrolling: 'touch', ...style }}
-        dangerouslySetInnerHTML={{ __html: svgHtml }}
+        style={{ ...style }}
+        dangerouslySetInnerHTML={{ __html: processedSvg }}
       />
     );
   }
