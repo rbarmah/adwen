@@ -636,17 +636,18 @@ export default function AnalysisPage() {
               <div
                 key={i}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: '8px',
+                  display: 'inline-flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap',
                   padding: '8px 14px',
                   borderRadius: 'var(--radius-sm)',
                   background: 'var(--surface)',
                   border: '1px solid var(--line)',
                   fontSize: 'var(--text-xs)',
+                  maxWidth: '100%',
                 }}
               >
-                <Badge variant="cobalt" size="sm">{p.from}</Badge>
+                <Badge variant="cobalt" size="sm" style={{ whiteSpace: 'normal', wordBreak: 'break-word', textAlign: 'left' }}>{p.from}</Badge>
                 <span style={{ color: 'var(--muted)', fontFamily: 'var(--font-mono)' }}>→</span>
-                <Badge variant="tangerine" size="sm">{p.to}</Badge>
+                <Badge variant="tangerine" size="sm" style={{ whiteSpace: 'normal', wordBreak: 'break-word', textAlign: 'left' }}>{p.to}</Badge>
               </div>
             ))}
           </div>
