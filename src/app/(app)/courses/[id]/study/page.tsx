@@ -79,7 +79,7 @@ export default function StudyRoom() {
           </span>
         </h1>
         <p style={{ color: 'var(--muted)', fontSize: 'var(--text-base)', maxWidth: '480px', lineHeight: 1.7, fontWeight: 500 }}>
-          Five ways to study. Pick your mode. Each is a different room built around how students actually learn.
+          Four ways to study. Pick your mode. Each is a different room built around how students actually learn.
         </p>
       </div>
 

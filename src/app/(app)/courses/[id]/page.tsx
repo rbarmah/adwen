@@ -133,7 +133,7 @@ export default function CourseDashboardPage() {
         const dynamicStages = [
           { href: `analysis`, label: 'Course Intelligence', icon: '🗂️', status: isAnalysisComplete ? 'complete' : 'available', description: `${totalUnits} topics mapped`, accentColor: 'var(--cobalt)' },
           { href: `diagnosis`, label: 'Cold Diagnosis', icon: '🔍', status: isDiagnosisComplete ? 'complete' : isAnalysisComplete ? 'available' : 'locked', description: `Readiness range: ${readinessRangeStr}`, accentColor: 'var(--magenta)' },
-          { href: `study`, label: 'Study Room', icon: '📖', status: isStudyAvailable ? 'available' : 'locked', description: `5 depth levels across ${totalUnits} topics`, accentColor: 'var(--tangerine)' },
+          { href: `study`, label: 'Study Room', icon: '📖', status: isStudyAvailable ? 'available' : 'locked', description: `4 depth levels across ${totalUnits} topics`, accentColor: 'var(--tangerine)' },
           { href: `quiz`, label: 'Adaptive Quiz', icon: '🎯', status: isQuizAvailable ? 'available' : 'locked', description: `${itemsCount || 0} items with CAT selection`, accentColor: 'var(--cobalt)' },
           { href: `results`, label: 'Results & Analysis', icon: '📊', status: isResultsAvailable ? 'available' : 'locked', description: 'Complete a quiz to see results', accentColor: 'var(--green)' },
           { href: `outcome`, label: 'Outcome Loop', icon: '🏆', status: isOutcomeAvailable ? 'available' : 'locked', description: 'Report your exam grade for recalibration', accentColor: 'var(--lime)' },
