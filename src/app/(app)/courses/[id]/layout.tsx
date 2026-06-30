@@ -50,6 +50,7 @@ export default function CourseLayout({ children }: { children: React.ReactNode }
   const pathname = usePathname();
   const router   = useRouter();
   const activeKey = getActiveKey(pathname);
+  const isChatPage = pathname.includes('/chat');
 
   const [courseName,     setCourseName]     = useState('');
   const [readinessLabel, setReadinessLabel] = useState('—');
@@ -290,8 +291,8 @@ export default function CourseLayout({ children }: { children: React.ReactNode }
           </span>
         </div>
 
-        <div className="responsive-container" style={{ flex: 1, padding: '28px 20px 80px', maxWidth: 980, width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
-          <div className="animate-fade">
+        <div className="responsive-container" style={{ flex: 1, padding: isChatPage ? '16px 20px 16px' : '28px 20px 80px', maxWidth: 980, width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
+          <div className="animate-fade" style={{ height: '100%' }}>
             {children}
           </div>
         </div>
