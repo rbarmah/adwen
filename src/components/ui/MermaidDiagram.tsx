@@ -30,8 +30,8 @@ async function getMermaid() {
         actorTextColor: '#FFFFFF',
         actorBorder: '#0E0E0E',
       },
-      flowchart: { curve: 'basis', padding: 16 },
-      sequence: { mirrorActors: false, messageAlign: 'center' },
+      flowchart: { curve: 'basis', padding: 16, htmlLabels: false },
+      sequence: { mirrorActors: false, messageAlign: 'center', useHtmlLabels: false },
     });
   }
   return mermaidInstance;
