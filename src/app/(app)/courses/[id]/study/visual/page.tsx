@@ -83,6 +83,7 @@ export default function VisualNotesPage() {
   const isPrefetching   = useRef(false);
   const activeTopicRef  = useRef<string>('');
   const [mobileTopicsOpen, setMobileTopicsOpen] = useState(false);
+  const [expandedPanel, setExpandedPanel] = useState<number | null>(null);
 
   // ─── Load topics ───────────────────────────────────────────────────────────
   useEffect(() => {
@@ -516,63 +517,110 @@ export default function VisualNotesPage() {
               )}
 
               {panels.map((panel, i) => (
-                <div key={i} className="card" style={{ padding: 0, overflow: 'hidden' }}>
-                  {/* Panel header */}
-                  <div style={{
-                    padding: '10px 14px',
-                    background: TYPE_COLOR[panel.diagram_type] || 'var(--cobalt)',
-                    borderBottom: '2px solid var(--ink)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px',
-                  }}>
-                    <span style={{
-                      fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 800,
-                      color: '#fff', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                <React.Fragment key={i}>
+                  {/* Desktop: full inline diagram */}
+                  <div className="desktop-only card" style={{ padding: 0, overflow: 'hidden' }}>
+                    {/* Panel header */}
+                    <div style={{
+                      padding: '10px 14px',
+                      background: TYPE_COLOR[panel.diagram_type] || 'var(--cobalt)',
+                      borderBottom: '2px solid var(--ink)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px',
                     }}>
-                      {panel.title}
-                    </span>
-                    <span style={{
-                      fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 700,
-                      letterSpacing: '0.1em', textTransform: 'uppercase',
-                      background: 'rgba(255,255,255,0.2)', borderRadius: 'var(--pill)',
-                      padding: '3px 8px', color: '#fff', flexShrink: 0,
-                    }}>
-                      {TYPE_LABEL[panel.diagram_type] || panel.diagram_type}
-                    </span>
-                  </div>
-
-                  {/* Diagram */}
-                  <div style={{ background: '#fff', padding: '12px' }}>
-                    <MermaidDiagram
-                      code={panel.mermaid_code}
-                      id={`panel-${i}-${topicName.replace(/\s+/g, '-')}-v${currentGen?.version ?? 1}`}
-                    />
-                  </div>
-
-                  {/* Explanation + exam relevance */}
-                  <div style={{ padding: '18px 22px', borderTop: '2px solid var(--ink)', background: 'var(--surface)' }}>
-                    <p style={{ fontSize: '13.5px', lineHeight: 1.7, color: 'var(--ink)', margin: 0 }}>
-                      {panel.explanation}
-                    </p>
-                    {panel.exam_relevance && (
-                      <div style={{
-                        marginTop: '12px', padding: '10px 14px',
-                        background: '#FDFDE0', border: '1.5px solid var(--lime-deep)',
-                        borderLeft: '4px solid var(--lime-deep)', borderRadius: '0 8px 8px 0',
+                      <span style={{
+                        fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 800,
+                        color: '#fff', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                       }}>
+                        {panel.title}
+                      </span>
+                      <span style={{
+                        fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 700,
+                        letterSpacing: '0.1em', textTransform: 'uppercase',
+                        background: 'rgba(255,255,255,0.2)', borderRadius: 'var(--pill)',
+                        padding: '3px 8px', color: '#fff', flexShrink: 0,
+                      }}>
+                        {TYPE_LABEL[panel.diagram_type] || panel.diagram_type}
+                      </span>
+                    </div>
+                    <div style={{ background: '#fff', padding: '12px' }}>
+                      <MermaidDiagram
+                        code={panel.mermaid_code}
+                        id={`panel-${i}-${topicName.replace(/\s+/g, '-')}-v${currentGen?.version ?? 1}`}
+                      />
+                    </div>
+                    <div style={{ padding: '18px 22px', borderTop: '2px solid var(--ink)', background: 'var(--surface)' }}>
+                      <p style={{ fontSize: '13.5px', lineHeight: 1.7, color: 'var(--ink)', margin: 0 }}>
+                        {panel.explanation}
+                      </p>
+                      {panel.exam_relevance && (
                         <div style={{
-                          fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 700,
-                          color: '#6b7a00', textTransform: 'uppercase', letterSpacing: '0.08em',
-                          marginBottom: '4px',
+                          marginTop: '12px', padding: '10px 14px',
+                          background: '#FDFDE0', border: '1.5px solid var(--lime-deep)',
+                          borderLeft: '4px solid var(--lime-deep)', borderRadius: '0 8px 8px 0',
                         }}>
-                          🎯 Exam Relevance
+                          <div style={{
+                            fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 700,
+                            color: '#6b7a00', textTransform: 'uppercase', letterSpacing: '0.08em',
+                            marginBottom: '4px',
+                          }}>
+                            🎯 Exam Relevance
+                          </div>
+                          <p style={{ fontSize: '12px', lineHeight: 1.5, color: 'var(--ink)', margin: 0 }}>
+                            {panel.exam_relevance}
+                          </p>
                         </div>
-                        <p style={{ fontSize: '12px', lineHeight: 1.5, color: 'var(--ink)', margin: 0 }}>
-                          {panel.exam_relevance}
-                        </p>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
+
+                  {/* Mobile: compact card with tap to view */}
+                  <div className="mobile-only card" style={{ padding: 0, overflow: 'hidden' }}>
+                    <button
+                      onClick={() => setExpandedPanel(i)}
+                      style={{
+                        width: '100%', border: 'none', cursor: 'pointer', background: 'none',
+                        padding: 0, textAlign: 'left',
+                      }}
+                    >
+                      <div style={{
+                        padding: '12px 14px',
+                        background: TYPE_COLOR[panel.diagram_type] || 'var(--cobalt)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px',
+                      }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <span style={{
+                            fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 800,
+                            color: '#fff', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          }}>
+                            {panel.title}
+                          </span>
+                          <span style={{
+                            fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 600,
+                            color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.06em',
+                          }}>
+                            {TYPE_LABEL[panel.diagram_type] || panel.diagram_type}
+                          </span>
+                        </div>
+                        <div style={{
+                          background: 'rgba(255,255,255,0.25)', borderRadius: '8px',
+                          padding: '6px 12px', flexShrink: 0,
+                          fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700,
+                          color: '#fff', letterSpacing: '0.04em',
+                        }}>
+                          View →
+                        </div>
+                      </div>
+                    </button>
+                    {/* Compact explanation */}
+                    <div style={{ padding: '10px 14px', background: 'var(--surface)' }}>
+                      <p style={{ fontSize: '12px', lineHeight: 1.5, color: 'var(--muted)', margin: 0,
+                        display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden',
+                      }}>
+                        {panel.explanation}
+                      </p>
+                    </div>
+                  </div>
+                </React.Fragment>
               ))}
             </div>
           )}
@@ -592,6 +640,115 @@ export default function VisualNotesPage() {
               {renderTopics()}
             </div>
           </aside>
+        </div>
+      )}
+
+      {/* ── Mobile Fullscreen Diagram Modal ── */}
+      {expandedPanel !== null && panels[expandedPanel] && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 10000,
+          background: '#fff',
+          display: 'flex', flexDirection: 'column',
+        }}>
+          {/* Modal header */}
+          <div style={{
+            padding: '12px 16px',
+            background: TYPE_COLOR[panels[expandedPanel].diagram_type] || 'var(--cobalt)',
+            borderBottom: '2px solid var(--ink)',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px',
+            flexShrink: 0,
+          }}>
+            <button
+              onClick={() => setExpandedPanel(null)}
+              style={{
+                background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '8px',
+                padding: '6px 12px', cursor: 'pointer',
+                fontFamily: 'var(--font-mono)', fontSize: '11px', fontWeight: 700,
+                color: '#fff', flexShrink: 0,
+              }}
+            >
+              ← Back
+            </button>
+            <span style={{
+              fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 800,
+              color: '#fff', flex: 1, textAlign: 'center', minWidth: 0,
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            }}>
+              {panels[expandedPanel].title}
+            </span>
+            <button
+              onClick={() => {
+                const wrapper = document.getElementById('fullscreen-diagram-svg');
+                const svgEl = wrapper?.querySelector('svg');
+                if (!svgEl) return;
+                const svgData = new XMLSerializer().serializeToString(svgEl);
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                if (!ctx) return;
+                const img = new Image();
+                img.onload = () => {
+                  canvas.width = img.naturalWidth * 2;
+                  canvas.height = img.naturalHeight * 2;
+                  ctx.fillStyle = '#fff';
+                  ctx.fillRect(0, 0, canvas.width, canvas.height);
+                  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                  const a = document.createElement('a');
+                  a.download = `${panels[expandedPanel!].title.replace(/[^a-zA-Z0-9]/g, '_')}.png`;
+                  a.href = canvas.toDataURL('image/png');
+                  a.click();
+                };
+                img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+              }}
+              style={{
+                background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '8px',
+                padding: '6px 12px', cursor: 'pointer',
+                fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700,
+                color: '#fff', flexShrink: 0, letterSpacing: '0.04em',
+              }}
+            >
+              ↓ Save
+            </button>
+          </div>
+
+          {/* Diagram area — pinch-to-zoom with overflow scroll */}
+          <div
+            id="fullscreen-diagram-svg"
+            style={{
+              flex: 1, overflow: 'auto', WebkitOverflowScrolling: 'touch',
+              padding: '16px', background: '#fff',
+            }}
+          >
+            <MermaidDiagram
+              code={panels[expandedPanel].mermaid_code}
+              id={`fullscreen-${expandedPanel}-${topicName.replace(/\s+/g, '-')}`}
+            />
+          </div>
+
+          {/* Explanation at bottom */}
+          <div style={{
+            padding: '12px 16px', borderTop: '2px solid var(--ink)',
+            background: 'var(--surface)', flexShrink: 0,
+            maxHeight: '30vh', overflowY: 'auto',
+          }}>
+            <p style={{ fontSize: '12.5px', lineHeight: 1.6, color: 'var(--ink)', margin: 0 }}>
+              {panels[expandedPanel].explanation}
+            </p>
+            {panels[expandedPanel].exam_relevance && (
+              <div style={{
+                marginTop: '10px', padding: '8px 12px',
+                background: '#FDFDE0', border: '1.5px solid var(--lime-deep)',
+                borderLeft: '4px solid var(--lime-deep)', borderRadius: '0 8px 8px 0',
+              }}>
+                <div style={{
+                  fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 700,
+                  color: '#6b7a00', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '3px',
+                }}>🎯 Exam Relevance</div>
+                <p style={{ fontSize: '11px', lineHeight: 1.4, color: 'var(--ink)', margin: 0 }}>
+                  {panels[expandedPanel].exam_relevance}
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
