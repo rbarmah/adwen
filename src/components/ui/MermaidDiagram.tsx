@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import DOMPurify from 'isomorphic-dompurify';
 
 // ─── Global render queue — Mermaid uses shared state, so we serialize renders ──
 let renderQueue: Promise<void> = Promise.resolve();
@@ -123,17 +122,13 @@ export default function MermaidDiagram({ code, id, style }: MermaidDiagramProps)
   }
 
   if (svgHtml) {
+    // Mermaid's securityLevel:'strict' already sanitizes the SVG output.
+    // DOMPurify was stripping <foreignObject> elements that contain all text labels.
     return (
       <div
         className="mermaid-wrapper"
         style={{ overflow: 'auto', WebkitOverflowScrolling: 'touch', ...style }}
-        dangerouslySetInnerHTML={{
-          __html: DOMPurify.sanitize(svgHtml, {
-            USE_PROFILES: { svg: true, svgFilters: true, html: true },
-            ADD_TAGS: ['foreignObject'],
-            ADD_ATTR: ['xmlns', 'xmlns:xlink', 'dominant-baseline', 'text-anchor'],
-          })
-        }}
+        dangerouslySetInnerHTML={{ __html: svgHtml }}
       />
     );
   }
