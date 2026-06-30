@@ -191,7 +191,7 @@ export default function DiagnosisPage() {
         </Card>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+      <div className="responsive-grid-1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
         {/* Readiness Range */}
         <Card padding="lg">
           <h2 style={{ fontSize: 'var(--text-base)', fontWeight: 700, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -247,7 +247,7 @@ export default function DiagnosisPage() {
             <Sparkle size={14} />
             Cognitive Strengths Analysis
           </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+          <div className="responsive-grid-1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
             {narrative.skill_commentary.map((sc: any) => (
               <div key={sc.skill} style={{ border: '1.5px solid var(--ink)', padding: '16px', borderRadius: 'var(--radius-sm)', background: 'var(--surface)' }}>
                 <h4 style={{ fontWeight: 700, fontSize: 'var(--text-sm)', color: 'var(--cobalt)' }}>{sc.skill}</h4>

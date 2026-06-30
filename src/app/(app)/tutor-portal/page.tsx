@@ -135,7 +135,7 @@ export default function TutorPortalPage() {
                 borderLeft: student.cbwAlerts > 2 ? '4px solid var(--magenta)' : '1.5px solid var(--ink)'
               }}
             >
-              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.5fr 1fr', gap: '24px', alignItems: 'center' }}>
+              <div className="responsive-grid-1" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.5fr 1fr', gap: '24px', alignItems: 'center' }}>
                 
                 {/* 1. Profile information */}
                 <div>
@@ -158,7 +158,7 @@ export default function TutorPortalPage() {
                   <h4 style={{ fontSize: '10px', color: 'var(--muted)', textTransform: 'uppercase', fontWeight: 700, marginBottom: '8px' }}>
                     Cognitive Skill Measures
                   </h4>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  <div className="responsive-grid-1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                     {Object.entries(student.skills).map(([skill, val]: any) => (
                       <div key={skill} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--surface-2)', padding: '6px 10px', borderRadius: 'var(--radius-sm)' }}>
                         <span style={{ fontSize: '10px', color: 'var(--muted-ink)', textTransform: 'capitalize' }}>{skill}</span>

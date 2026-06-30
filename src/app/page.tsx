@@ -10,11 +10,13 @@ export default function HomePage() {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '16px 32px',
+          padding: '16px 20px',
           background: 'var(--lime)',
           position: 'sticky',
           top: 0,
           zIndex: 100,
+          flexWrap: 'wrap',
+          gap: '16px',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

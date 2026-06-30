@@ -300,11 +300,7 @@ export default function OnboardingPage() {
       </div>
 
       {/* Main content */}
-      <div style={{
-        maxWidth: '780px',
-        margin: '0 auto',
-        padding: '32px 24px 64px',
-      }}>
+      <div style={{ width: '100%', maxWidth: '840px', margin: '0 auto', padding: '32px 24px 64px' }} className="responsive-container">
         {/* Stepper */}
         <div style={{
           display: 'flex', gap: '4px', marginBottom: '32px',

@@ -365,7 +365,7 @@ export default function StudyCardsPage() {
       </div>
 
       {/* ─── Main layout ─────────────────────────────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '232px 1fr', gap: '24px', alignItems: 'start' }}>
+      <div className="responsive-grid-1" style={{ display: 'grid', gridTemplateColumns: '232px 1fr', gap: '24px', alignItems: 'start' }}>
 
         {/* ── Left sidebar ─── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -541,7 +541,7 @@ export default function StudyCardsPage() {
                       )}
 
                       {(card.common_mistake || card.exam_tip) && (
-                        <div style={{ display: 'grid', gridTemplateColumns: card.common_mistake && card.exam_tip ? '1fr 1fr' : '1fr', gap: '10px', marginBottom: '14px' }}>
+                        <div className="responsive-grid-1" style={{ display: 'grid', gridTemplateColumns: card.common_mistake && card.exam_tip ? '1fr 1fr' : '1fr', gap: '10px', marginBottom: '14px' }}>
                           {card.common_mistake && (
                             <div style={{ background: '#FFF0EE', border: '2px solid var(--ink)', borderLeft: '6px solid var(--tangerine)', borderRadius: '0 10px 10px 0', padding: '12px 14px' }}>
                               <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700, color: 'var(--tangerine)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '5px' }}>⚠️ Common Mistake</div>

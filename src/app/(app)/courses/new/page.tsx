@@ -174,7 +174,7 @@ export default function NewCoursePage() {
   };
 
   return (
-    <div style={{ maxWidth: '680px', margin: '0 auto' }} className="animate-fade-in">
+    <div style={{ maxWidth: '680px', margin: '0 auto' }} className="animate-fade-in responsive-container responsive-pad">
       <div style={{ marginBottom: '32px' }}>
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-3xl)', textTransform: 'uppercase' }}>
           NEW{' '}

@@ -417,7 +417,7 @@ export default function AnalysisPage() {
       </div>
 
       {/* ── Row 1: Cognitive Emphasis + Exam Distribution ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
+      <div className="responsive-grid-1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
 
         {/* Cognitive Emphasis */}
         <Card padding="lg">
@@ -466,7 +466,7 @@ export default function AnalysisPage() {
       </div>
 
       {/* ── Row 2: Skill Requirements + Study Forecast ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
+      <div className="responsive-grid-1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
 
         {/* Required Skills */}
         <Card padding="lg">
@@ -565,7 +565,7 @@ export default function AnalysisPage() {
       </div>
 
       {/* ── Row 3: Risk Areas + Strategies ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
+      <div className="responsive-grid-1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
 
         {/* Risk Areas */}
         <Card padding="lg">

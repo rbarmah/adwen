@@ -433,7 +433,7 @@ export default function StudyChatPage() {
       </div>
 
       {/* Layout */}
-      <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: '20px', flex: 1, minHeight: 0 }}>
+      <div className="responsive-grid-1" style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: '20px', flex: 1, minHeight: 0 }}>
         {/* Topic sidebar */}
         <div className="card-premium" style={{ padding: '16px', overflowY: 'auto' }}>
           <h3 style={{ fontSize: '11px', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>Topics</h3>

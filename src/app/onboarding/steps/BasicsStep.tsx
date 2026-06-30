@@ -119,7 +119,7 @@ export default function BasicsStep({
 
           {/* Row 3: CWA/GPA with auto-classification */}
           <div style={{ marginTop: '14px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '18px', alignItems: 'end' }}>
+            <div className="responsive-grid-1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '18px', alignItems: 'end' }}>
               <Input
                 label={`Current ${scoreLabel}`}
                 placeholder={scorePlaceholder}
@@ -209,7 +209,7 @@ export default function BasicsStep({
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {/* Core Subjects */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+              <div className="responsive-grid-1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 {['Core Mathematics', 'English Language', 'Integrated Science', 'Social Studies'].map(sub => (
                   <div key={sub} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     <label className="mono" style={{ fontSize: '11px', fontWeight: 600 }}>{sub} *</label>
@@ -241,7 +241,7 @@ export default function BasicsStep({
                 {wassceElectives.map((el, idx) => (
                   <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     <label className="mono" style={{ fontSize: '11px', fontWeight: 600 }}>Elective Subject {idx + 1} *</label>
-                    <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: '10px' }}>
+                    <div className="responsive-grid-1" style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: '10px' }}>
                       {/* Subject selector */}
                       <select
                         value={el.subject}

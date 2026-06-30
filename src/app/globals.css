@@ -1080,3 +1080,60 @@ input[type=range]::-webkit-slider-thumb {
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }
+
+/* ============================================================
+   RESPONSIVE UTILITY CLASSES (Overriding Inline Styles)
+   ============================================================ */
+@media (max-width: 768px) {
+  /* Override massive hardcoded desktop padding */
+  .responsive-pad {
+    padding: 24px 16px !important;
+  }
+  
+  /* Force multiple columns into a single column on mobile */
+  .responsive-grid-1 {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+  
+  /* Force a 2-column flex row to stack on mobile */
+  .responsive-flex-stack {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 16px !important;
+  }
+
+  /* Make containers 100% width rather than fixed widths (like 860px) */
+  .responsive-container {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+  
+  /* Reduce massive display font sizes */
+  .responsive-text-xl {
+    font-size: 2.5rem !important;
+  }
+  .responsive-text-lg {
+    font-size: 1.8rem !important;
+  }
+  .responsive-text-md {
+    font-size: 1.2rem !important;
+  }
+
+  /* Hide elements that break mobile layouts (e.g., large side graphics) */
+  .responsive-hide {
+    display: none !important;
+  }
+
+  /* Adjust modals / centered dialogs to touch edges on mobile */
+  .responsive-modal {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+  }
+}

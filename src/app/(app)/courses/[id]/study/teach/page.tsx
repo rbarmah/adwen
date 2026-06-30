@@ -720,7 +720,7 @@ export default function TeachItBackRoom() {
           </div>
 
           {/* Correct / Missing / Misconceptions */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+          <div className="responsive-grid-1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
             {/* Correct */}
             {result.correct_points.length > 0 && (
               <div style={{ background: 'var(--green-soft)', border: '2px solid var(--green)', borderRadius: '14px', padding: '20px' }}>

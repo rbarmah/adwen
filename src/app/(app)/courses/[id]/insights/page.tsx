@@ -230,7 +230,7 @@ export default function InsightsPage() {
       </div>
 
       {/* ── Row 1: Exam Readiness + At-a-Glance Stats ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 20, marginBottom: 20 }}>
+      <div className="responsive-grid-1" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 20, marginBottom: 20 }}>
 
         {/* Exam Readiness */}
         <Card padding="lg" style={{ background: 'var(--cobalt-deep)', color: '#fff' }}>
@@ -266,7 +266,7 @@ export default function InsightsPage() {
         </Card>
 
         {/* Stats grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <div className="responsive-grid-1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           {[
             { label: 'Overall Accuracy',  value: `${telemetry.accuracy}%`,        sub: `${telemetry.totalQ} questions`,           colour: telemetry.accuracy >= 70 ? '#16A34A' : telemetry.accuracy >= 50 ? 'var(--cobalt)' : 'var(--danger)' },
             { label: 'Avg Response Time', value: fmtTime(telemetry.avgLatency),   sub: 'per question',                            colour: telemetry.avgLatency < 8000 ? '#16A34A' : 'var(--tangerine)' },
@@ -285,7 +285,7 @@ export default function InsightsPage() {
       </div>
 
       {/* ── Row 2: Cognitive Accuracy + Strength/Gap Matrix ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
+      <div className="responsive-grid-1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
 
         {/* Accuracy by Cognitive Type */}
         <Card padding="lg">
