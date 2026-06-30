@@ -278,6 +278,7 @@ export default function StudyChatPage() {
   const abortRef    = useRef<AbortController | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const savingRef   = useRef(false);
+  const [mobileTopicsOpen, setMobileTopicsOpen] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -418,51 +419,66 @@ export default function StudyChatPage() {
     </div>
   );
 
+  const renderTopics = () => (
+    <>
+      <h3 style={{ fontSize: '11px', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>Topics</h3>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+        {topics.map((topic, i) => (
+          <button key={i} onClick={() => { setCurrentTopic(i); setMobileTopicsOpen(false); }} style={{ padding: '8px 10px', borderRadius: 'var(--radius-sm)', border: 'none', background: currentTopic === i ? 'rgba(42,59,201,0.06)' : 'transparent', color: currentTopic === i ? 'var(--cobalt)' : 'var(--ink)', cursor: 'pointer', fontSize: '12.5px', fontWeight: currentTopic === i ? 700 : 500, textAlign: 'left', fontFamily: 'var(--font-body)', width: '100%', transition: 'all 0.15s' }}>
+            {topic.name}
+          </button>
+        ))}
+      </div>
+      {messages.length > 0 && (
+        <button onClick={clearChat} style={{
+          marginTop: '12px',
+          padding: '7px 10px',
+          borderRadius: 'var(--radius-sm)',
+          border: '1.5px solid var(--line)',
+          background: 'transparent',
+          color: 'var(--muted)',
+          cursor: 'pointer',
+          fontSize: '11px',
+          fontWeight: 600,
+          fontFamily: 'var(--font-body)',
+          width: '100%',
+          transition: 'all 0.15s',
+          textAlign: 'center',
+        }}>
+          🗑 Clear this chat
+        </button>
+      )}
+    </>
+  );
+
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 120px)' }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px', flexShrink: 0 }}>
-        <button onClick={() => router.push(`/courses/${courseId}/study`)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', fontSize: '13px', fontWeight: 600, fontFamily: 'var(--font-body)', padding: '4px 0', display: 'flex', alignItems: 'center', gap: '4px' }}>
-          ← Study Room
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '20px', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          <button onClick={() => router.push(`/courses/${courseId}/study`)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', fontSize: '13px', fontWeight: 600, fontFamily: 'var(--font-body)', padding: '4px 0', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            ← Study Room
+          </button>
+          <span className="desktop-only" style={{ color: 'var(--line)' }}>·</span>
+          <h1 className="desktop-only" style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-2xl)', textTransform: 'uppercase', lineHeight: 1, margin: 0 }}>
+            💬 Chat with <span style={{ fontFamily: 'var(--font-accent)', textTransform: 'none', color: 'var(--cobalt)', fontSize: '1.1em' }}>Adwen</span>
+          </h1>
+          <span className="desktop-only" style={{ fontSize: '13px', color: 'var(--muted)', marginLeft: '12px' }}>{courseName}</span>
+        </div>
+        <button 
+          className="mobile-only"
+          onClick={() => setMobileTopicsOpen(true)} 
+          style={{ background: 'var(--paper-2)', border: '2px solid var(--ink)', padding: '6px 14px', borderRadius: '99px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '10.5px', fontWeight: 700, fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.05em' }}
+        >
+          Topics <span style={{ color: 'var(--ink)', fontSize: '14px' }}>▾</span>
         </button>
-        <span style={{ color: 'var(--line)' }}>·</span>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-2xl)', textTransform: 'uppercase', lineHeight: 1, margin: 0 }}>
-          💬 Chat with <span style={{ fontFamily: 'var(--font-accent)', textTransform: 'none', color: 'var(--cobalt)', fontSize: '1.1em' }}>Adwen</span>
-        </h1>
-        <span style={{ fontSize: '13px', color: 'var(--muted)', marginLeft: 'auto' }}>{courseName}</span>
       </div>
 
       {/* Layout */}
       <div className="responsive-grid-1" style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: '20px', flex: 1, minHeight: 0 }}>
         {/* Topic sidebar */}
-        <div className="card-premium" style={{ padding: '16px', overflowY: 'auto' }}>
-          <h3 style={{ fontSize: '11px', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>Topics</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-            {topics.map((topic, i) => (
-              <button key={i} onClick={() => setCurrentTopic(i)} style={{ padding: '8px 10px', borderRadius: 'var(--radius-sm)', border: 'none', background: currentTopic === i ? 'rgba(42,59,201,0.06)' : 'transparent', color: currentTopic === i ? 'var(--cobalt)' : 'var(--ink)', cursor: 'pointer', fontSize: '12.5px', fontWeight: currentTopic === i ? 700 : 500, textAlign: 'left', fontFamily: 'var(--font-body)', width: '100%', transition: 'all 0.15s' }}>
-                {topic.name}
-              </button>
-            ))}
-          </div>
-          {messages.length > 0 && (
-            <button onClick={clearChat} style={{
-              marginTop: '12px',
-              padding: '7px 10px',
-              borderRadius: 'var(--radius-sm)',
-              border: '1.5px solid var(--line)',
-              background: 'transparent',
-              color: 'var(--muted)',
-              cursor: 'pointer',
-              fontSize: '11px',
-              fontWeight: 600,
-              fontFamily: 'var(--font-body)',
-              width: '100%',
-              transition: 'all 0.15s',
-              textAlign: 'center',
-            }}>
-              🗑 Clear this chat
-            </button>
-          )}
+        <div className="desktop-only card-premium" style={{ padding: '16px', overflowY: 'auto' }}>
+          {renderTopics()}
         </div>
 
         {/* Chat area */}
@@ -637,11 +653,33 @@ export default function StudyChatPage() {
               onFocus={e => { e.target.style.borderColor = 'var(--cobalt)'; }}
               onBlur={e => { e.target.style.borderColor = 'var(--ink)'; }}
             />
-            <Button onClick={() => sendMessage(chatInput)} disabled={!chatInput.trim() || chatLoading} loading={chatLoading} size="md" style={{ flexShrink: 0, alignSelf: 'flex-end' }}>Send →</Button>
-            {chatLoading && <Button variant="ghost" size="md" onClick={() => abortRef.current?.abort()} style={{ flexShrink: 0, alignSelf: 'flex-end' }}>Stop</Button>}
+            <Button onClick={() => sendMessage(chatInput)} disabled={!chatInput.trim() || chatLoading} loading={chatLoading} size="md" style={{ flexShrink: 0, alignSelf: 'flex-end', padding: '10px 16px' }}>
+              <span className="desktop-only">Send →</span>
+              <span className="mobile-only" style={{ fontSize: '18px', fontWeight: 800, lineHeight: 1 }}>↑</span>
+            </Button>
+            {chatLoading && <Button variant="ghost" size="md" onClick={() => abortRef.current?.abort()} style={{ flexShrink: 0, alignSelf: 'flex-end', padding: '10px 16px' }}>
+              <span className="desktop-only">Stop</span>
+              <span className="mobile-only" style={{ fontSize: '18px', fontWeight: 800, lineHeight: 1 }}>■</span>
+            </Button>}
           </div>
         </div>
       </div>
+
+      {/* ── Mobile Topics Drawer ── */}
+      {mobileTopicsOpen && (
+        <div className="mobile-only">
+          <div className="sidebar-overlay open" onClick={() => setMobileTopicsOpen(false)} style={{ zIndex: 9998 }} />
+          <aside className="sidebar-drawer open" style={{ background: 'var(--surface-2)', padding: '24px 20px', zIndex: 9999 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <span style={{ fontWeight: 800, fontSize: 16 }}>Topics</span>
+              <button onClick={() => setMobileTopicsOpen(false)} style={{ background: 'none', border: 'none', fontSize: 24, cursor: 'pointer', color: 'var(--ink)' }}>✕</button>
+            </div>
+            <div style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 80px)', paddingBottom: '24px' }}>
+              {renderTopics()}
+            </div>
+          </aside>
+        </div>
+      )}
     </div>
   );
 }
