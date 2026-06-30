@@ -104,9 +104,10 @@ export default function StudyRoom() {
               router.push(`/courses/${courseId}${m.route}`);
             }}
             style={{
-              padding: '28px 24px',
+              padding: '24px',
               borderRadius: 'var(--r)',
               border: '2px solid var(--ink)',
+              borderTop: m.status === 'active' ? `5px solid ${m.accent}` : '2px solid var(--ink)',
               background: 'var(--paper-2)',
               cursor: m.status === 'soon' ? 'not-allowed' : 'pointer',
               textAlign: 'left',
@@ -126,15 +127,10 @@ export default function StudyRoom() {
               (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow)';
             }}
           >
-            {/* Top accent bar */}
-            {m.status === 'active' && (
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: m.accent, borderRadius: 'var(--r) var(--r) 0 0' }} />
-            )}
-
             {/* Badge */}
             {m.badge && (
               <div style={{
-                position: 'absolute', top: '16px', right: '16px',
+                position: 'absolute', top: '12px', right: '12px',
                 fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700,
                 letterSpacing: '0.08em',
                 background: m.status === 'soon' ? 'var(--line)' : 'var(--lime)',
@@ -152,7 +148,7 @@ export default function StudyRoom() {
               width: '52px', height: '52px', borderRadius: '12px',
               background: m.accentSoft, border: '2px solid var(--ink)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '1.6rem', marginBottom: '16px', marginTop: m.status === 'active' ? '8px' : '0',
+              fontSize: '1.6rem', marginBottom: '16px',
             }}>
               {m.icon}
             </div>
