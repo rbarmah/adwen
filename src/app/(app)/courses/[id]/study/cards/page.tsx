@@ -123,6 +123,7 @@ export default function StudyCardsPage() {
   const [ratings,      setRatings]      = useState<Record<number, Rating>>({});
   const [showSummary,  setShowSummary]  = useState(false);
   const [reviewMode,   setReviewMode]   = useState<number[] | null>(null);
+  const [mobileSettingsOpen, setMobileSettingsOpen] = useState(false);
 
   // Background prefetch tracking
   const [prefetchStatus, setPrefetchStatus] = useState<Record<string, PStatus>>({});
@@ -328,6 +329,67 @@ export default function StudyCardsPage() {
   const readyCount  = Object.values(prefetchStatus).filter(s => s === 'ready').length;
   const totalTopics = topics.length;
 
+  const renderSettings = () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      {/* Depth */}
+      <div className="card" style={{ padding: '18px' }}>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: '12px', fontWeight: 700 }}>Depth Level</div>
+        <div style={{ display: 'flex', gap: '3px', marginBottom: '12px' }}>
+          {STUDY_DEPTHS.map((d, i) => <div key={d.level} style={{ flex: 1, height: '3px', borderRadius: '99px', background: i <= depth ? DEPTH_COLORS[depth] : 'var(--line)', transition: 'all 0.3s' }} />)}
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+          {STUDY_DEPTHS.map((d, i) => (
+            <button key={d.level} onClick={() => { setDepth(d.level); setCurrentCard(0); setRatings({}); setShowSummary(false); setMobileSettingsOpen(false); }} style={{
+              display: 'flex', flexDirection: 'column', padding: '8px 10px', borderRadius: '10px',
+              border: depth === d.level ? `2px solid ${DEPTH_COLORS[i]}` : '2px solid transparent',
+              background: depth === d.level ? DEPTH_BG[i] : 'transparent',
+              fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: depth === d.level ? 700 : 500,
+              cursor: 'pointer', textAlign: 'left', width: '100%', color: 'var(--ink)', transition: 'all 0.15s',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: depth === d.level ? DEPTH_COLORS[i] : 'var(--line)', flexShrink: 0 }} />
+                {d.label}
+              </div>
+              <span style={{ fontSize: '11px', color: 'var(--muted)', marginTop: '2px', marginLeft: '14px', lineHeight: 1.4 }}>{d.description}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Topics */}
+      <div className="card" style={{ padding: '18px' }}>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: '10px', fontWeight: 700 }}>Topics</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+          {topics.map((topic, i) => {
+            const status = prefetchStatus[topic.name] ?? 'idle';
+            return (
+              <button key={i} onClick={() => { setCurrentTopic(i); setCurrentCard(0); setMobileSettingsOpen(false); }} style={{
+                padding: '9px 10px', borderRadius: '10px',
+                border: currentTopic === i ? '2px solid var(--cobalt)' : '2px solid transparent',
+                background: currentTopic === i ? 'var(--cobalt-soft)' : 'transparent',
+                color: currentTopic === i ? 'var(--cobalt-ink)' : 'var(--ink)',
+                cursor: 'pointer', fontSize: '12.5px', fontWeight: currentTopic === i ? 700 : 500,
+                textAlign: 'left', fontFamily: 'var(--font-body)', width: '100%',
+                display: 'flex', alignItems: 'center', gap: '7px', transition: 'all 0.15s',
+              }}>
+                <div style={{
+                  width: '7px', height: '7px', borderRadius: '50%', flexShrink: 0,
+                  background: status === 'ready' ? 'var(--green)' : status === 'fetching' ? 'var(--tangerine)' : 'var(--line)',
+                  animation: status === 'fetching' ? 'pulse 1s ease infinite' : 'none',
+                  transition: 'background 0.4s',
+                }} />
+                <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{topic.name}</span>
+                <div style={{ width: '26px', height: '3px', borderRadius: '3px', background: 'var(--line)', flexShrink: 0 }}>
+                  <div style={{ height: '100%', borderRadius: '3px', width: `${topic.mastery}%`, background: topic.mastery >= 60 ? 'var(--green)' : topic.mastery >= 30 ? 'var(--cobalt)' : 'var(--tangerine)' }} />
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="animate-fade-in">
       {/* ─── Header ─────────────────────────────────────── */}
@@ -367,70 +429,27 @@ export default function StudyCardsPage() {
       {/* ─── Main layout ─────────────────────────────────── */}
       <div className="responsive-grid-1" style={{ display: 'grid', gridTemplateColumns: '232px 1fr', gap: '24px', alignItems: 'start' }}>
 
-        {/* ── Left sidebar ─── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-
-          {/* Depth */}
-          <div className="card" style={{ padding: '18px' }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: '12px', fontWeight: 700 }}>Depth Level</div>
-            <div style={{ display: 'flex', gap: '3px', marginBottom: '12px' }}>
-              {STUDY_DEPTHS.map((d, i) => <div key={d.level} style={{ flex: 1, height: '3px', borderRadius: '99px', background: i <= depth ? DEPTH_COLORS[depth] : 'var(--line)', transition: 'all 0.3s' }} />)}
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-              {STUDY_DEPTHS.map((d, i) => (
-                <button key={d.level} onClick={() => { setDepth(d.level); setCurrentCard(0); setRatings({}); setShowSummary(false); }} style={{
-                  display: 'flex', flexDirection: 'column', padding: '8px 10px', borderRadius: '10px',
-                  border: depth === d.level ? `2px solid ${DEPTH_COLORS[i]}` : '2px solid transparent',
-                  background: depth === d.level ? DEPTH_BG[i] : 'transparent',
-                  fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: depth === d.level ? 700 : 500,
-                  cursor: 'pointer', textAlign: 'left', width: '100%', color: 'var(--ink)', transition: 'all 0.15s',
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                    <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: depth === d.level ? DEPTH_COLORS[i] : 'var(--line)', flexShrink: 0 }} />
-                    {d.label}
-                  </div>
-                  <span style={{ fontSize: '11px', color: 'var(--muted)', marginTop: '2px', marginLeft: '14px', lineHeight: 1.4 }}>{d.description}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Topics */}
-          <div className="card" style={{ padding: '18px' }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: '10px', fontWeight: 700 }}>Topics</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-              {topics.map((topic, i) => {
-                const status = prefetchStatus[topic.name] ?? 'idle';
-                return (
-                  <button key={i} onClick={() => { setCurrentTopic(i); setCurrentCard(0); }} style={{
-                    padding: '9px 10px', borderRadius: '10px',
-                    border: currentTopic === i ? '2px solid var(--cobalt)' : '2px solid transparent',
-                    background: currentTopic === i ? 'var(--cobalt-soft)' : 'transparent',
-                    color: currentTopic === i ? 'var(--cobalt-ink)' : 'var(--ink)',
-                    cursor: 'pointer', fontSize: '12.5px', fontWeight: currentTopic === i ? 700 : 500,
-                    textAlign: 'left', fontFamily: 'var(--font-body)', width: '100%',
-                    display: 'flex', alignItems: 'center', gap: '7px', transition: 'all 0.15s',
-                  }}>
-                    {/* Prefetch status dot */}
-                    <div style={{
-                      width: '7px', height: '7px', borderRadius: '50%', flexShrink: 0,
-                      background: status === 'ready' ? 'var(--green)' : status === 'fetching' ? 'var(--tangerine)' : 'var(--line)',
-                      animation: status === 'fetching' ? 'pulse 1s ease infinite' : 'none',
-                      transition: 'background 0.4s',
-                    }} />
-                    <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{topic.name}</span>
-                    <div style={{ width: '26px', height: '3px', borderRadius: '3px', background: 'var(--line)', flexShrink: 0 }}>
-                      <div style={{ height: '100%', borderRadius: '3px', width: `${topic.mastery}%`, background: topic.mastery >= 60 ? 'var(--green)' : topic.mastery >= 30 ? 'var(--cobalt)' : 'var(--tangerine)' }} />
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+        {/* ── Left sidebar (Desktop) ─── */}
+        <div className="desktop-only" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {renderSettings()}
         </div>
 
         {/* ── Main area ─── */}
-        <div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {/* Mobile settings toggle */}
+          <div className="mobile-only" style={{ marginBottom: '16px' }}>
+            <button onClick={() => setMobileSettingsOpen(true)} style={{
+              display: 'flex', alignItems: 'center', gap: '8px', width: '100%',
+              padding: '12px 16px', borderRadius: '12px', background: 'var(--paper-2)',
+              border: '2px solid var(--ink)', fontFamily: 'var(--font-body)', fontSize: '13px',
+              fontWeight: 700, cursor: 'pointer', color: 'var(--ink)',
+              boxShadow: '0 4px 0 var(--ink)'
+            }}>
+              <span style={{ fontSize: '16px' }}>⚙️</span>
+              <span style={{ flex: 1, textAlign: 'left' }}>Depth & Topic Settings</span>
+              <span style={{ color: 'var(--muted)', fontSize: '16px', fontWeight: 700 }}>+</span>
+            </button>
+          </div>
           {/* Topic title + progress dots */}
           <div style={{ marginBottom: '14px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
@@ -596,6 +615,22 @@ export default function StudyCardsPage() {
           ) : null}
         </div>
       </div>
+
+      {/* ── Mobile Settings Drawer ── */}
+      {mobileSettingsOpen && (
+        <div className="mobile-only">
+          <div className="sidebar-overlay open" onClick={() => setMobileSettingsOpen(false)} style={{ zIndex: 9998 }} />
+          <aside className="sidebar-drawer open" style={{ background: 'var(--surface-2)', padding: '24px 20px', zIndex: 9999 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <span style={{ fontWeight: 800, fontSize: 16 }}>Settings</span>
+              <button onClick={() => setMobileSettingsOpen(false)} style={{ background: 'none', border: 'none', fontSize: 24, cursor: 'pointer', color: 'var(--ink)' }}>✕</button>
+            </div>
+            <div style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 80px)', paddingBottom: '24px' }}>
+              {renderSettings()}
+            </div>
+          </aside>
+        </div>
+      )}
     </div>
   );
 }
