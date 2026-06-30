@@ -1156,13 +1156,12 @@ input[type=range]::-webkit-slider-thumb {
   }
 }
 
-/* Mermaid diagram mobile support — keep text readable, scroll horizontally */
+/* Mermaid diagram responsive scaling */
 .mermaid-wrapper {
   -webkit-overflow-scrolling: touch;
-  overflow-x: auto;
 }
 .mermaid-wrapper svg {
   display: block;
-  min-width: 580px;
+  max-width: 100%;
   height: auto !important;
 }
