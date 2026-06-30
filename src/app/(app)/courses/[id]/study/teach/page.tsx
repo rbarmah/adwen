@@ -383,39 +383,30 @@ export default function TeachItBackRoom() {
 
   return (
     <div className="animate-fade-in" style={{
-      height: '100dvh',
       display: 'flex',
       flexDirection: 'column',
       fontFamily: 'var(--font-body)',
-      overflow: 'hidden'
     }}>
-      {/* ─── Header ─────────────────────────────────────── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', flexWrap: 'wrap', padding: '16px 24px', flexShrink: 0 }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', flexWrap: 'wrap' }}>
         <button onClick={() => router.push(`/courses/${courseId}/study`)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', fontSize: '13px', fontWeight: 700, fontFamily: 'var(--font-body)', padding: 0 }}>
           ← Study Room
         </button>
         <span className="desktop-only" style={{ color: 'var(--line)', fontWeight: 700 }}>·</span>
         <h1 className="desktop-only" style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-2xl)', textTransform: 'uppercase', margin: 0, lineHeight: 1 }}>TEACH IT BACK</h1>
-        
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{
-            padding: '4px 12px', borderRadius: '999px',
-            background: 'var(--magenta-soft)', border: '1.5px solid var(--magenta)',
-            fontSize: '11px', fontWeight: 700, color: 'var(--magenta)', fontFamily: 'var(--font-mono)'
-          }}>
-            🎤 FEYNMAN
-          </div>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '10px' }}>
           {activeTopic && (
-            <span style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '150px' }}>
-              {activeTopic.name}
+            <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600, fontFamily: 'var(--font-mono)', letterSpacing: '0.05em' }}>
+              {activeTopic.name.toUpperCase()}
             </span>
           )}
+          {courseName && <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600, fontFamily: 'var(--font-mono)', letterSpacing: '0.05em' }}>{courseName.toUpperCase()}</span>}
         </div>
       </div>
 
       {/* ─────────────── PHASE: TOPIC SELECT ─────────────────── */}
       {phase === 'topic_select' && (
-        <div className="responsive-pad" style={{ maxWidth: '860px', margin: '0 auto', padding: '40px', flex: 1, overflowY: 'auto' }}>
+        <div className="responsive-pad" style={{ maxWidth: '860px', margin: '0 auto', padding: '40px', flex: 1 }}>
           <div style={{ textAlign: 'center', marginBottom: '56px' }}>
             <div style={{ fontSize: '3.5rem', marginBottom: '20px' }}>🎓</div>
             <h1 className="h-lg" style={{ justifyContent: 'center', display: 'flex', marginBottom: '16px' }}>
@@ -466,7 +457,7 @@ export default function TeachItBackRoom() {
 
       {/* ─────────────── PHASE: BRIEFING ─────────────────────── */}
       {phase === 'briefing' && activeTopic && (
-        <div className="responsive-pad" style={{ maxWidth: '680px', margin: '0 auto', padding: '40px', flex: 1, overflowY: 'auto' }}>
+        <div className="responsive-pad" style={{ maxWidth: '680px', margin: '0 auto', padding: '40px', flex: 1 }}>
           <div style={{ textAlign: 'center', marginBottom: '40px' }}>
             <div style={{ fontSize: '2rem', marginBottom: '12px' }}>📖</div>
             <h2 style={{ fontSize: '1.8rem', fontWeight: 800,  margin: '0 0 8px' }}>
@@ -500,7 +491,7 @@ export default function TeachItBackRoom() {
 
       {/* ─────────────── PHASE: CONVERSATION ────────────────────── */}
       {phase === 'conversation' && activeTopic && (
-        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, maxWidth: '860px', margin: '0 auto', width: '100%', position: 'relative', minHeight: 0 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, maxWidth: '860px', margin: '0 auto', width: '100%', position: 'relative' }}>
           
           {/* Chat Transcript Area */}
           <div className="responsive-pad" style={{ flex: 1, padding: '24px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '160px' }}>
@@ -567,12 +558,12 @@ export default function TeachItBackRoom() {
             <div ref={chatEndRef} />
           </div>
 
-          {/* Input Area (Sticky Bottom) */}
+          {/* Input Area (Fixed Bottom) */}
           <div style={{
-            position: 'absolute', bottom: 0, left: 0, right: 0,
-            background: 'linear-gradient(to top, var(--paper) 70%, transparent)',
-            padding: '16px 16px 24px',
-            display: 'flex', flexDirection: 'column', gap: '12px'
+            position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50,
+            background: 'linear-gradient(to top, var(--paper) 80%, transparent)',
+            padding: '12px 16px 16px',
+            display: 'flex', flexDirection: 'column', gap: '10px'
           }}>
             
             {evalError && (
@@ -677,7 +668,7 @@ export default function TeachItBackRoom() {
 
       {/* ─────────────── PHASE: THINKING ─────────────────────── */}
       {phase === 'thinking' && (
-        <div className="responsive-pad" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 24px', textAlign: 'center', flex: 1, overflowY: 'auto' }}>
+        <div className="responsive-pad" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 24px', textAlign: 'center', flex: 1 }}>
           <div style={{
             width: '80px', height: '80px', borderRadius: '50%',
             border: '4px solid var(--line)', borderTop: '4px solid var(--magenta)',
@@ -699,7 +690,7 @@ export default function TeachItBackRoom() {
 
       {/* ─────────────── PHASE: FEEDBACK ─────────────────────── */}
       {phase === 'feedback' && result && (
-        <div className="responsive-pad" style={{ maxWidth: '820px', margin: '0 auto', padding: '24px 24px 80px', flex: 1, overflowY: 'auto' }}>
+        <div className="responsive-pad" style={{ maxWidth: '820px', margin: '0 auto', padding: '24px 24px 80px', flex: 1 }}>
           {/* Score hero */}
           <div className="card" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '40px', flexWrap: 'wrap' }}>
             <ScoreCircle score={result.feynman_score} />
