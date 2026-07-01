@@ -158,15 +158,33 @@ export async function POST(
 
     // 5. Compute readiness estimate
     const updatedMasteries = (masteries as any[]) || [];
-    const skillMasteries: Record<string, number> = {
-      recall: 0.5, comprehension: 0.5, application: 0.5,
-      analysis: 0.5, evaluation: 0.5, maths: 0.5,
-      synthesis: 0.5, procedural: 0.5, data_interpretation: 0.5,
-    };
     const avgMastery = updatedMasteries.length > 0
       ? updatedMasteries.reduce((s, m) => s + Number(m.p_mastered), 0) / updatedMasteries.length
       : 0.35;
-    Object.keys(skillMasteries).forEach(k => { skillMasteries[k] = avgMastery; });
+
+    // Fetch user's multi-dimensional cognitive constructs for readiness mapping
+    const { data: userConstructs } = await supabase
+      .from('learner_constructs')
+      .select('construct, value')
+      .eq('user_id', user.id);
+
+    const constructsMap = ((userConstructs as any[]) || []).reduce((acc, c) => {
+      acc[c.construct] = Number(c.value) / 100; // Map 0-100 to 0-1
+      return acc;
+    }, {} as Record<string, number>);
+
+    // Map 5 cognitive constructs to 9 course emphasis dimensions
+    const skillMasteries: Record<string, number> = {
+      recall: constructsMap['prior_knowledge'] ?? avgMastery,
+      comprehension: constructsMap['working_memory'] ?? avgMastery,
+      application: constructsMap['application'] ?? avgMastery,
+      analysis: constructsMap['analysis'] ?? avgMastery,
+      evaluation: constructsMap['evaluation'] ?? avgMastery,
+      maths: constructsMap['prior_knowledge'] ?? avgMastery,
+      synthesis: ((constructsMap['analysis'] ?? avgMastery) + (constructsMap['evaluation'] ?? avgMastery)) / 2,
+      procedural: constructsMap['application'] ?? avgMastery,
+      data_interpretation: constructsMap['analysis'] ?? avgMastery,
+    };
 
     const { data: allUnitsEmphasis } = await (supabase
       .from('content_units')
@@ -189,11 +207,28 @@ export async function POST(
       courseEmphasis = { recall: 15, comprehension: 15, application: 15, analysis: 15, evaluation: 10, synthesis: 10, maths: 10, procedural: 5, data_interpretation: 5 };
     }
 
+    // Cumulative observations across all quizzes in this course
+    const { data: sessionRows } = await supabase.from('quiz_sessions').select('id').eq('course_id', courseId).eq('user_id', user.id);
+    const sessionIds = (sessionRows as any[])?.map(s => s.id) || [sessionId];
+    
+    let cumulativeResponses = responses.length;
+    if (sessionIds.length > 0) {
+      const { count } = await supabase
+        .from('response_events')
+        .select('*', { count: 'exact', head: true })
+        .in('session_id', sessionIds);
+      if (count) cumulativeResponses = count;
+    }
+
+    const totalTopics = updatedMasteries.length || 1;
+    // Assuming 5 questions per topic provides "full" coverage of the course breadth
+    const topicCoverage = Math.min(1, cumulativeResponses / (totalTopics * 5));
+
     const readinessResult = computeReadiness({
       skillMasteries,
       cognitiveEmphasis: courseEmphasis as any,
-      topicCoverage: Math.min(1, responses.length / Math.max(1, updatedMasteries.length * 9)),
-      totalObservations: responses.length,
+      topicCoverage,
+      totalObservations: cumulativeResponses,
     });
 
     await (supabase.from('readiness_estimates') as any).insert({

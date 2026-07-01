@@ -18,15 +18,7 @@ export function computeReadiness(input: ReadinessInput): ReadinessResult {
 
   // Normalize emphasis weights across all 6 dimensions
   const ce = cognitiveEmphasis as any;
-  const totalWeight =
-    (ce.recall        ?? 0) +
-    (ce.comprehension ?? 0) +
-    (ce.application   ?? 0) +
-    (ce.analysis      ?? 0) +
-    (ce.evaluation    ?? 0) +
-    (ce.maths         ?? 0) +
-    // backward compat — old 4-field data
-    (ce.memory        ?? 0);
+  const totalWeight = Object.values(ce).reduce<number>((sum, v) => sum + (Number(v) || 0), 0);
 
   const safeTotal = totalWeight > 0 ? totalWeight : 100;
   const normWeights: Record<string, number> = {};
