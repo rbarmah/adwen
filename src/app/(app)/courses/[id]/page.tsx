@@ -124,7 +124,6 @@ export default function CourseDashboardPage() {
 
         // 6. Check pipelines statuses
         const isAnalysisComplete = dbCourse.status === 'ready' || totalUnits > 0;
-        const isDiagnosisComplete = latestReadiness !== undefined;
         const isStudyAvailable = totalUnits > 0;
         const isQuizAvailable = (itemsCount || 0) > 0;
         const isResultsAvailable = courseEvents.length > 0;
@@ -132,7 +131,6 @@ export default function CourseDashboardPage() {
 
         const dynamicStages = [
           { href: `analysis`, label: 'Course Intelligence', icon: '🗂️', status: isAnalysisComplete ? 'complete' : 'available', description: `${totalUnits} topics mapped`, accentColor: 'var(--cobalt)' },
-          { href: `diagnosis`, label: 'Cold Diagnosis', icon: '🔍', status: isDiagnosisComplete ? 'complete' : isAnalysisComplete ? 'available' : 'locked', description: `Readiness range: ${readinessRangeStr}`, accentColor: 'var(--magenta)' },
           { href: `study`, label: 'Study Room', icon: '📖', status: isStudyAvailable ? 'available' : 'locked', description: `4 depth levels across ${totalUnits} topics`, accentColor: 'var(--tangerine)' },
           { href: `quiz`, label: 'Adaptive Quiz', icon: '🎯', status: isQuizAvailable ? 'available' : 'locked', description: `${itemsCount || 0} items with CAT selection`, accentColor: 'var(--cobalt)' },
           { href: `results`, label: 'Results & Analysis', icon: '📊', status: isResultsAvailable ? 'available' : 'locked', description: 'Complete a quiz to see results', accentColor: 'var(--green)' },
