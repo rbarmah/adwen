@@ -729,9 +729,11 @@ export default function AnalysisPage() {
             }}>
               We'll compare <strong>{topics.length} course topics</strong> against your 6 cognitive dimensions to predict friction points and formulate a strategy.
             </p>
-            <Button onClick={fetchReport} size="lg" variant="primary">
-              Analyze Course Intelligence ⚡
-            </Button>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <Button onClick={fetchReport} size="lg" variant="primary">
+                Analyze Course Intelligence ⚡
+              </Button>
+            </div>
           </div>
         )}
 
