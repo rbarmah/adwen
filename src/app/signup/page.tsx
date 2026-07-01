@@ -43,6 +43,20 @@ export default function SignupPage() {
 
     try {
       const supabase = createClient();
+
+      // Check waitlist approval before allowing signup
+      const { data: waitlistRow } = await (supabase
+        .from('waitlist')
+        .select('status')
+        .eq('email', email.toLowerCase().trim())
+        .single() as any);
+
+      if (!waitlistRow || waitlistRow.status !== 'approved') {
+        setError('This email hasn\'t been approved yet. Please join the waitlist first.');
+        setLoading(false);
+        return;
+      }
+
       const { data, error: authError } = await supabase.auth.signUp({
         email,
         password,
@@ -162,7 +176,12 @@ export default function SignupPage() {
               </label>
 
               {error && (
-                <p style={{ color: 'var(--danger)', fontSize: 'var(--text-sm)' }}>{error}</p>
+                <div style={{ color: 'var(--danger)', fontSize: 'var(--text-sm)' }}>
+                  {error}{' '}
+                  {error.includes('waitlist') && (
+                    <Link href="/waitlist" style={{ color: 'var(--cobalt)', fontWeight: 700 }}>Join the waitlist →</Link>
+                  )}
+                </div>
               )}
               <Button type="submit" loading={loading} style={{ width: '100%' }} size="lg">
                 Create account
@@ -175,6 +194,10 @@ export default function SignupPage() {
           Already have an account?{' '}
           <Link href="/login" style={{ color: 'var(--cobalt)', fontWeight: 600 }}>
             Log in
+          </Link>
+          {' · '}
+          <Link href="/waitlist" style={{ color: 'var(--cobalt)', fontWeight: 600 }}>
+            Join waitlist
           </Link>
         </p>
       </div>

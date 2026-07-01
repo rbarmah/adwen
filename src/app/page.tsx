@@ -54,7 +54,7 @@ export default function HomePage() {
             Log in
           </Link>
           <Link
-            href="/signup"
+            href="/waitlist"
             style={{
               padding: '10px 24px',
               borderRadius: 'var(--radius-pill)',
@@ -69,7 +69,7 @@ export default function HomePage() {
               alignItems: 'center',
             }}
           >
-            Get started
+            Join waitlist
           </Link>
         </nav>
       </header>
@@ -168,7 +168,7 @@ export default function HomePage() {
 
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link
-              href="/signup"
+              href="/waitlist"
               style={{
                 padding: '16px 40px',
                 borderRadius: 'var(--radius-pill)',
@@ -184,7 +184,7 @@ export default function HomePage() {
                 alignItems: 'center',
               }}
             >
-              Start for free →
+              Join the waitlist →
             </Link>
             <Link
               href="#how-it-works"
@@ -538,7 +538,7 @@ export default function HomePage() {
           Join university students across Africa who are studying with confidence, clarity, and intelligence.
         </p>
         <Link
-          href="/signup"
+          href="/waitlist"
           style={{
             padding: '16px 48px',
             borderRadius: 'var(--radius-pill)',
@@ -553,7 +553,7 @@ export default function HomePage() {
             minHeight: '52px',
           }}
         >
-          Get started free →
+          Join the waitlist →
         </Link>
       </section>
 
@@ -582,7 +582,7 @@ export default function HomePage() {
               <div>
                 <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', marginBottom: '12px' }}>Platform</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <Link href="/signup" style={{ color: 'rgba(255,255,255,0.6)', fontSize: 'var(--text-sm)', textDecoration: 'none' }}>Get Started</Link>
+                  <Link href="/waitlist" style={{ color: 'rgba(255,255,255,0.6)', fontSize: 'var(--text-sm)', textDecoration: 'none' }}>Join Waitlist</Link>
                   <Link href="/login" style={{ color: 'rgba(255,255,255,0.6)', fontSize: 'var(--text-sm)', textDecoration: 'none' }}>Log In</Link>
                 </div>
               </div>

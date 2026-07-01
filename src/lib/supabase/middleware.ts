@@ -34,7 +34,7 @@ export async function updateSession(request: NextRequest) {
     } = await supabase.auth.getUser();
 
     // Public routes that don't require auth
-    const publicPaths = ['/', '/login', '/signup', '/consent', '/onboarding', '/forgot-password', '/terms', '/privacy', '/update-password'];
+    const publicPaths = ['/', '/login', '/signup', '/waitlist', '/consent', '/onboarding', '/forgot-password', '/terms', '/privacy', '/update-password'];
     const isPublicPath = publicPaths.some(
       (path) => request.nextUrl.pathname === path
     );
@@ -84,7 +84,7 @@ export async function updateSession(request: NextRequest) {
   } catch {
     // Auth check failed — for protected routes, redirect to login
     // rather than letting the request through in an unknown state
-    const publicPaths = ['/', '/login', '/signup', '/consent', '/onboarding', '/forgot-password', '/terms', '/privacy', '/update-password'];
+    const publicPaths = ['/', '/login', '/signup', '/waitlist', '/consent', '/onboarding', '/forgot-password', '/terms', '/privacy', '/update-password'];
     const isPublicPath = publicPaths.some(
       (path) => request.nextUrl.pathname === path
     );

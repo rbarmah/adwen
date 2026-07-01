@@ -138,6 +138,7 @@ export const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
   SIGNUP: '/signup',
+  WAITLIST: '/waitlist',
   CONSENT: '/consent',
   ONBOARDING: '/onboarding',
   ONBOARDING_TESTS: '/onboarding/tests',
