@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Sparkle } from '@/components/ui/Badge';
+import Icon from '@/components/ui/Icon';
 import { createClient } from '@/lib/supabase/client';
 import { WASSCE_SUBJECTS, STEP_LABELS, analyzeWassceAlerts } from './data';
 import type { ProfileState, WassceElective } from './types';
@@ -292,7 +293,15 @@ export default function OnboardingPage() {
         background: 'var(--lime)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <img src="/logo.png" alt="Adwen" style={{ height: '56px', width: 'auto' }} />
+          <div style={{
+            width: 36, height: 36, borderRadius: 10,
+            background: 'var(--paper)', border: '2px solid var(--ink)',
+            display: 'grid', placeItems: 'center',
+            boxShadow: '0 2px 0 var(--ink)',
+          }}>
+            <Icon name="bulb" size={18} color="var(--ink)" />
+          </div>
+          <span style={{ fontFamily: 'var(--font-display)', fontSize: 22, color: 'var(--ink)', lineHeight: 1 }}>Adwen</span>
         </div>
         <span className="mono" style={{ fontSize: '12px', color: 'var(--ink)', fontWeight: 600 }}>
           Step {step + 1} of {STEP_LABELS.length}
