@@ -5,20 +5,7 @@ export default function HomePage() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* ========== HEADER ========== */}
-      <header
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '16px 20px',
-          background: 'var(--lime)',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}
-      >
+      <header className="landing-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Sparkle color="var(--magenta)" size={24} />
           <span

@@ -1175,3 +1175,23 @@ input[type=range]::-webkit-slider-thumb {
   max-width: 100%;
   height: auto !important;
 }
+
+/* Landing Page Header */
+.landing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: var(--lime);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .landing-header {
+    justify-content: center;
+  }
+}
