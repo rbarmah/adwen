@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
+function getSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+}
 
 const ADMIN_SECRET = process.env.ADMIN_SECRET;
 
@@ -19,7 +21,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('waitlist')
     .select('*')
     .order('created_at', { ascending: false });
@@ -42,7 +44,7 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: 'Email and status required' }, { status: 400 });
   }
 
-  const { error } = await supabase
+  const { error } = await getSupabase()
     .from('waitlist')
     .update({ status })
     .eq('email', email.toLowerCase().trim());

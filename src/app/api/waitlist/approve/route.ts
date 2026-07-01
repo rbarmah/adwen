@@ -2,13 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY);
+}
 
-// Use service role to update waitlist rows
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
+function getSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+}
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://adwen.vercel.app';
 const ADMIN_SECRET = process.env.ADMIN_SECRET;
@@ -30,7 +33,7 @@ export async function POST(request: NextRequest) {
     const normalizedEmail = email.toLowerCase().trim();
 
     // 1. Update waitlist status
-    const { data, error: updateError } = await supabase
+    const { data, error: updateError } = await getSupabase()
       .from('waitlist')
       .update({ status: 'approved', approved_at: new Date().toISOString() })
       .eq('email', normalizedEmail)
@@ -45,7 +48,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Send approval email via Resend
-    const { error: emailError } = await resend.emails.send({
+    const { error: emailError } = await getResend().emails.send({
       from: `Adwen <${FROM_EMAIL}>`,
       to: normalizedEmail,
       subject: 'You\'re in! 🎉 Your Adwen access is ready',
