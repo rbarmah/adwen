@@ -524,7 +524,7 @@ export default function CognitiveTestsStep({
   // RENDER
   // ═══════════════════════════════════════════════════════════════
   return (
-    <div className="animate-fade-in" style={{ maxWidth: 600, margin: '0 auto', paddingTop: 20 }}>
+    <div className="animate-fade-in" style={{ maxWidth: 600, margin: '0 auto', paddingTop: 20, paddingLeft: 16, paddingRight: 16, boxSizing: 'border-box' }}>
       <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 32 }}>
         {TESTS_CONFIG.map((_, i) => (
           <div key={i} style={{
@@ -540,11 +540,11 @@ export default function CognitiveTestsStep({
       {testActiveState === 'result' && renderResult()}
       {testActiveState === 'testing' && (
         <div>
-          <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between' }}>
-            <h1 className="h-lg" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px', flexWrap: 'wrap' }}>
+            <h1 className="h-lg" style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: 'clamp(16px, 4vw, 22px)', margin: 0 }}>
               <span>{TESTS_CONFIG[curTest].icon}</span> {TESTS_CONFIG[curTest].title}
             </h1>
-            <span className="mono note" style={{ fontWeight: 700 }}>
+            <span className="mono note" style={{ fontWeight: 700, whiteSpace: 'nowrap' }}>
               {curTest === 1 ? `⏱ ${sdTimeLeft}s` : `${progress.current} / ${progress.total}`}
             </span>
           </div>
@@ -581,14 +581,14 @@ export default function CognitiveTestsStep({
               <div>
                 {/* Reference key */}
                 <div style={{
-                  display: 'flex', justifyContent: 'center', gap: '12px', marginBottom: '20px',
+                  display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(40px, 1fr))', gap: '8px', marginBottom: '20px',
                   padding: '12px', background: 'rgba(0,0,0,0.04)', borderRadius: 'var(--r)',
                   border: '2px dashed var(--ink)'
                 }}>
                   {SYMBOL_DIGIT_KEY.map(item => (
                     <div key={item.digit} style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: '28px', lineHeight: 1 }}>{item.symbol}</div>
-                      <div className="mono" style={{ fontSize: '16px', fontWeight: 800, marginTop: '4px', color: 'var(--cobalt)' }}>{item.digit}</div>
+                      <div style={{ fontSize: 'clamp(18px, 5vw, 28px)', lineHeight: 1 }}>{item.symbol}</div>
+                      <div className="mono" style={{ fontSize: 'clamp(12px, 3vw, 16px)', fontWeight: 800, marginTop: '4px', color: 'var(--cobalt)' }}>{item.digit}</div>
                     </div>
                   ))}
                 </div>
@@ -597,19 +597,19 @@ export default function CognitiveTestsStep({
                   <div style={{ textAlign: 'center' }}>
                     {/* Current symbol to match */}
                     <div style={{
-                      fontSize: '72px', lineHeight: 1, margin: '16px 0 24px',
+                      fontSize: 'clamp(48px, 12vw, 72px)', lineHeight: 1, margin: '16px 0 24px',
                       background: 'var(--navy)', color: '#fff', display: 'inline-block',
-                      padding: '20px 40px', borderRadius: 'var(--r)', border: '3px solid var(--ink)',
+                      padding: '16px 32px', borderRadius: 'var(--r)', border: '3px solid var(--ink)',
                     }}>
                       {SYMBOL_DIGIT_KEY[sdSequence[sdCurrent]].symbol}
                     </div>
 
                     {/* Digit buttons */}
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(44px, 1fr))', gap: '8px', maxWidth: '400px', margin: '0 auto' }}>
                       {SYMBOL_DIGIT_KEY.map(item => (
                         <button key={item.digit} onClick={() => handleSpeedInput(item.digit)}
                           style={{
-                            width: '56px', height: '56px', fontSize: '24px', fontWeight: 800,
+                            width: '100%', aspectRatio: '1', fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 800,
                             border: '2.5px solid var(--ink)', borderRadius: 'var(--r)',
                             background: '#fff', cursor: 'pointer', fontFamily: 'var(--font-mono)',
                             transition: 'transform 0.1s', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -794,12 +794,12 @@ export default function CognitiveTestsStep({
           {/* Progress bar */}
           <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Button variant="ghost" onClick={handleSkipTest}>Skip Test</Button>
-            <div style={{ display: 'flex', gap: '3px' }}>
+            <div style={{ display: 'flex', gap: '3px', flexWrap: 'wrap', maxWidth: '60%', justifyContent: 'flex-end' }}>
               {Array.from({ length: progress.total > 30 ? 20 : progress.total }).map((_, i) => {
                 const scaled = progress.total > 30 ? Math.floor((i / 20) * progress.total) : i;
                 return (
                   <div key={i} style={{
-                    height: '8px', width: '12px', border: '1.5px solid var(--ink)',
+                    height: '8px', width: '10px', border: '1.5px solid var(--ink)',
                     background: scaled < (curTest === 1 ? sdCurrent : progress.current - 1) ? TESTS_CONFIG[curTest].color : '#fff',
                     borderRadius: '2px',
                   }} />
