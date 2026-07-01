@@ -1,40 +1,42 @@
 import { NextResponse } from 'next/server';
 import { requireAuth, isAuthError } from '@/lib/api/auth';
+import { createClient } from '@supabase/supabase-js';
 
 export async function POST() {
   const auth = await requireAuth();
   if (isAuthError(auth)) return auth;
   const { user, supabase } = auth;
 
-  try {
-    // Delete all user data across tables (cascading deletes on courses handle most)
-    // Order: dependent tables first, then courses, then profile
-    const tables = [
-      'review_schedule',
-      'readiness_estimates',
-      'response_events',
-      'quiz_sessions',
-      'mastery_states',
-      'learner_constructs',
-      'chat_messages',
-      'study_cards',
-      'visual_note_generations',
-    ];
+  // Initialize admin client to bypass RLS and delete auth user
+  const adminKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
-    for (const table of tables) {
-      await (supabase.from(table) as any).delete().eq('user_id', user.id);
+  if (!adminKey || !supabaseUrl) {
+    return NextResponse.json({ error: 'Server misconfiguration: missing admin keys.' }, { status: 500 });
+  }
+
+  const supabaseAdmin = createClient(supabaseUrl, adminKey, {
+    auth: { autoRefreshToken: false, persistSession: false }
+  });
+
+  try {
+    // 1. Delete all user uploaded files from storage
+    const { data: files } = await (supabase.from('course_files') as any)
+      .select('storage_path')
+      .eq('user_id', user.id);
+      
+    const paths = ((files as any[]) || []).map((f: any) => f.storage_path).filter(Boolean);
+    if (paths.length > 0) {
+      await supabaseAdmin.storage.from('course-uploads').remove(paths);
     }
 
-    // Delete courses (cascading will clean up items, content_units, prerequisites)
-    await supabase.from('courses').delete().eq('user_id', user.id);
+    // 2. Delete the user from Auth
+    // Because of ON DELETE CASCADE on auth.users -> profiles / courses / etc.
+    // This will instantly and atomically wipe every single row belonging to the user.
+    const { error: deleteErr } = await supabaseAdmin.auth.admin.deleteUser(user.id);
+    if (deleteErr) throw deleteErr;
 
-    // Delete profile
-    await supabase.from('profiles').delete().eq('id', user.id);
-
-    // Note: Supabase client-side cannot delete auth user.
-    // The user should sign out. For full auth deletion, use admin API on the server.
-
-    return NextResponse.json({ success: true, message: 'All data deleted. Please sign out.' });
+    return NextResponse.json({ success: true, message: 'Account completely deleted.' });
   } catch (error: unknown) {
     console.error('[delete-account] Error:', error);
     return NextResponse.json({ error: 'Account deletion failed. Please try again.' }, { status: 500 });

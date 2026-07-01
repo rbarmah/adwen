@@ -105,7 +105,16 @@ export async function DELETE(
       .delete()
       .eq('course_id', courseId);
 
-    // 11. course_files
+    // 11. course_files (and actual storage files)
+    const { data: files } = await (supabase.from('course_files') as any)
+      .select('storage_path')
+      .eq('course_id', courseId);
+
+    const paths = ((files as any[]) || []).map((f: any) => f.storage_path).filter(Boolean);
+    if (paths.length > 0) {
+      await supabase.storage.from('course-uploads').remove(paths);
+    }
+
     await (supabase.from('course_files') as any)
       .delete()
       .eq('course_id', courseId);
