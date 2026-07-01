@@ -13,12 +13,14 @@ function getSupabase() {
   );
 }
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://adwen.vercel.app';
+// APP_URL is determined dynamically from the request
 const ADMIN_SECRET = process.env.ADMIN_SECRET;
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
 
 export async function POST(request: NextRequest) {
   try {
+    // Dynamically get the app URL so the email links correctly in production
+    const APP_URL = request.nextUrl.origin;
     // Auth check — require admin secret
     const authHeader = request.headers.get('x-admin-secret');
     if (ADMIN_SECRET && authHeader !== ADMIN_SECRET) {
