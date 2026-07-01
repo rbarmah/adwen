@@ -202,7 +202,7 @@ export default function ProfilePage() {
   );
 
   return (
-    <div className="animate-fade-in" style={{ maxWidth: 700, margin: '0 auto' }}>
+    <div className="animate-fade-in" style={{ maxWidth: 700, margin: '0 auto', overflow: 'hidden' }}>
 
       {/* ─── Header ─────────────────────────────────────── */}
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 36, flexWrap: 'wrap', gap: 16 }}>
@@ -252,7 +252,7 @@ export default function ProfilePage() {
 
       {/* ─── WASSCE Background ──────────────────────────── */}
       {profile?.wassce_course && (
-        <div className="card" style={{ padding: '22px 28px', marginBottom: 20 }}>
+        <div className="card" style={{ padding: '20px', marginBottom: 20 }}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 14, fontWeight: 700 }}>
             📋 WASSCE Background
           </div>
@@ -277,7 +277,7 @@ export default function ProfilePage() {
       {/* ─── Cognitive Profile ──────────────────────────── */}
       {assessedCount > 0 ? (
         <div className="hero" style={{ marginBottom: 20 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
             <div className="eyebrow" style={{ color: 'var(--lime)', margin: 0 }}>Learner profile · v1 — 6 dimensions</div>
             <button
               onClick={() => router.push('/onboarding?retake=tests')}
@@ -334,8 +334,8 @@ export default function ProfilePage() {
           </div>
         </div>
       ) : (
-        <div className="card" style={{ padding: '22px 28px', marginBottom: 20 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+        <div className="card" style={{ padding: '20px', marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 8 }}>
             <div>
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 4, fontWeight: 700 }}>
                 🧠 Cognitive Profile
@@ -359,7 +359,7 @@ export default function ProfilePage() {
 
       {/* ─── Deep Qualitative Synthesis ─────────────────── */}
       <div style={{ marginBottom: 30 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', textTransform: 'uppercase', margin: 0 }}>Deep Profile Synthesis</h2>
           <button
             onClick={() => fetchReport(profile, constructs, telemetry, sessions)}
@@ -428,7 +428,7 @@ export default function ProfilePage() {
 
       {/* ─── CWA ────────────────────────────────────────── */}
       {profile?.cwa !== null && profile?.cwa !== undefined && (
-        <div className="card" style={{ padding: '22px 28px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 24 }}>
+        <div className="card" style={{ padding: '20px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
           <div style={{ flex: 1 }}>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 6, fontWeight: 700 }}>📈 Current Weighted Average</div>
             <div style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.5 }}>Your self-reported university GPA (0–100 scale)</div>
@@ -441,7 +441,7 @@ export default function ProfilePage() {
       )}
 
       {/* ─── Footer action ──────────────────────────────── */}
-      <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+      <div style={{ display: 'flex', gap: 12, marginTop: 8, flexWrap: 'wrap' }}>
         <button
           onClick={() => router.push('/onboarding?step=4')}
           style={{ flex: 1, padding: '14px 24px', border: '2px solid var(--ink)', borderRadius: 'var(--r-sm)', background: 'var(--paper-2)', fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 700, cursor: 'pointer', boxShadow: '0 3px 0 var(--ink)' }}

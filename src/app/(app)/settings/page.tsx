@@ -118,7 +118,7 @@ export default function SettingsPage() {
         <Card padding="lg">
           <h2 style={{ fontSize: 'var(--text-base)', fontWeight: 700, marginBottom: '16px' }}>Privacy &amp; Consent</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
               <div>
                 <p style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>Diagnostic measurement</p>
                 <p style={{ fontSize: 'var(--text-xs)', color: 'var(--muted)' }}>Allow response pattern analysis</p>
@@ -152,7 +152,7 @@ export default function SettingsPage() {
                 }} />
               </button>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
               <div>
                 <p style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>Data storage</p>
                 <p style={{ fontSize: 'var(--text-xs)', color: 'var(--muted)' }}>Store and process study data</p>
@@ -200,7 +200,7 @@ export default function SettingsPage() {
               {exporting ? 'Exporting…' : 'Export my data'}
             </Button>
             {showDeleteConfirm ? (
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                 <span style={{ fontSize: 'var(--text-xs)', color: 'var(--danger)', fontWeight: 700 }}>
                   Are you sure? This cannot be undone.
                 </span>
@@ -221,7 +221,7 @@ export default function SettingsPage() {
 
         <Card padding="lg">
           <h2 style={{ fontSize: 'var(--text-base)', fontWeight: 700, marginBottom: '16px' }}>Account</h2>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <div>
               <p style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>Signed in as</p>
               <p style={{ fontSize: 'var(--text-xs)', color: 'var(--muted)' }}>{userEmail || 'Loading…'}</p>
