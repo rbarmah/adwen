@@ -94,7 +94,8 @@ export default function UpdatePasswordPage() {
       >
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <Link href="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-            <img src="/logo.png" alt="Adwen" style={{ height: '56px', width: 'auto' }} />
+            <Sparkle color="var(--magenta)" size={28} />
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-2xl)', textTransform: 'uppercase', color: 'var(--ink)' }}>ADWEN</span>
           </Link>
           <p style={{ marginTop: '12px', color: 'var(--muted)', fontSize: 'var(--text-sm)' }}>
             Set your new password below.

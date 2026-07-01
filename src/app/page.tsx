@@ -585,7 +585,7 @@ export default function HomePage() {
           </div>
 
           <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-            <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 'var(--text-sm)' }}>© 2026 Adwen. All rights reserved.</p>
+            <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 'var(--text-sm)' }}>© 2026 Adwen. Powered by the PHANET Academics Department.</p>
             <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 'var(--text-sm)' }}>Compliant with Ghana Data Protection Act, 2012 (Act 843)</p>
           </div>
         </div>
