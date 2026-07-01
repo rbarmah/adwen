@@ -90,9 +90,9 @@ interface ConfidenceBandProps {
 export function ConfidenceBand({ point, ciLow, ciHigh, label, confidenceLabel, color = 'var(--cobalt)', measured = true }: ConfidenceBandProps) {
   return (
     <div style={{ marginBottom: 4 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6, flexWrap: 'wrap', gap: '4px' }}>
         <span style={{ fontSize: 13, fontWeight: 700 }}>{label}</span>
-        <span className="mono" style={{ fontSize: 11, color: measured ? 'var(--ink)' : 'var(--muted)' }}>
+        <span className="mono" style={{ fontSize: 11, color: measured ? 'var(--ink)' : 'var(--muted)', wordBreak: 'break-word' }}>
           {ciLow}–{ciHigh}% {confidenceLabel && `· ${confidenceLabel}`}
         </span>
       </div>

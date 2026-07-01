@@ -182,7 +182,7 @@ export default function OutcomePage() {
   }
 
   return (
-    <div className="animate-fade-in" style={{ maxWidth: '680px', margin: '0 auto' }}>
+    <div className="animate-fade-in" style={{ maxWidth: '680px', margin: '0 auto', overflow: 'hidden' }}>
       <div style={{ marginBottom: '32px' }}>
         <Badge variant="cobalt" size="sm" style={{ marginBottom: '8px' }}>Stage 8</Badge>
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-2xl)', textTransform: 'uppercase' }}>
@@ -283,8 +283,8 @@ export default function OutcomePage() {
             {Number(realGrade || calibrationData[0]?.real) >= prediction.ciLow && Number(realGrade || calibrationData[0]?.real) <= prediction.ciHigh ? (
               <Badge variant="green" size="sm">Within predicted range ✓</Badge>
             ) : (
-              <Badge variant="tangerine" size="sm">
-                Outside range — recalibrating model parameters
+              <Badge variant="tangerine" size="sm" style={{ whiteSpace: 'normal', textAlign: 'center', lineHeight: 1.4 }}>
+                Outside range — recalibrating model
               </Badge>
             )}
           </div>
