@@ -230,6 +230,26 @@ export default function SettingsPage() {
           </div>
         </Card>
 
+        <Card padding="lg">
+          <h2 style={{ fontSize: 'var(--text-base)', fontWeight: 700, marginBottom: '16px' }}>Help</h2>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <div>
+              <p style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>App tutorial</p>
+              <p style={{ fontSize: 'var(--text-xs)', color: 'var(--muted)' }}>Replay the walkthrough of all features</p>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                localStorage.removeItem('adwen_tutorial_seen');
+                router.push('/courses');
+              }}
+            >
+              Replay tutorial →
+            </Button>
+          </div>
+        </Card>
+
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Sparkle } from '@/components/ui/Badge';
 import { createClient } from '@/lib/supabase/client';
+import Tutorial from '@/components/Tutorial';
 
 // ── Accent colours per notebook ───────────────────────────────────────────────
 const SPINE_COLORS = [
@@ -118,6 +119,14 @@ export default function CoursesPage() {
   const [loading, setLoading] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
+
+  // Show tutorial on first visit after onboarding
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !localStorage.getItem('adwen_tutorial_seen')) {
+      setShowTutorial(true);
+    }
+  }, []);
 
   const fetchCourses = async () => {
     const supabase = createClient();
@@ -168,6 +177,8 @@ export default function CoursesPage() {
   };
 
   return (
+    <>
+      {showTutorial && <Tutorial onComplete={() => setShowTutorial(false)} />}
     <div className="animate-fade-in" style={{ maxWidth: 1200, margin: '0 auto', padding: '44px 48px 80px' }}>
 
       {/* ── Header ── */}
@@ -346,5 +357,6 @@ export default function CoursesPage() {
         />
       )}
     </div>
+    </>
   );
 }
