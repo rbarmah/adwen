@@ -220,8 +220,8 @@ export default function OutcomePage() {
             This closes the feedback loop. Your real grade helps Adwen recalibrate item parameters
             and improve predictions for you and future students.
           </p>
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-end' }}>
-            <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'flex-end' }}>
+            <div style={{ flex: '1 1 200px', minWidth: 0 }}>
               <Input
                 label="Your exam score (%)"
                 type="number"
@@ -258,23 +258,23 @@ export default function OutcomePage() {
             </h2>
 
             {/* Predicted vs Actual */}
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', margin: '24px 0' }}>
-              <div style={{ textAlign: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', margin: '24px 0', flexWrap: 'wrap', alignItems: 'center' }}>
+              <div style={{ textAlign: 'center', minWidth: '80px' }}>
                 <p style={{ fontSize: 'var(--text-xs)', color: 'var(--muted)', textTransform: 'uppercase', fontWeight: 600 }}>
                   Predicted
                 </p>
-                <p style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-3xl)', fontWeight: 700, color: 'var(--cobalt)' }}>
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(1.2rem, 4vw, var(--text-3xl))', fontWeight: 700, color: 'var(--cobalt)' }}>
                   {prediction.ciLow}–{prediction.ciHigh}%
                 </p>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', fontSize: 'var(--text-2xl)', color: 'var(--muted)' }}>
                 vs
               </div>
-              <div style={{ textAlign: 'center' }}>
+              <div style={{ textAlign: 'center', minWidth: '80px' }}>
                 <p style={{ fontSize: 'var(--text-xs)', color: 'var(--muted)', textTransform: 'uppercase', fontWeight: 600 }}>
                   Actual
                 </p>
-                <p style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-3xl)', fontWeight: 700, color: 'var(--success)' }}>
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(1.2rem, 4vw, var(--text-3xl))', fontWeight: 700, color: 'var(--success)' }}>
                   {realGrade || calibrationData[0]?.real}%
                 </p>
               </div>
