@@ -38,11 +38,13 @@ export async function updateSession(request: NextRequest) {
     const isPublicPath = publicPaths.some(
       (path) => request.nextUrl.pathname === path
     );
+    // Admin pages handle their own auth (ADMIN_SECRET)
+    const isAdminPath = request.nextUrl.pathname.startsWith('/admin');
     // API routes handle their own auth
     const isApiPath = request.nextUrl.pathname.startsWith('/api');
 
     // If no user and trying to access protected route, redirect to login
-    if (!user && !isPublicPath && !isApiPath) {
+    if (!user && !isPublicPath && !isAdminPath && !isApiPath) {
       const url = request.nextUrl.clone();
       url.pathname = '/login';
       return NextResponse.redirect(url);
@@ -67,7 +69,7 @@ export async function updateSession(request: NextRequest) {
     }
 
     // If user is logged in and accessing protected page, check if profiled
-    if (user && !isPublicPath && !isApiPath) {
+    if (user && !isPublicPath && !isAdminPath && !isApiPath) {
       const { data: profile } = await supabase
         .from('profiles')
         .select('consent_measure, consent_data')
@@ -88,8 +90,9 @@ export async function updateSession(request: NextRequest) {
     const isPublicPath = publicPaths.some(
       (path) => request.nextUrl.pathname === path
     );
+    const isAdminPath = request.nextUrl.pathname.startsWith('/admin');
     const isApiPath = request.nextUrl.pathname.startsWith('/api');
-    if (!isPublicPath && !isApiPath) {
+    if (!isPublicPath && !isAdminPath && !isApiPath) {
       const url = request.nextUrl.clone();
       url.pathname = '/login';
       return NextResponse.redirect(url);
