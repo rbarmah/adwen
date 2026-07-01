@@ -1,314 +1,214 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Button from '@/components/ui/Button';
-import Icon from '@/components/ui/Icon';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 
-// ── Tutorial Steps ─────────────────────────────────────────────────────────────
-const TUTORIAL_STEPS = [
+// ── Tour step definitions ──────────────────────────────────────────────────────
+interface TourStep {
+  target: string;           // data-tour attribute value
+  title: string;
+  body: string;
+  tip?: string;
+  position?: 'top' | 'bottom' | 'left' | 'right' | 'auto';
+}
+
+const TOUR_STEPS: TourStep[] = [
   {
-    id: 'welcome',
-    icon: '🎓',
-    title: 'Welcome to Adwen',
-    subtitle: 'Your AI-powered learning companion',
-    body: 'Adwen uses cognitive science and AI to help you master your university courses. Let\u2019s walk you through the key features so you can hit the ground running.',
-    tip: 'This tour takes about 2 minutes. You can revisit it anytime from Settings.',
-    visual: 'welcome',
+    target: 'tour-header',
+    title: 'Your Dashboard',
+    body: 'This is your command centre. All your registered courses appear here as notebook cards, each showing your mastery percentage and processing status.',
+    tip: 'Courses turn "READY" once Adwen\'s AI finishes analyzing your study materials.',
+    position: 'bottom',
   },
   {
-    id: 'dashboard',
-    icon: '📚',
-    title: 'Your Course Library',
-    subtitle: 'The command centre for all your courses',
-    body: 'The dashboard shows every course you\u2019ve registered as a notebook card. Each card displays your mastery percentage, course code, and processing status. Courses turn "READY" once Adwen\u2019s AI finishes analyzing your study materials.',
-    tip: 'Click the \u201c+ New course\u201d button to register a new course anytime.',
-    visual: 'dashboard',
+    target: 'tour-new-course',
+    title: 'Add a New Course',
+    body: 'Click here to register a new course. You\'ll enter the course name, code, description, and your target grade. Adwen uses this to calibrate quizzes and study recommendations.',
+    tip: 'Be specific with names — "MATH 263 — Linear Algebra" works better than just "Math".',
+    position: 'bottom',
   },
   {
-    id: 'add-course',
-    icon: '➕',
-    title: 'Adding a New Course',
-    subtitle: 'Register a course in 30 seconds',
-    body: 'When you add a course, you\u2019ll provide the course name, code, a brief description, and your target grade. Adwen uses this information to calibrate AI-generated quizzes and study recommendations to your goals.',
-    tip: 'Be specific with course names. "MATH 263 \u2014 Linear Algebra" works better than just "Math".',
-    visual: 'add-course',
+    target: 'tour-course-card',
+    title: 'Course Cards',
+    body: 'Each card shows your course at a glance — the mastery ring, topic count, readiness score, and exam countdown. Click any card to dive into that course.',
+    tip: 'The mastery ring fills up as you answer quiz questions correctly.',
+    position: 'bottom',
   },
   {
-    id: 'study',
-    icon: '📖',
-    title: 'Study Materials',
-    subtitle: 'Upload your notes. Adwen does the rest.',
-    body: 'Upload lecture notes, past exams, and textbook chapters as PDFs. Adwen\u2019s AI extracts key concepts, learning objectives, and generates a comprehensive knowledge graph from your materials. The more you upload, the smarter Adwen gets for that course.',
-    tip: 'Past exam papers are gold \u2014 they teach Adwen exactly what your lecturers test on.',
-    visual: 'study',
+    target: 'tour-telemetry',
+    title: 'Live Telemetry',
+    body: 'This panel shows a real-time feed of your learning activity — quiz responses, ability updates, and course events. It helps you track what\'s happening under the hood.',
+    tip: 'Watch your θ (theta) score change after each quiz question — that\'s your ability level.',
+    position: 'bottom',
   },
   {
-    id: 'quiz',
-    icon: '🧠',
-    title: 'Adaptive Quiz Engine',
-    subtitle: 'Quizzes that get harder as you get smarter',
-    body: 'Adwen generates questions directly from YOUR study materials using Item Response Theory (IRT). Each question adapts to your current ability level \u2014 too easy questions get harder, too hard ones get easier. This keeps you in the optimal learning zone.',
-    tip: 'Don\u2019t rush! Your response time is factored into the difficulty calibration.',
-    visual: 'quiz',
-  },
-  {
-    id: 'intelligence',
-    icon: '📊',
-    title: 'Course Intelligence',
-    subtitle: 'AI-powered analysis of your course',
-    body: 'Course Intelligence gives you a deep synthesis of your entire course \u2014 topic breakdown, difficulty analysis, exam pattern detection, and learning path recommendations. Think of it as an AI teaching assistant that\u2019s read all your materials.',
-    tip: 'Run the analysis after uploading at least 3 documents for the best results.',
-    visual: 'intelligence',
-  },
-  {
-    id: 'personal',
-    icon: '🔍',
-    title: 'Personal Intelligence',
-    subtitle: 'Your learning fingerprint',
-    body: 'Personal Intelligence tracks YOUR unique learning patterns: which topics you struggle with, your confidence calibration, response speed trends, and cognitive strengths. It combines your onboarding cognitive test results with live quiz performance data.',
-    tip: 'Check this regularly to see which topics need more revision.',
-    visual: 'personal',
-  },
-  {
-    id: 'outcome',
-    icon: '🔄',
-    title: 'Outcome Loop',
-    subtitle: 'Close the gap between effort and results',
-    body: 'The Outcome Loop tracks your predicted vs actual exam results and uses Bayesian updating to refine your readiness estimate over time. After entering your real exam grade, Adwen recalibrates everything \u2014 difficulty estimates, your ability level, and study recommendations.',
-    tip: 'Always log your actual exam results. This is how Adwen learns to predict more accurately.',
-    visual: 'outcome',
-  },
-  {
-    id: 'profile',
-    icon: '👤',
-    title: 'Your Profile & Cognitive Map',
-    subtitle: 'See your complete learning profile',
-    body: 'Your profile stores your cognitive diagnostic results (the 6 tests from onboarding), academic background, and a radar chart of your cognitive strengths. These inform how Adwen calibrates quiz difficulty and study recommendations specifically for you.',
-    tip: 'Your cognitive scores improve over time as you use the platform.',
-    visual: 'profile',
-  },
-  {
-    id: 'ready',
-    icon: '🚀',
-    title: 'You\u2019re All Set!',
-    subtitle: 'Time to add your first course',
-    body: 'Start by adding a course and uploading your study materials. Adwen will handle the rest \u2014 generating quizzes, analyzing content, and tracking your progress. The more you engage, the smarter and more personalized everything becomes.',
-    tip: 'Pro tip: Start with your hardest course. That\u2019s where Adwen makes the biggest difference.',
-    visual: 'ready',
+    target: 'tour-profile-btn',
+    title: 'Profile & Settings',
+    body: 'Click your avatar to access your Profile (cognitive diagnostics, academic info) and Settings (consent, data rights, tutorial replay).',
+    tip: 'Your 6-dimension cognitive profile from onboarding is always accessible here.',
+    position: 'bottom',
   },
 ];
 
-// ── Visual illustrations for each step ─────────────────────────────────────────
-function StepVisual({ id }: { id: string }) {
-  const visuals: Record<string, React.ReactNode> = {
-    welcome: (
-      <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-        {['📚', '🧠', '📊', '🔄', '🎯', '🚀'].map((e, i) => (
-          <div key={i} style={{
-            width: 52, height: 52, borderRadius: 14,
-            border: '2.5px solid var(--ink)', display: 'grid', placeItems: 'center',
-            fontSize: 24, background: i === 0 ? 'var(--lime)' : i === 1 ? 'var(--cobalt)' : i === 2 ? 'var(--tangerine)' : i === 3 ? 'var(--magenta)' : i === 4 ? 'var(--green)' : '#8B5CF6',
-            boxShadow: '0 3px 0 var(--ink)',
-            animation: `float ${1.5 + i * 0.3}s ease-in-out infinite alternate`,
-          }}>{e}</div>
-        ))}
-      </div>
-    ),
-    dashboard: (
-      <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
-        {[{ name: 'MATH 263', color: 'var(--cobalt)', pct: 72 }, { name: 'CHEM 151', color: 'var(--magenta)', pct: 45 }, { name: 'PHYS 241', color: 'var(--lime)', pct: 88 }].map((c, i) => (
-          <div key={i} style={{
-            width: 90, padding: '14px 10px', borderRadius: 12,
-            border: '2.5px solid var(--ink)', background: '#fff',
-            boxShadow: '0 3px 0 var(--ink)', textAlign: 'center',
-          }}>
-            <div style={{ width: 6, height: 32, background: c.color, borderRadius: 3, margin: '0 auto 8px', border: '1.5px solid var(--ink)' }} />
-            <div style={{ fontSize: 10, fontWeight: 800, fontFamily: 'var(--font-mono)', marginBottom: 4 }}>{c.name}</div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: c.color, fontFamily: 'var(--font-mono)' }}>{c.pct}%</div>
-          </div>
-        ))}
-      </div>
-    ),
-    'add-course': (
-      <div style={{
-        maxWidth: 220, margin: '0 auto', padding: '16px 20px',
-        border: '2.5px solid var(--ink)', borderRadius: 14,
-        background: '#fff', boxShadow: '0 4px 0 var(--ink)',
-      }}>
-        {['Course name', 'Course code', 'Target grade'].map((label, i) => (
-          <div key={i} style={{ marginBottom: i < 2 ? 10 : 0 }}>
-            <div style={{ fontSize: 9, fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--muted)', textTransform: 'uppercase', marginBottom: 3 }}>{label}</div>
-            <div style={{ height: 28, border: '2px solid var(--line)', borderRadius: 6, background: 'var(--surface)' }} />
-          </div>
-        ))}
-      </div>
-    ),
-    study: (
-      <div style={{ display: 'flex', gap: 8, justifyContent: 'center', alignItems: 'flex-end' }}>
-        {[{ label: 'Notes.pdf', h: 44 }, { label: 'Exam_2023.pdf', h: 56 }, { label: 'Ch5.pdf', h: 38 }].map((f, i) => (
-          <div key={i} style={{
-            width: 72, padding: '8px 6px', borderRadius: 10,
-            border: '2.5px solid var(--ink)', background: '#fff',
-            boxShadow: '0 2px 0 var(--ink)', textAlign: 'center',
-          }}>
-            <div style={{ fontSize: 22, marginBottom: 4 }}>📄</div>
-            <div style={{ fontSize: 8, fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f.label}</div>
-          </div>
-        ))}
-      </div>
-    ),
-    quiz: (
-      <div style={{
-        maxWidth: 240, margin: '0 auto', padding: '14px 16px',
-        border: '2.5px solid var(--ink)', borderRadius: 14,
-        background: '#fff', boxShadow: '0 3px 0 var(--ink)',
-      }}>
-        <div style={{ fontSize: 11, fontWeight: 700, marginBottom: 8 }}>What is the derivative of x²?</div>
-        {['2x', 'x²', '2', 'x'].map((o, i) => (
-          <div key={i} style={{
-            padding: '6px 10px', marginBottom: i < 3 ? 5 : 0,
-            border: `2px solid ${i === 0 ? 'var(--green)' : 'var(--line)'}`,
-            borderRadius: 8, fontSize: 10, fontWeight: 600,
-            background: i === 0 ? 'rgba(34,197,94,0.1)' : '#fff',
-            display: 'flex', alignItems: 'center', gap: 6,
-          }}>
-            <span style={{ fontSize: 8, background: 'var(--ink)', color: '#fff', padding: '1px 5px', borderRadius: 3, fontFamily: 'var(--font-mono)' }}>{'ABCD'[i]}</span>
-            {o}
-          </div>
-        ))}
-      </div>
-    ),
-    intelligence: (
-      <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
-        {[{ label: 'Topics', icon: '🗂️', val: '24' }, { label: 'Difficulty', icon: '📈', val: 'Hard' }, { label: 'Patterns', icon: '🔍', val: '8 found' }].map((c, i) => (
-          <div key={i} style={{
-            width: 80, padding: '12px 8px', borderRadius: 12,
-            border: '2.5px solid var(--ink)', background: '#fff',
-            boxShadow: '0 2px 0 var(--ink)', textAlign: 'center',
-          }}>
-            <div style={{ fontSize: 20, marginBottom: 4 }}>{c.icon}</div>
-            <div style={{ fontSize: 14, fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--cobalt)' }}>{c.val}</div>
-            <div style={{ fontSize: 8, fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase' }}>{c.label}</div>
-          </div>
-        ))}
-      </div>
-    ),
-    personal: (
-      <div style={{
-        maxWidth: 200, margin: '0 auto', padding: '14px',
-        border: '2.5px solid var(--ink)', borderRadius: 14,
-        background: '#fff', boxShadow: '0 3px 0 var(--ink)',
-      }}>
-        {[{ label: 'Working Memory', pct: 78, color: 'var(--lime)' }, { label: 'Processing Speed', pct: 65, color: 'var(--tangerine)' }, { label: 'Attention', pct: 85, color: 'var(--cobalt)' }].map((s, i) => (
-          <div key={i} style={{ marginBottom: i < 2 ? 10 : 0 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-              <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--muted)' }}>{s.label}</span>
-              <span style={{ fontSize: 9, fontWeight: 800, fontFamily: 'var(--font-mono)' }}>{s.pct}%</span>
-            </div>
-            <div style={{ height: 6, background: 'var(--line)', borderRadius: 3, overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: `${s.pct}%`, background: s.color, borderRadius: 3, transition: 'width 1s' }} />
-            </div>
-          </div>
-        ))}
-      </div>
-    ),
-    outcome: (
-      <div style={{ display: 'flex', gap: 12, justifyContent: 'center', alignItems: 'center' }}>
-        <div style={{
-          padding: '10px 16px', borderRadius: 12,
-          border: '2.5px solid var(--ink)', background: '#fff',
-          boxShadow: '0 2px 0 var(--ink)', textAlign: 'center',
-        }}>
-          <div style={{ fontSize: 8, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', marginBottom: 2 }}>Predicted</div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--cobalt)', fontFamily: 'var(--font-mono)' }}>B+</div>
-        </div>
-        <div style={{ fontSize: 20 }}>→</div>
-        <div style={{
-          padding: '10px 16px', borderRadius: 12,
-          border: '2.5px solid var(--green)', background: 'rgba(34,197,94,0.08)',
-          boxShadow: '0 2px 0 var(--green)', textAlign: 'center',
-        }}>
-          <div style={{ fontSize: 8, fontWeight: 700, color: 'var(--green)', textTransform: 'uppercase', marginBottom: 2 }}>Actual</div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--green)', fontFamily: 'var(--font-mono)' }}>A</div>
-        </div>
-      </div>
-    ),
-    profile: (
-      <div style={{
-        maxWidth: 200, margin: '0 auto', padding: '14px',
-        border: '2.5px solid var(--ink)', borderRadius: 14,
-        background: '#fff', boxShadow: '0 3px 0 var(--ink)',
-        textAlign: 'center',
-      }}>
-        <div style={{
-          width: 40, height: 40, borderRadius: '50%', margin: '0 auto 8px',
-          background: 'var(--cobalt)', border: '2.5px solid var(--ink)',
-          display: 'grid', placeItems: 'center', color: '#fff',
-          fontSize: 14, fontWeight: 800,
-        }}>JD</div>
-        <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 2 }}>Student Profile</div>
-        <div style={{ fontSize: 9, color: 'var(--muted)', fontFamily: 'var(--font-mono)' }}>6 cognitive dimensions</div>
-      </div>
-    ),
-    ready: (
-      <div style={{ textAlign: 'center' }}>
-        <div style={{
-          fontSize: 64, lineHeight: 1, marginBottom: 8,
-          animation: 'float 2s ease-in-out infinite alternate',
-        }}>🚀</div>
-        <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--cobalt)', fontFamily: 'var(--font-mono)' }}>READY TO LAUNCH</div>
-      </div>
-    ),
+// Steps shown when inside a course page
+export const COURSE_TOUR_STEPS: TourStep[] = [
+  {
+    target: 'tour-course-nav-study',
+    title: 'Study Materials',
+    body: 'Upload lecture notes, past exams, and textbook chapters as PDFs. Adwen\'s AI extracts key concepts and builds a knowledge graph from your materials.',
+    tip: 'Past exam papers are gold — they teach Adwen exactly what your lecturers test on.',
+    position: 'right',
+  },
+  {
+    target: 'tour-course-nav-quiz',
+    title: 'Adaptive Quiz Engine',
+    body: 'AI-generated questions from YOUR study materials. Each question adapts to your ability level using Item Response Theory (IRT) — too easy gets harder, too hard gets easier.',
+    tip: 'Don\'t rush! Your response time is factored into the difficulty calibration.',
+    position: 'right',
+  },
+  {
+    target: 'tour-course-nav-analysis',
+    title: 'Course Intelligence',
+    body: 'Deep AI analysis of your entire course — topic breakdown, difficulty mapping, exam pattern detection, and learning path recommendations.',
+    tip: 'Run this after uploading at least 3 documents for the best results.',
+    position: 'right',
+  },
+  {
+    target: 'tour-course-nav-insights',
+    title: 'Personal Intelligence',
+    body: 'YOUR unique learning fingerprint — tracks which topics you struggle with, confidence calibration, response speed trends, and cognitive strengths over time.',
+    tip: 'Check this regularly to see which topics need more revision.',
+    position: 'right',
+  },
+  {
+    target: 'tour-course-nav-outcome',
+    title: 'Outcome Loop',
+    body: 'Tracks predicted vs actual exam results. After entering your real grade, Adwen recalibrates everything using Bayesian updating — difficulty estimates, ability level, and study recommendations.',
+    tip: 'Always log your actual exam results. This is how Adwen learns to predict more accurately.',
+    position: 'right',
+  },
+];
+
+// ── Tooltip positioning ────────────────────────────────────────────────────────
+function getTooltipStyle(
+  rect: DOMRect,
+  position: string,
+  tooltipRef: React.RefObject<HTMLDivElement | null>
+): React.CSSProperties {
+  const pad = 14;
+  const tooltipW = tooltipRef.current?.offsetWidth || 340;
+  const tooltipH = tooltipRef.current?.offsetHeight || 200;
+  const vpW = window.innerWidth;
+  const vpH = window.innerHeight;
+
+  // Auto-detect best position
+  let pos = position;
+  if (pos === 'auto') {
+    const spaceBelow = vpH - rect.bottom;
+    const spaceAbove = rect.top;
+    const spaceRight = vpW - rect.right;
+    const spaceLeft = rect.left;
+    if (spaceBelow >= tooltipH + pad) pos = 'bottom';
+    else if (spaceAbove >= tooltipH + pad) pos = 'top';
+    else if (spaceRight >= tooltipW + pad) pos = 'right';
+    else if (spaceLeft >= tooltipW + pad) pos = 'left';
+    else pos = 'bottom';
+  }
+
+  const base: React.CSSProperties = {
+    position: 'fixed',
+    zIndex: 10002,
+    maxWidth: Math.min(380, vpW - 32),
+    width: 380,
   };
 
-  return (
-    <div style={{ padding: '20px 0' }}>
-      {visuals[id] || null}
-    </div>
-  );
+  switch (pos) {
+    case 'bottom': {
+      let left = rect.left + rect.width / 2 - 190;
+      left = Math.max(16, Math.min(left, vpW - 396));
+      return { ...base, top: rect.bottom + pad, left };
+    }
+    case 'top': {
+      let left = rect.left + rect.width / 2 - 190;
+      left = Math.max(16, Math.min(left, vpW - 396));
+      return { ...base, bottom: vpH - rect.top + pad, left };
+    }
+    case 'right': {
+      const left = Math.min(rect.right + pad, vpW - 396);
+      let top = rect.top + rect.height / 2 - tooltipH / 2;
+      top = Math.max(16, Math.min(top, vpH - tooltipH - 16));
+      return { ...base, top, left };
+    }
+    case 'left': {
+      const right = vpW - rect.left + pad;
+      let top = rect.top + rect.height / 2 - tooltipH / 2;
+      top = Math.max(16, Math.min(top, vpH - tooltipH - 16));
+      return { ...base, top, right };
+    }
+    default:
+      return base;
+  }
 }
 
-// ── Main Tutorial Component ────────────────────────────────────────────────────
-export default function Tutorial({ onComplete }: { onComplete: () => void }) {
+// ── Main GuidedTour Component ──────────────────────────────────────────────────
+interface GuidedTourProps {
+  steps?: TourStep[];
+  onComplete: () => void;
+  storageKey?: string;
+}
+
+export default function GuidedTour({
+  steps = TOUR_STEPS,
+  onComplete,
+  storageKey = 'adwen_tutorial_seen',
+}: GuidedTourProps) {
   const [currentStep, setCurrentStep] = useState(0);
-  const [isExiting, setIsExiting] = useState(false);
-  const router = useRouter();
-  const step = TUTORIAL_STEPS[currentStep];
-  const total = TUTORIAL_STEPS.length;
+  const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const tooltipRef = useRef<HTMLDivElement | null>(null);
+  const step = steps[currentStep];
+  const total = steps.length;
 
-  const goNext = () => {
-    if (currentStep < total - 1) {
-      setIsExiting(true);
+  // Find and measure the target element
+  const measureTarget = useCallback(() => {
+    if (!step) return;
+    const el = document.querySelector(`[data-tour="${step.target}"]`);
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      setTargetRect(rect);
+      // Scroll into view if needed
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       setTimeout(() => {
-        setCurrentStep(prev => prev + 1);
-        setIsExiting(false);
-      }, 200);
+        setTargetRect(el.getBoundingClientRect());
+        setIsVisible(true);
+      }, 350);
     } else {
-      handleFinish();
+      // Element not found — skip to next step
+      setTargetRect(null);
+      setIsVisible(true);
     }
-  };
+  }, [step]);
 
-  const goPrev = () => {
-    if (currentStep > 0) {
-      setIsExiting(true);
-      setTimeout(() => {
-        setCurrentStep(prev => prev - 1);
-        setIsExiting(false);
-      }, 200);
-    }
-  };
+  useEffect(() => {
+    setIsVisible(false);
+    const timer = setTimeout(measureTarget, 100);
+    return () => clearTimeout(timer);
+  }, [currentStep, measureTarget]);
 
-  const handleFinish = () => {
-    // Mark tutorial as seen in localStorage
-    localStorage.setItem('adwen_tutorial_seen', 'true');
-    onComplete();
-  };
-
-  const handleSkip = () => {
-    localStorage.setItem('adwen_tutorial_seen', 'true');
-    onComplete();
-  };
+  // Re-measure on resize/scroll
+  useEffect(() => {
+    const handleResize = () => {
+      if (step) {
+        const el = document.querySelector(`[data-tour="${step.target}"]`);
+        if (el) setTargetRect(el.getBoundingClientRect());
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('scroll', handleResize, true);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', handleResize, true);
+    };
+  }, [step]);
 
   // Keyboard nav
   useEffect(() => {
@@ -321,160 +221,234 @@ export default function Tutorial({ onComplete }: { onComplete: () => void }) {
     return () => window.removeEventListener('keydown', handler);
   }, [currentStep]);
 
+  const goNext = () => {
+    if (currentStep < total - 1) {
+      setIsVisible(false);
+      setTimeout(() => setCurrentStep(prev => prev + 1), 200);
+    } else {
+      handleFinish();
+    }
+  };
+
+  const goPrev = () => {
+    if (currentStep > 0) {
+      setIsVisible(false);
+      setTimeout(() => setCurrentStep(prev => prev - 1), 200);
+    }
+  };
+
+  const handleFinish = () => {
+    localStorage.setItem(storageKey, 'true');
+    onComplete();
+  };
+
+  const handleSkip = () => {
+    localStorage.setItem(storageKey, 'true');
+    onComplete();
+  };
+
+  if (!step) return null;
+
+  const spotlightPad = 8;
+  const r = targetRect;
+
   return (
-    <div style={{
-      position: 'fixed', inset: 0, zIndex: 9999,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      padding: '16px',
-    }}>
-      {/* Backdrop */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        background: 'rgba(14, 14, 14, 0.75)',
-        backdropFilter: 'blur(8px)',
-      }} onClick={handleSkip} />
+    <>
+      {/* ── Overlay with spotlight cutout ── */}
+      <div style={{ position: 'fixed', inset: 0, zIndex: 10000, pointerEvents: 'none' }}>
+        <svg width="100%" height="100%" style={{ position: 'absolute', inset: 0 }}>
+          <defs>
+            <mask id="tour-spotlight-mask">
+              <rect width="100%" height="100%" fill="white" />
+              {r && (
+                <rect
+                  x={r.left - spotlightPad}
+                  y={r.top - spotlightPad}
+                  width={r.width + spotlightPad * 2}
+                  height={r.height + spotlightPad * 2}
+                  rx={12}
+                  fill="black"
+                />
+              )}
+            </mask>
+          </defs>
+          <rect
+            width="100%" height="100%"
+            fill="rgba(14, 14, 14, 0.65)"
+            mask="url(#tour-spotlight-mask)"
+            style={{ transition: 'opacity 0.3s' }}
+          />
+        </svg>
 
-      {/* Card */}
-      <div style={{
-        position: 'relative', width: '100%', maxWidth: 480,
-        background: '#fff', border: '3px solid var(--ink)',
-        borderRadius: 'var(--r)', boxShadow: '0 8px 0 var(--ink)',
-        overflow: 'hidden',
-        opacity: isExiting ? 0 : 1,
-        transform: isExiting ? 'scale(0.96)' : 'scale(1)',
-        transition: 'opacity 0.2s, transform 0.2s',
-      }}>
-        {/* Top accent */}
-        <div style={{
-          height: 5,
-          background: `linear-gradient(90deg, var(--lime), var(--cobalt), var(--tangerine), var(--magenta))`,
-        }} />
-
-        {/* Header with skip */}
-        <div style={{
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          padding: '16px 24px 0',
-        }}>
-          <span style={{
-            fontSize: 10, fontWeight: 700, fontFamily: 'var(--font-mono)',
-            color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.08em',
-          }}>
-            {currentStep + 1} / {total}
-          </span>
-          <button onClick={handleSkip} style={{
-            fontSize: 11, fontWeight: 700, color: 'var(--muted)',
-            background: 'none', border: 'none', cursor: 'pointer',
-            fontFamily: 'var(--font-body)',
-            padding: '4px 8px', borderRadius: 6,
-            transition: '0.15s',
-          }}>
-            Skip tutorial ✕
-          </button>
-        </div>
-
-        {/* Content */}
-        <div style={{ padding: '16px 24px 20px' }}>
-          {/* Icon + Title */}
-          <div style={{ textAlign: 'center', marginBottom: 16 }}>
-            <div style={{ fontSize: 36, marginBottom: 8 }}>{step.icon}</div>
-            <h2 style={{
-              fontFamily: 'var(--font-display)', fontSize: 'clamp(18px, 5vw, 24px)',
-              textTransform: 'uppercase', margin: '0 0 4px', lineHeight: 1.2,
-            }}>
-              {step.title}
-            </h2>
-            <p style={{
-              fontFamily: 'var(--font-accent)', fontSize: 'clamp(13px, 3.5vw, 16px)',
-              color: 'var(--cobalt)', margin: 0, fontStyle: 'italic',
-            }}>
-              {step.subtitle}
-            </p>
-          </div>
-
-          {/* Visual */}
-          <StepVisual id={step.visual} />
-
-          {/* Body text */}
-          <p style={{
-            fontSize: 'clamp(13px, 3.5vw, 14px)', lineHeight: 1.65, color: 'var(--ink)',
-            margin: '12px 0 14px', textAlign: 'center',
-          }}>
-            {step.body}
-          </p>
-
-          {/* Tip callout */}
+        {/* Spotlight border glow */}
+        {r && (
           <div style={{
-            display: 'flex', alignItems: 'flex-start', gap: 8,
-            padding: '10px 14px', borderRadius: 10,
-            background: 'rgba(212, 237, 42, 0.12)',
-            border: '1.5px solid var(--lime)',
-            fontSize: 12, color: 'var(--ink)', lineHeight: 1.5,
-          }}>
-            <span style={{ fontSize: 14, flexShrink: 0 }}>💡</span>
-            <span>{step.tip}</span>
-          </div>
-        </div>
-
-        {/* Progress dots + nav */}
-        <div style={{
-          padding: '0 24px 20px',
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          gap: 12,
-        }}>
-          {/* Prev */}
-          <button
-            onClick={goPrev}
-            disabled={currentStep === 0}
-            style={{
-              padding: '8px 16px', border: '2px solid var(--ink)',
-              borderRadius: 'var(--pill)', background: '#fff',
-              fontSize: 12, fontWeight: 700, cursor: currentStep === 0 ? 'default' : 'pointer',
-              opacity: currentStep === 0 ? 0.3 : 1,
-              fontFamily: 'var(--font-body)', transition: '0.15s',
-              boxShadow: currentStep > 0 ? '0 2px 0 var(--ink)' : 'none',
-            }}
-          >
-            ← Back
-          </button>
-
-          {/* Dots */}
-          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', justifyContent: 'center' }}>
-            {TUTORIAL_STEPS.map((_, i) => (
-              <div key={i} style={{
-                width: i === currentStep ? 20 : 8, height: 8, borderRadius: 4,
-                background: i < currentStep ? 'var(--green)' : i === currentStep ? 'var(--cobalt)' : 'var(--line)',
-                border: '1.5px solid var(--ink)',
-                transition: 'all 0.3s ease',
-                cursor: 'pointer',
-              }} onClick={() => { setIsExiting(true); setTimeout(() => { setCurrentStep(i); setIsExiting(false); }, 200); }} />
-            ))}
-          </div>
-
-          {/* Next */}
-          <button
-            onClick={goNext}
-            style={{
-              padding: '8px 16px', border: '2px solid var(--ink)',
-              borderRadius: 'var(--pill)',
-              background: currentStep === total - 1 ? 'var(--lime)' : 'var(--cobalt)',
-              color: currentStep === total - 1 ? 'var(--ink)' : '#fff',
-              fontSize: 12, fontWeight: 700, cursor: 'pointer',
-              fontFamily: 'var(--font-body)', transition: '0.15s',
-              boxShadow: '0 2px 0 var(--ink)',
-            }}
-          >
-            {currentStep === total - 1 ? 'Let\u2019s go! →' : 'Next →'}
-          </button>
-        </div>
+            position: 'fixed',
+            left: r.left - spotlightPad,
+            top: r.top - spotlightPad,
+            width: r.width + spotlightPad * 2,
+            height: r.height + spotlightPad * 2,
+            border: '2.5px solid var(--lime)',
+            borderRadius: 12,
+            boxShadow: '0 0 20px rgba(212, 237, 42, 0.35), inset 0 0 20px rgba(212, 237, 42, 0.1)',
+            transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+            pointerEvents: 'none',
+          }} />
+        )}
       </div>
 
-      {/* Floating animation keyframes */}
-      <style>{`
-        @keyframes float {
-          0% { transform: translateY(0); }
-          100% { transform: translateY(-6px); }
-        }
-      `}</style>
-    </div>
+      {/* ── Clickable overlay (outside spotlight) ── */}
+      <div
+        style={{ position: 'fixed', inset: 0, zIndex: 10001, cursor: 'pointer' }}
+        onClick={handleSkip}
+      />
+
+      {/* ── Tooltip ── */}
+      {r && (
+        <div
+          ref={tooltipRef}
+          style={{
+            ...getTooltipStyle(r, step.position || 'auto', tooltipRef),
+            opacity: isVisible ? 1 : 0,
+            transform: isVisible ? 'translateY(0)' : 'translateY(8px)',
+            transition: 'opacity 0.25s, transform 0.25s',
+            pointerEvents: 'auto',
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div style={{
+            background: '#fff',
+            border: '2.5px solid var(--ink)',
+            borderRadius: 16,
+            boxShadow: '0 6px 0 var(--ink)',
+            overflow: 'hidden',
+          }}>
+            {/* Accent bar */}
+            <div style={{
+              height: 4,
+              background: `linear-gradient(90deg, var(--lime) ${((currentStep) / total) * 100}%, var(--line) ${((currentStep) / total) * 100}%)`,
+            }} />
+
+            <div style={{ padding: '18px 20px 16px' }}>
+              {/* Step counter + skip */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                <span style={{
+                  fontSize: 10, fontWeight: 700, fontFamily: 'var(--font-mono)',
+                  color: 'var(--cobalt)', textTransform: 'uppercase', letterSpacing: '0.08em',
+                }}>
+                  Step {currentStep + 1} of {total}
+                </span>
+                <button onClick={handleSkip} style={{
+                  fontSize: 11, fontWeight: 600, color: 'var(--muted)',
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  fontFamily: 'var(--font-body)', padding: '2px 6px',
+                }}>
+                  Skip ✕
+                </button>
+              </div>
+
+              {/* Title */}
+              <h3 style={{
+                fontFamily: 'var(--font-display)', fontSize: 18,
+                textTransform: 'uppercase', margin: '0 0 6px', lineHeight: 1.2,
+              }}>
+                {step.title}
+              </h3>
+
+              {/* Body */}
+              <p style={{
+                fontSize: 13, lineHeight: 1.6, color: 'var(--ink)',
+                margin: '0 0 10px', opacity: 0.85,
+              }}>
+                {step.body}
+              </p>
+
+              {/* Tip */}
+              {step.tip && (
+                <div style={{
+                  display: 'flex', alignItems: 'flex-start', gap: 6,
+                  padding: '8px 12px', borderRadius: 8,
+                  background: 'rgba(212, 237, 42, 0.12)',
+                  border: '1.5px solid var(--lime)',
+                  fontSize: 11, color: 'var(--ink)', lineHeight: 1.5,
+                  marginBottom: 12,
+                }}>
+                  <span style={{ flexShrink: 0 }}>💡</span>
+                  <span>{step.tip}</span>
+                </div>
+              )}
+
+              {/* Navigation */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
+                <button
+                  onClick={goPrev}
+                  disabled={currentStep === 0}
+                  style={{
+                    padding: '7px 14px', border: '2px solid var(--ink)',
+                    borderRadius: 'var(--pill)', background: '#fff',
+                    fontSize: 11, fontWeight: 700, cursor: currentStep === 0 ? 'default' : 'pointer',
+                    opacity: currentStep === 0 ? 0.3 : 1,
+                    fontFamily: 'var(--font-body)',
+                    boxShadow: currentStep > 0 ? '0 2px 0 var(--ink)' : 'none',
+                  }}
+                >
+                  ← Back
+                </button>
+
+                {/* Dots */}
+                <div style={{ display: 'flex', gap: 4, justifyContent: 'center' }}>
+                  {steps.map((_, i) => (
+                    <div key={i} style={{
+                      width: i === currentStep ? 16 : 6, height: 6, borderRadius: 3,
+                      background: i < currentStep ? 'var(--green)' : i === currentStep ? 'var(--cobalt)' : 'var(--line)',
+                      border: '1px solid var(--ink)',
+                      transition: 'all 0.3s',
+                    }} />
+                  ))}
+                </div>
+
+                <button
+                  onClick={goNext}
+                  style={{
+                    padding: '7px 14px', border: '2px solid var(--ink)',
+                    borderRadius: 'var(--pill)',
+                    background: currentStep === total - 1 ? 'var(--lime)' : 'var(--cobalt)',
+                    color: currentStep === total - 1 ? 'var(--ink)' : '#fff',
+                    fontSize: 11, fontWeight: 700, cursor: 'pointer',
+                    fontFamily: 'var(--font-body)',
+                    boxShadow: '0 2px 0 var(--ink)',
+                  }}
+                >
+                  {currentStep === total - 1 ? 'Done! ✓' : 'Next →'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Fallback tooltip when no target element found */}
+      {!r && isVisible && (
+        <div style={{
+          position: 'fixed', top: '50%', left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 10002, width: 380, maxWidth: 'calc(100vw - 32px)',
+          pointerEvents: 'auto',
+        }} onClick={(e) => e.stopPropagation()}>
+          <div style={{
+            background: '#fff', border: '2.5px solid var(--ink)',
+            borderRadius: 16, boxShadow: '0 6px 0 var(--ink)',
+            padding: '20px',
+          }}>
+            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, margin: '0 0 8px' }}>{step.title}</h3>
+            <p style={{ fontSize: 13, lineHeight: 1.6, margin: '0 0 12px' }}>{step.body}</p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+              <button onClick={goPrev} disabled={currentStep === 0} style={{ padding: '7px 14px', border: '2px solid var(--ink)', borderRadius: 99, background: '#fff', fontSize: 11, fontWeight: 700, cursor: 'pointer', opacity: currentStep === 0 ? 0.3 : 1 }}>← Back</button>
+              <button onClick={goNext} style={{ padding: '7px 14px', border: '2px solid var(--ink)', borderRadius: 99, background: 'var(--cobalt)', color: '#fff', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>{currentStep === total - 1 ? 'Done! ✓' : 'Next →'}</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

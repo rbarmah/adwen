@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Sparkle } from '@/components/ui/Badge';
 import { createClient } from '@/lib/supabase/client';
-import Tutorial from '@/components/Tutorial';
+import GuidedTour from '@/components/Tutorial';
 
 // ── Accent colours per notebook ───────────────────────────────────────────────
 const SPINE_COLORS = [
@@ -178,11 +178,11 @@ export default function CoursesPage() {
 
   return (
     <>
-      {showTutorial && <Tutorial onComplete={() => setShowTutorial(false)} />}
+      {showTutorial && <GuidedTour onComplete={() => setShowTutorial(false)} />}
     <div className="animate-fade-in" style={{ maxWidth: 1200, margin: '0 auto', padding: '44px 48px 80px' }}>
 
       {/* ── Header ── */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 40, flexWrap: 'wrap', gap: 16 }}>
+      <div data-tour="tour-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 40, flexWrap: 'wrap', gap: 16 }}>
         <div>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 8 }}>
             Your study workspace
@@ -196,7 +196,7 @@ export default function CoursesPage() {
             </p>
           )}
         </div>
-        <Link href="/courses/new" style={{ textDecoration: 'none' }}>
+        <Link href="/courses/new" style={{ textDecoration: 'none' }} data-tour="tour-new-course">
           <button style={{
             display: 'flex', alignItems: 'center', gap: 8,
             padding: '12px 22px', border: '2px solid var(--ink)',
@@ -221,8 +221,8 @@ export default function CoursesPage() {
       ) : (
         <div className="responsive-grid-3" style={{ gap: 24 }}>
 
-          {courses.map(course => (
-            <div key={course.id} style={{ position: 'relative' }}>
+          {courses.map((course, idx) => (
+            <div key={course.id} style={{ position: 'relative' }} {...(idx === 0 ? { 'data-tour': 'tour-course-card' } : {})}>
               <Link href={`/courses/${course.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
                 <div
                   style={{

@@ -122,6 +122,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           {/* Telemetry */}
           <button
+            data-tour="tour-telemetry"
             onClick={() => setTeleOpen(true)}
             style={{
               display: 'flex', alignItems: 'center', gap: 6,
@@ -139,7 +140,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </button>
 
           {/* Profile avatar */}
-          <div ref={profileDropRef} style={{ position: 'relative' }}>
+          <div ref={profileDropRef} style={{ position: 'relative' }} data-tour="tour-profile-btn">
             <button
               onClick={() => setProfileOpen(o => !o)}
               style={{

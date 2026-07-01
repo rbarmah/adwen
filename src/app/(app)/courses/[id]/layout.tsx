@@ -192,6 +192,7 @@ export default function CourseLayout({ children }: { children: React.ReactNode }
                 return (
                   <button
                     key={item.key}
+                    data-tour={`tour-course-nav-${item.key}`}
                     onClick={() => router.push(href)}
                     style={navBtnStyle(isActive)}
                     onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,.08)'; }}
