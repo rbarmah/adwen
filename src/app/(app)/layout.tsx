@@ -82,8 +82,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       // Check if tour should be shown
       if (typeof window !== 'undefined' && !localStorage.getItem('adwen_tutorial_seen')) {
         // Fetch first course ID for tour steps that navigate into a course
-        const { data: courses } = await supabase.from('courses').select('id').order('created_at', { ascending: false }).limit(1);
-        const firstCourseId = courses?.[0]?.id || undefined;
+        const { data: courses } = await (supabase.from('courses') as any).select('id').order('created_at', { ascending: false }).limit(1);
+        const firstCourseId = (courses as any)?.[0]?.id || undefined;
         setTourSteps(buildTourSteps(firstCourseId));
         setShowTour(true);
       }
