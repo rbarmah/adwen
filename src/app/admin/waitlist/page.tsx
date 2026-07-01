@@ -24,10 +24,12 @@ export default function AdminWaitlistPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
   const [toast, setToast] = useState('');
+  const [authError, setAuthError] = useState('');
 
   // Simple admin auth — enter the ADMIN_SECRET
   const handleAuth = () => {
     if (secret.trim()) {
+      setAuthError('');
       localStorage.setItem('adwen_admin_secret', secret.trim());
       setAuthed(true);
       fetchEntries(secret.trim());
@@ -46,6 +48,7 @@ export default function AdminWaitlistPage() {
       });
       if (res.status === 401) {
         setAuthed(false);
+        setAuthError('Invalid admin secret. Check your ADMIN_SECRET env var.');
         localStorage.removeItem('adwen_admin_secret');
         setLoading(false);
         return;
@@ -168,6 +171,9 @@ export default function AdminWaitlistPage() {
                 fontFamily: 'var(--font-body)', fontSize: 14, outline: 'none',
               }}
             />
+            {authError && (
+              <p style={{ color: 'var(--danger, #e53935)', fontSize: 13, margin: 0, fontWeight: 600 }}>{authError}</p>
+            )}
             <Button type="submit" size="md" variant="primary" style={{ width: '100%' }}>
               Authenticate
             </Button>
