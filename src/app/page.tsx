@@ -232,7 +232,7 @@ export default function HomePage() {
             </span>
           </h2>
           <p style={{ color: 'var(--muted)', fontSize: 'var(--text-base)', marginBottom: '64px', maxWidth: '500px', margin: '0 auto 64px' }}>
-            Three steps. Zero fluff. You bring the notes — we bring the intelligence.
+            Four steps. Zero fluff. You bring the notes — we bring the intelligence.
           </p>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '32px' }}>
@@ -245,12 +245,18 @@ export default function HomePage() {
               },
               {
                 step: '02',
+                title: 'Master the concepts',
+                description: 'Before you test yourself, use AI-generated visual notes, smart flashcards, and the Feynman technique to truly understand the material.',
+                accent: 'var(--green)',
+              },
+              {
+                step: '03',
                 title: 'Take adaptive quizzes',
                 description: 'The AI generates targeted questions that probe your real weaknesses — not random trivia. Each question adapts to your level.',
                 accent: 'var(--tangerine)',
               },
               {
-                step: '03',
+                step: '04',
                 title: 'Watch your readiness sharpen',
                 description: 'Your Exam Readiness Score tightens with every session. See exactly which topics are dragging you down and why.',
                 accent: 'var(--magenta)',
