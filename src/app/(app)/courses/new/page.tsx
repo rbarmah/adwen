@@ -8,8 +8,9 @@ import Input, { Slider } from '@/components/ui/Input';
 import Badge, { Sparkle } from '@/components/ui/Badge';
 import { createClient } from '@/lib/supabase/client';
 
-const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB per file
-const MAX_TOTAL_SIZE = 50 * 1024 * 1024; // 50MB total
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB per file
+const MAX_TOTAL_SIZE = 30 * 1024 * 1024; // 30MB total
+const MAX_FILES = 3;
 const ALLOWED_EXTENSIONS = ['pdf', 'pptx', 'ppt', 'docx', 'doc', 'txt', 'png', 'jpg', 'jpeg'];
 
 function validateFile(file: File, existingFiles: File[]): string | null {
@@ -17,12 +18,15 @@ function validateFile(file: File, existingFiles: File[]): string | null {
   if (!ALLOWED_EXTENSIONS.includes(ext)) {
     return `"${file.name}" has an unsupported file type. Allowed: ${ALLOWED_EXTENSIONS.join(', ')}`;
   }
+  if (existingFiles.length >= MAX_FILES) {
+    return `You can only upload up to ${MAX_FILES} files per course to ensure optimal processing speed.`;
+  }
   if (file.size > MAX_FILE_SIZE) {
-    return `"${file.name}" is too large (${(file.size / (1024 * 1024)).toFixed(1)}MB). Maximum is 20MB per file.`;
+    return `"${file.name}" is too large (${(file.size / (1024 * 1024)).toFixed(1)}MB). Maximum is 10MB per file.`;
   }
   const totalSize = existingFiles.reduce((sum, f) => sum + f.size, 0) + file.size;
   if (totalSize > MAX_TOTAL_SIZE) {
-    return `Adding "${file.name}" would exceed the 50MB total upload limit.`;
+    return `Adding "${file.name}" would exceed the 30MB total upload limit.`;
   }
   return null;
 }
@@ -219,7 +223,7 @@ export default function NewCoursePage() {
             {dragActive ? 'Drop files here' : 'Drag & drop your course materials'}
           </p>
           <p style={{ color: 'var(--muted)', fontSize: 'var(--text-sm)' }}>
-            PDF, PowerPoint, Word, images — or click to browse
+            PDF, PowerPoint, Word, images — up to 10MB and 3 files per course
           </p>
           <p style={{ color: 'var(--muted-light)', fontSize: 'var(--text-xs)', marginTop: '8px' }}>
             Past papers are especially helpful for calibrating your exam preparation
