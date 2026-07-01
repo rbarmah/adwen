@@ -30,10 +30,10 @@ export default function WaitlistPage() {
 
       // Check if already on waitlist
       const { data: existing } = await (supabase
-        .from('waitlist')
+        .from('waitlist') as any)
         .select('status')
         .eq('email', email.toLowerCase().trim())
-        .single() as any);
+        .single();
 
       if (existing) {
         if (existing.status === 'approved') {
@@ -50,8 +50,8 @@ export default function WaitlistPage() {
 
       // Insert into waitlist
       const { error: insertError } = await (supabase
-        .from('waitlist')
-        .insert({ email: email.toLowerCase().trim() }) as any);
+        .from('waitlist') as any)
+        .insert({ email: email.toLowerCase().trim() });
 
       if (insertError) {
         if (insertError.code === '23505') {

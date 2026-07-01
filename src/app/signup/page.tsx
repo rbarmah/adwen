@@ -46,10 +46,10 @@ export default function SignupPage() {
 
       // Check waitlist approval before allowing signup
       const { data: waitlistRow } = await (supabase
-        .from('waitlist')
+        .from('waitlist') as any)
         .select('status')
         .eq('email', email.toLowerCase().trim())
-        .single() as any);
+        .single();
 
       if (!waitlistRow || waitlistRow.status !== 'approved') {
         setError('This email hasn\'t been approved yet. Please join the waitlist first.');
