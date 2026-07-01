@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Sparkle } from '@/components/ui/Badge';
-import { BookOpen, Target, BarChart3, Brain, Timer, Globe, Dices, TrendingDown, Search, Dna, Ruler } from 'lucide-react';
+import { BookOpen, Target, BarChart3, Brain, Timer, Globe, Dices, TrendingDown, Search, Dna, Ruler, Zap, MessageSquare } from 'lucide-react';
 
 export default function HomePage() {
   return (
@@ -322,33 +322,33 @@ export default function HomePage() {
             {[
               {
                 icon: <BookOpen size={32} color="var(--magenta)" />,
-                title: 'Your material, your way',
-                description: 'Upload your own lecture slides, handouts, and past papers. Adwen analyses them to build a study plan around YOUR course — not generic content.',
+                title: 'Your lecture notes, your rules',
+                description: 'Upload your exact PDFs, slides, and past papers. Adwen studies YOUR lecturer\'s material, not generic internet content.',
+              },
+              {
+                icon: <Zap size={32} color="var(--magenta)" />,
+                title: 'Flashcards that actually work',
+                description: 'Ditch the manual typing. Adwen instantly generates smart, spaced-repetition flashcards directly from your course uploads.',
+              },
+              {
+                icon: <MessageSquare size={32} color="var(--magenta)" />,
+                title: 'Master it before you test it',
+                description: 'Use the Feynman technique to teach concepts back to the AI in plain English, and let it generate gorgeous visual mind-maps of complex topics.',
               },
               {
                 icon: <Target size={32} color="var(--magenta)" />,
-                title: 'Adaptive quizzes',
-                description: 'Smart questions that target your actual gaps. Each distractor tests a real misconception. Targeted items, not random ones.',
+                title: 'Quizzes that expose your weak spots',
+                description: 'No more random trivia. Get hit with adaptive questions specifically designed to break your misconceptions and highlight exactly what you don\'t know.',
               },
               {
                 icon: <BarChart3 size={32} color="var(--magenta)" />,
-                title: 'Readiness that tightens',
-                description: 'Your readiness is a range, not a number. With each practice, the range tightens. See exactly where you have the most room to grow.',
+                title: 'Know if you\'ll pass before you write',
+                description: 'Your Exam Readiness Score isn\'t just a number — it tightens as you study, showing exactly which topics are dragging your grade down.',
               },
               {
                 icon: <Brain size={32} color="var(--magenta)" />,
-                title: 'Deep intelligence',
-                description: '25 AI-generated psychological insights about your learning behaviour — from guessing patterns to cognitive blind spots — explained in plain English.',
-              },
-              {
-                icon: <Timer size={32} color="var(--magenta)" />,
-                title: 'Behavioural telemetry',
-                description: 'We track how long you take, when you guess, which question types trip you up, and how your confidence maps to actual performance.',
-              },
-              {
-                icon: <Globe size={32} color="var(--magenta)" />,
-                title: 'Built for African universities',
-                description: 'Designed for tertiary students across Africa. Understands CWA grading, local curricula, and the exam formats you actually face.',
+                title: 'Analytics for your brain',
+                description: 'Adwen tracks your guessing patterns, thinking speed, and cognitive blind spots. It\'s like having a personal academic coach in your pocket.',
               },
             ].map((feature, i) => (
               <div
