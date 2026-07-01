@@ -242,7 +242,7 @@ export default function SettingsPage() {
               size="sm"
               onClick={() => {
                 localStorage.removeItem('adwen_tutorial_seen');
-                router.push('/courses');
+                window.location.href = '/courses';
               }}
             >
               Replay tutorial →

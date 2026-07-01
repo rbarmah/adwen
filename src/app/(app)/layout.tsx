@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Icon from '@/components/ui/Icon';
 import { createClient } from '@/lib/supabase/client';
+import GuidedTour, { buildTourSteps } from '@/components/Tutorial';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -12,6 +13,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const profileDropRef = useRef<HTMLDivElement>(null);
   const [dbEvents, setDbEvents] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
+  const [showTour, setShowTour] = useState(false);
+  const [tourSteps, setTourSteps] = useState(buildTourSteps());
 
   const initials = user?.email ? user.email.slice(0, 2).toUpperCase() : '?';
 
@@ -75,6 +78,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       if (!user) return;
       setUser(user);
       await fetchTelemetry(user.id);
+
+      // Check if tour should be shown
+      if (typeof window !== 'undefined' && !localStorage.getItem('adwen_tutorial_seen')) {
+        // Fetch first course ID for tour steps that navigate into a course
+        const { data: courses } = await supabase.from('courses').select('id').order('created_at', { ascending: false }).limit(1);
+        const firstCourseId = courses?.[0]?.id || undefined;
+        setTourSteps(buildTourSteps(firstCourseId));
+        setShowTour(true);
+      }
+
       // Use a unique channel name per mount — prevents StrictMode double-invoke
       // from finding and reusing an already-subscribed channel
       channel = supabase.channel(`tele-${user.id}-${Date.now()}`)
@@ -86,6 +99,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
+    <>
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
 
       {/* ── Global top bar ── */}
@@ -251,5 +265,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
     </div>
+
+    {/* Guided Tour */}
+    {showTour && <GuidedTour steps={tourSteps} onComplete={() => setShowTour(false)} />}
+
+    </>
   );
 }

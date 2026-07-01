@@ -1,92 +1,117 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 
 // ── Tour step definitions ──────────────────────────────────────────────────────
-interface TourStep {
+export interface TourStep {
   target: string;           // data-tour attribute value
   title: string;
   body: string;
   tip?: string;
   position?: 'top' | 'bottom' | 'left' | 'right' | 'auto';
+  navigateTo?: string;      // URL to navigate to before showing this step
 }
 
-const TOUR_STEPS: TourStep[] = [
-  {
-    target: 'tour-header',
-    title: 'Your Dashboard',
-    body: 'This is your command centre. All your registered courses appear here as notebook cards, each showing your mastery percentage and processing status.',
-    tip: 'Courses turn "READY" once Adwen\'s AI finishes analyzing your study materials.',
-    position: 'bottom',
-  },
-  {
-    target: 'tour-new-course',
-    title: 'Add a New Course',
-    body: 'Click here to register a new course. You\'ll enter the course name, code, description, and your target grade. Adwen uses this to calibrate quizzes and study recommendations.',
-    tip: 'Be specific with names — "MATH 263 — Linear Algebra" works better than just "Math".',
-    position: 'bottom',
-  },
-  {
-    target: 'tour-course-card',
-    title: 'Course Cards',
-    body: 'Each card shows your course at a glance — the mastery ring, topic count, readiness score, and exam countdown. Click any card to dive into that course.',
-    tip: 'The mastery ring fills up as you answer quiz questions correctly.',
-    position: 'bottom',
-  },
-  {
-    target: 'tour-telemetry',
-    title: 'Live Telemetry',
-    body: 'This panel shows a real-time feed of your learning activity — quiz responses, ability updates, and course events. It helps you track what\'s happening under the hood.',
-    tip: 'Watch your θ (theta) score change after each quiz question — that\'s your ability level.',
-    position: 'bottom',
-  },
-  {
-    target: 'tour-profile-btn',
-    title: 'Profile & Settings',
-    body: 'Click your avatar to access your Profile (cognitive diagnostics, academic info) and Settings (consent, data rights, tutorial replay).',
-    tip: 'Your 6-dimension cognitive profile from onboarding is always accessible here.',
-    position: 'bottom',
-  },
-];
+// Build tour steps dynamically — courseId injected at runtime
+export function buildTourSteps(courseId?: string): TourStep[] {
+  const steps: TourStep[] = [
+    // ── Dashboard steps ──
+    {
+      target: 'tour-header',
+      title: 'Your Dashboard',
+      body: 'This is your command centre. All your registered courses appear here as notebook cards, each showing your mastery percentage and processing status.',
+      tip: 'Courses turn "READY" once Adwen\'s AI finishes analyzing your study materials.',
+      position: 'bottom',
+      navigateTo: '/courses',
+    },
+    {
+      target: 'tour-new-course',
+      title: 'Add a New Course',
+      body: 'Click here to register a new course. You\'ll enter the course name, code, description, and your target grade. Adwen uses this to calibrate quizzes and study recommendations.',
+      tip: 'Be specific with names — "MATH 263 — Linear Algebra" works better than just "Math".',
+      position: 'bottom',
+    },
+    {
+      target: 'tour-course-card',
+      title: 'Course Cards',
+      body: 'Each card shows your course at a glance — the mastery ring, topic count, readiness score, and exam countdown. Click any card to dive into that course.',
+      tip: 'The mastery ring fills up as you answer quiz questions correctly.',
+      position: 'bottom',
+    },
+    {
+      target: 'tour-telemetry',
+      title: 'Live Telemetry',
+      body: 'This panel shows a real-time feed of your learning activity — quiz responses, ability updates, and course events. It helps you track what\'s happening under the hood.',
+      tip: 'Watch your θ (theta) score change after each quiz question — that\'s your ability level.',
+      position: 'bottom',
+    },
+  ];
 
-// Steps shown when inside a course page
-export const COURSE_TOUR_STEPS: TourStep[] = [
-  {
-    target: 'tour-course-nav-study',
-    title: 'Study Materials',
-    body: 'Upload lecture notes, past exams, and textbook chapters as PDFs. Adwen\'s AI extracts key concepts and builds a knowledge graph from your materials.',
-    tip: 'Past exam papers are gold — they teach Adwen exactly what your lecturers test on.',
-    position: 'right',
-  },
-  {
-    target: 'tour-course-nav-quiz',
-    title: 'Adaptive Quiz Engine',
-    body: 'AI-generated questions from YOUR study materials. Each question adapts to your ability level using Item Response Theory (IRT) — too easy gets harder, too hard gets easier.',
-    tip: 'Don\'t rush! Your response time is factored into the difficulty calibration.',
-    position: 'right',
-  },
-  {
-    target: 'tour-course-nav-analysis',
-    title: 'Course Intelligence',
-    body: 'Deep AI analysis of your entire course — topic breakdown, difficulty mapping, exam pattern detection, and learning path recommendations.',
-    tip: 'Run this after uploading at least 3 documents for the best results.',
-    position: 'right',
-  },
-  {
-    target: 'tour-course-nav-insights',
-    title: 'Personal Intelligence',
-    body: 'YOUR unique learning fingerprint — tracks which topics you struggle with, confidence calibration, response speed trends, and cognitive strengths over time.',
-    tip: 'Check this regularly to see which topics need more revision.',
-    position: 'right',
-  },
-  {
-    target: 'tour-course-nav-outcome',
-    title: 'Outcome Loop',
-    body: 'Tracks predicted vs actual exam results. After entering your real grade, Adwen recalibrates everything using Bayesian updating — difficulty estimates, ability level, and study recommendations.',
-    tip: 'Always log your actual exam results. This is how Adwen learns to predict more accurately.',
-    position: 'right',
-  },
-];
+  // ── Course-level steps (only if user has a course) ──
+  if (courseId) {
+    const base = `/courses/${courseId}`;
+    steps.push(
+      {
+        target: 'tour-course-nav-overview',
+        title: 'Course Dashboard',
+        body: 'This is the overview for a single course. You\'ll see your readiness estimate, mastery breakdown, recent quiz activity, and a cognitive snapshot — all in one place.',
+        tip: 'The readiness estimate updates every time you take a quiz.',
+        position: 'right',
+        navigateTo: base,
+      },
+      {
+        target: 'tour-course-nav-study',
+        title: 'Study Materials',
+        body: 'Upload lecture notes, past exams, and textbook chapters as PDFs. Adwen\'s AI extracts key concepts and builds a knowledge graph from your materials.',
+        tip: 'Past exam papers are gold — they teach Adwen exactly what your lecturers test on.',
+        position: 'right',
+      },
+      {
+        target: 'tour-course-nav-quiz',
+        title: 'Adaptive Quiz Engine',
+        body: 'AI-generated questions from YOUR study materials. Each question adapts to your ability level using Item Response Theory (IRT) — too easy gets harder, too hard gets easier.',
+        tip: 'Don\'t rush! Your response time is factored into the difficulty calibration.',
+        position: 'right',
+      },
+      {
+        target: 'tour-course-nav-analysis',
+        title: 'Course Intelligence',
+        body: 'Deep AI analysis of your entire course — topic breakdown, difficulty mapping, exam pattern detection, and learning path recommendations.',
+        tip: 'Run this after uploading at least 3 documents for the best results.',
+        position: 'right',
+      },
+      {
+        target: 'tour-course-nav-insights',
+        title: 'Personal Intelligence',
+        body: 'YOUR unique learning fingerprint — tracks which topics you struggle with, confidence calibration, response speed trends, and cognitive strengths over time.',
+        tip: 'Check this regularly to see which topics need more revision.',
+        position: 'right',
+      },
+      {
+        target: 'tour-course-nav-outcome',
+        title: 'Outcome Loop',
+        body: 'Tracks predicted vs actual exam results. After entering your real grade, Adwen recalibrates everything using Bayesian updating — difficulty estimates, ability level, and study recommendations.',
+        tip: 'Always log your actual exam results. This is how Adwen learns to predict more accurately.',
+        position: 'right',
+      },
+    );
+  }
+
+  // ── Profile & Settings ──
+  steps.push(
+    {
+      target: 'tour-profile-btn',
+      title: 'Profile & Settings',
+      body: 'Click your avatar to access your Profile (cognitive diagnostics, academic info) and Settings (consent, data rights, and this tutorial replay).',
+      tip: 'Your 6-dimension cognitive profile from onboarding is always accessible here.',
+      position: 'bottom',
+      navigateTo: '/courses',
+    },
+  );
+
+  return steps;
+}
 
 // ── Tooltip positioning ────────────────────────────────────────────────────────
 function getTooltipStyle(
@@ -100,7 +125,6 @@ function getTooltipStyle(
   const vpW = window.innerWidth;
   const vpH = window.innerHeight;
 
-  // Auto-detect best position
   let pos = position;
   if (pos === 'auto') {
     const spaceBelow = vpH - rect.bottom;
@@ -151,48 +175,69 @@ function getTooltipStyle(
 
 // ── Main GuidedTour Component ──────────────────────────────────────────────────
 interface GuidedTourProps {
-  steps?: TourStep[];
+  steps: TourStep[];
   onComplete: () => void;
   storageKey?: string;
 }
 
 export default function GuidedTour({
-  steps = TOUR_STEPS,
+  steps,
   onComplete,
   storageKey = 'adwen_tutorial_seen',
 }: GuidedTourProps) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [currentStep, setCurrentStep] = useState(0);
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
+  const retryCountRef = useRef(0);
   const step = steps[currentStep];
   const total = steps.length;
 
-  // Find and measure the target element
+  // Find and measure the target element, with retries for navigation delays
   const measureTarget = useCallback(() => {
     if (!step) return;
     const el = document.querySelector(`[data-tour="${step.target}"]`);
     if (el) {
-      const rect = el.getBoundingClientRect();
-      setTargetRect(rect);
-      // Scroll into view if needed
+      retryCountRef.current = 0;
       el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      // Small delay for scroll to settle
       setTimeout(() => {
-        setTargetRect(el.getBoundingClientRect());
+        const rect = el.getBoundingClientRect();
+        setTargetRect(rect);
         setIsVisible(true);
-      }, 350);
+        setIsNavigating(false);
+      }, 300);
+    } else if (retryCountRef.current < 15) {
+      // Element might not be rendered yet after navigation — retry
+      retryCountRef.current++;
+      setTimeout(measureTarget, 300);
     } else {
-      // Element not found — skip to next step
+      // Give up after retries — show fallback centered tooltip
+      retryCountRef.current = 0;
       setTargetRect(null);
       setIsVisible(true);
+      setIsNavigating(false);
     }
   }, [step]);
 
+  // When step changes, navigate if needed, then measure
   useEffect(() => {
+    if (!step) return;
     setIsVisible(false);
-    const timer = setTimeout(measureTarget, 100);
-    return () => clearTimeout(timer);
-  }, [currentStep, measureTarget]);
+    retryCountRef.current = 0;
+
+    if (step.navigateTo && !pathname.endsWith(step.navigateTo) && pathname !== step.navigateTo) {
+      setIsNavigating(true);
+      router.push(step.navigateTo);
+      // Wait for navigation to complete before measuring
+      setTimeout(measureTarget, 600);
+    } else {
+      setTimeout(measureTarget, 150);
+    }
+  }, [currentStep, step, pathname, router, measureTarget]);
 
   // Re-measure on resize/scroll
   useEffect(() => {
@@ -222,6 +267,7 @@ export default function GuidedTour({
   }, [currentStep]);
 
   const goNext = () => {
+    if (isNavigating) return;
     if (currentStep < total - 1) {
       setIsVisible(false);
       setTimeout(() => setCurrentStep(prev => prev + 1), 200);
@@ -231,6 +277,7 @@ export default function GuidedTour({
   };
 
   const goPrev = () => {
+    if (isNavigating) return;
     if (currentStep > 0) {
       setIsVisible(false);
       setTimeout(() => setCurrentStep(prev => prev - 1), 200);
@@ -239,6 +286,7 @@ export default function GuidedTour({
 
   const handleFinish = () => {
     localStorage.setItem(storageKey, 'true');
+    router.push('/courses');
     onComplete();
   };
 
@@ -297,14 +345,32 @@ export default function GuidedTour({
         )}
       </div>
 
-      {/* ── Clickable overlay (outside spotlight) ── */}
+      {/* ── Clickable overlay ── */}
       <div
         style={{ position: 'fixed', inset: 0, zIndex: 10001, cursor: 'pointer' }}
         onClick={handleSkip}
       />
 
+      {/* ── Loading state during navigation ── */}
+      {isNavigating && (
+        <div style={{
+          position: 'fixed', top: '50%', left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 10003, textAlign: 'center',
+          pointerEvents: 'none',
+        }}>
+          <div style={{
+            width: 48, height: 48, border: '4px solid var(--line)',
+            borderTopColor: 'var(--lime)', borderRadius: '50%',
+            animation: 'tourSpin 0.8s linear infinite',
+            margin: '0 auto 12px',
+          }} />
+          <div style={{ color: '#fff', fontWeight: 700, fontSize: 13 }}>Navigating...</div>
+        </div>
+      )}
+
       {/* ── Tooltip ── */}
-      {r && (
+      {r && !isNavigating && (
         <div
           ref={tooltipRef}
           style={{
@@ -323,10 +389,10 @@ export default function GuidedTour({
             boxShadow: '0 6px 0 var(--ink)',
             overflow: 'hidden',
           }}>
-            {/* Accent bar */}
+            {/* Progress bar */}
             <div style={{
               height: 4,
-              background: `linear-gradient(90deg, var(--lime) ${((currentStep) / total) * 100}%, var(--line) ${((currentStep) / total) * 100}%)`,
+              background: `linear-gradient(90deg, var(--lime) ${((currentStep + 1) / total) * 100}%, var(--line) ${((currentStep + 1) / total) * 100}%)`,
             }} />
 
             <div style={{ padding: '18px 20px 16px' }}>
@@ -396,10 +462,10 @@ export default function GuidedTour({
                 </button>
 
                 {/* Dots */}
-                <div style={{ display: 'flex', gap: 4, justifyContent: 'center' }}>
+                <div style={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
                   {steps.map((_, i) => (
                     <div key={i} style={{
-                      width: i === currentStep ? 16 : 6, height: 6, borderRadius: 3,
+                      width: i === currentStep ? 14 : 5, height: 5, borderRadius: 3,
                       background: i < currentStep ? 'var(--green)' : i === currentStep ? 'var(--cobalt)' : 'var(--line)',
                       border: '1px solid var(--ink)',
                       transition: 'all 0.3s',
@@ -427,8 +493,8 @@ export default function GuidedTour({
         </div>
       )}
 
-      {/* Fallback tooltip when no target element found */}
-      {!r && isVisible && (
+      {/* Fallback: centered tooltip when target not found */}
+      {!r && isVisible && !isNavigating && (
         <div style={{
           position: 'fixed', top: '50%', left: '50%',
           transform: 'translate(-50%, -50%)',
@@ -438,17 +504,23 @@ export default function GuidedTour({
           <div style={{
             background: '#fff', border: '2.5px solid var(--ink)',
             borderRadius: 16, boxShadow: '0 6px 0 var(--ink)',
-            padding: '20px',
+            overflow: 'hidden',
           }}>
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, margin: '0 0 8px' }}>{step.title}</h3>
-            <p style={{ fontSize: 13, lineHeight: 1.6, margin: '0 0 12px' }}>{step.body}</p>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-              <button onClick={goPrev} disabled={currentStep === 0} style={{ padding: '7px 14px', border: '2px solid var(--ink)', borderRadius: 99, background: '#fff', fontSize: 11, fontWeight: 700, cursor: 'pointer', opacity: currentStep === 0 ? 0.3 : 1 }}>← Back</button>
-              <button onClick={goNext} style={{ padding: '7px 14px', border: '2px solid var(--ink)', borderRadius: 99, background: 'var(--cobalt)', color: '#fff', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>{currentStep === total - 1 ? 'Done! ✓' : 'Next →'}</button>
+            <div style={{ height: 4, background: `linear-gradient(90deg, var(--lime) ${((currentStep + 1) / total) * 100}%, var(--line) ${((currentStep + 1) / total) * 100}%)` }} />
+            <div style={{ padding: '20px' }}>
+              <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--cobalt)' }}>Step {currentStep + 1} of {total}</span>
+              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, margin: '6px 0 8px', textTransform: 'uppercase' }}>{step.title}</h3>
+              <p style={{ fontSize: 13, lineHeight: 1.6, margin: '0 0 12px' }}>{step.body}</p>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+                <button onClick={goPrev} disabled={currentStep === 0} style={{ padding: '7px 14px', border: '2px solid var(--ink)', borderRadius: 99, background: '#fff', fontSize: 11, fontWeight: 700, cursor: 'pointer', opacity: currentStep === 0 ? 0.3 : 1 }}>← Back</button>
+                <button onClick={goNext} style={{ padding: '7px 14px', border: '2px solid var(--ink)', borderRadius: 99, background: 'var(--cobalt)', color: '#fff', fontSize: 11, fontWeight: 700, cursor: 'pointer', boxShadow: '0 2px 0 var(--ink)' }}>{currentStep === total - 1 ? 'Done! ✓' : 'Next →'}</button>
+              </div>
             </div>
           </div>
         </div>
       )}
+
+      <style>{`@keyframes tourSpin { to { transform: rotate(360deg); } }`}</style>
     </>
   );
 }
