@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Sparkle } from '@/components/ui/Badge';
+import { BookOpen, Target, BarChart3, Brain, Timer, Globe, Dices, TrendingDown, Search, Dna, Ruler } from 'lucide-react';
 
 export default function HomePage() {
   return (
@@ -314,32 +315,32 @@ export default function HomePage() {
           >
             {[
               {
-                emoji: '📚',
+                icon: <BookOpen size={32} color="var(--magenta)" />,
                 title: 'Your material, your way',
                 description: 'Upload your own lecture slides, handouts, and past papers. Adwen analyses them to build a study plan around YOUR course — not generic content.',
               },
               {
-                emoji: '🎯',
+                icon: <Target size={32} color="var(--magenta)" />,
                 title: 'Adaptive quizzes',
                 description: 'Smart questions that target your actual gaps. Each distractor tests a real misconception. Targeted items, not random ones.',
               },
               {
-                emoji: '📊',
+                icon: <BarChart3 size={32} color="var(--magenta)" />,
                 title: 'Readiness that tightens',
                 description: 'Your readiness is a range, not a number. With each practice, the range tightens. See exactly where you have the most room to grow.',
               },
               {
-                emoji: '🧠',
+                icon: <Brain size={32} color="var(--magenta)" />,
                 title: 'Deep intelligence',
                 description: '25 AI-generated psychological insights about your learning behaviour — from guessing patterns to cognitive blind spots — explained in plain English.',
               },
               {
-                emoji: '⏱️',
+                icon: <Timer size={32} color="var(--magenta)" />,
                 title: 'Behavioural telemetry',
                 description: 'We track how long you take, when you guess, which question types trip you up, and how your confidence maps to actual performance.',
               },
               {
-                emoji: '🌍',
+                icon: <Globe size={32} color="var(--magenta)" />,
                 title: 'Built for African universities',
                 description: 'Designed for tertiary students across Africa. Understands CWA grading, local curricula, and the exam formats you actually face.',
               },
@@ -356,7 +357,7 @@ export default function HomePage() {
 
                 }}
               >
-                <div style={{ fontSize: '2rem', marginBottom: '12px' }}>{feature.emoji}</div>
+                <div style={{ marginBottom: '16px' }}>{feature.icon}</div>
                 <h3
                   style={{
                     fontSize: 'var(--text-lg)',
@@ -399,19 +400,19 @@ export default function HomePage() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
             {[
-              { icon: '🎲', label: 'Panic Guessing', detail: 'Detects when you answer in under 4 seconds and get it wrong — a sign of guessing, not knowing.' },
-              { icon: '⏱️', label: 'Thinking Speed', detail: 'Measures your average response latency to reveal whether you are overthinking or underthinking.' },
-              { icon: '📉', label: 'Stamina Drops', detail: 'Tracks accuracy decline within a session — showing exactly when your focus runs out.' },
-              { icon: '🔍', label: 'Blind Spots', detail: 'Finds topics where you are confident but wrong — the most dangerous kind of gap.' },
-              { icon: '🧬', label: 'Cognitive Type', detail: 'Maps your accuracy across Bloom\'s taxonomy — recall, application, analysis, synthesis, evaluation.' },
-              { icon: '📐', label: 'Exam Weight Alignment', detail: 'Checks if your strongest topics are actually the ones worth the most marks on the exam.' },
+              { icon: <Dices size={24} color="var(--lime)" />, label: 'Panic Guessing', detail: 'Detects when you answer in under 4 seconds and get it wrong — a sign of guessing, not knowing.' },
+              { icon: <Timer size={24} color="var(--lime)" />, label: 'Thinking Speed', detail: 'Measures your average response latency to reveal whether you are overthinking or underthinking.' },
+              { icon: <TrendingDown size={24} color="var(--lime)" />, label: 'Stamina Drops', detail: 'Tracks accuracy decline within a session — showing exactly when your focus runs out.' },
+              { icon: <Search size={24} color="var(--lime)" />, label: 'Blind Spots', detail: 'Finds topics where you are confident but wrong — the most dangerous kind of gap.' },
+              { icon: <Dna size={24} color="var(--lime)" />, label: 'Cognitive Type', detail: 'Maps your accuracy across Bloom\'s taxonomy — recall, application, analysis, synthesis, evaluation.' },
+              { icon: <Ruler size={24} color="var(--lime)" />, label: 'Exam Weight Alignment', detail: 'Checks if your strongest topics are actually the ones worth the most marks on the exam.' },
             ].map((item, i) => (
               <div key={i} style={{
                 padding: '24px', borderRadius: 'var(--radius-card)',
                 background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
 
               }}>
-                <div style={{ fontSize: '1.5rem', marginBottom: '12px' }}>{item.icon}</div>
+                <div style={{ marginBottom: '12px' }}>{item.icon}</div>
                 <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--lime)', marginBottom: '8px', fontWeight: 700 }}>
                   {item.label}
                 </div>
