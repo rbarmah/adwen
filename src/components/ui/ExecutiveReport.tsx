@@ -4,18 +4,18 @@ import DOMPurify from 'isomorphic-dompurify';
 
 const SECTION_STYLES: Record<string, { icon: React.ElementType, color: string, bg: string, border: string }> = {
   // Profile Analysis Keys
-  'overall profile': { icon: Target, color: '#1B3055', bg: 'linear-gradient(135deg, #F0F4F8, #E2E8F0)', border: '#CBD5E1' },
-  'key strengths': { icon: Trophy, color: '#00A99D', bg: 'linear-gradient(135deg, #E6F9F7, #F0FBF9)', border: '#B3EDE7' },
-  'struggle': { icon: AlertTriangle, color: '#E24329', bg: 'linear-gradient(135deg, #FEF2F0, #FFF8F7)', border: '#FAD8D1' },
-  'academic trajectory': { icon: TrendingUp, color: '#2563EB', bg: 'linear-gradient(135deg, #EFF6FF, #DBEAFE)', border: '#BFDBFE' },
-  'strategic recommendations': { icon: Lightbulb, color: '#F59E0B', bg: 'linear-gradient(135deg, #FFFBEB, #FEF3C7)', border: '#FDE68A' },
+  'overall profile': { icon: Target, color: 'var(--navy)', bg: 'var(--paper-2)', border: 'var(--line)' },
+  'key strengths': { icon: Trophy, color: 'var(--green)', bg: 'var(--green-soft)', border: 'var(--green)' },
+  'struggle': { icon: AlertTriangle, color: 'var(--magenta)', bg: '#FEF2F0', border: 'var(--magenta)' },
+  'academic trajectory': { icon: TrendingUp, color: 'var(--cobalt)', bg: 'var(--cobalt-soft)', border: 'var(--cobalt)' },
+  'strategic recommendations': { icon: Lightbulb, color: 'var(--tangerine)', bg: '#FFF8F0', border: 'var(--tangerine)' },
   
   // Course Analysis Keys
-  'demanding': { icon: Target, color: '#1B3055', bg: 'linear-gradient(135deg, #F0F4F8, #E2E8F0)', border: '#CBD5E1' },
-  'excel': { icon: Trophy, color: '#00A99D', bg: 'linear-gradient(135deg, #E6F9F7, #F0FBF9)', border: '#B3EDE7' },
-  'friction': { icon: AlertTriangle, color: '#E24329', bg: 'linear-gradient(135deg, #FEF2F0, #FFF8F7)', border: '#FAD8D1' },
-  'wassce': { icon: TrendingUp, color: '#2563EB', bg: 'linear-gradient(135deg, #EFF6FF, #DBEAFE)', border: '#BFDBFE' },
-  'strategy': { icon: Lightbulb, color: '#F59E0B', bg: 'linear-gradient(135deg, #FFFBEB, #FEF3C7)', border: '#FDE68A' },
+  'demanding': { icon: Target, color: 'var(--navy)', bg: 'var(--paper-2)', border: 'var(--line)' },
+  'excel': { icon: Trophy, color: 'var(--green)', bg: 'var(--green-soft)', border: 'var(--green)' },
+  'friction': { icon: AlertTriangle, color: 'var(--magenta)', bg: '#FEF2F0', border: 'var(--magenta)' },
+  'wassce': { icon: TrendingUp, color: 'var(--cobalt)', bg: 'var(--cobalt-soft)', border: 'var(--cobalt)' },
+  'strategy': { icon: Lightbulb, color: 'var(--tangerine)', bg: '#FFF8F0', border: 'var(--tangerine)' },
 };
 
 function parseMarkdownToSections(markdown: string) {
@@ -50,11 +50,11 @@ export default function ExecutiveReport({ markdown }: { markdown: string }) {
   const sections = parseMarkdownToSections(markdown);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       {sections.map((section, idx) => {
         // Find matching style or fallback
         const lowerTitle = section.title.toLowerCase();
-        let style: { icon: React.ElementType; color: string; bg: string; border: string } = { icon: CheckCircle, color: '#475569', bg: '#F8FAFC', border: '#E2E8F0' };
+        let style: { icon: React.ElementType; color: string; bg: string; border: string } = { icon: CheckCircle, color: 'var(--ink)', bg: 'var(--paper-2)', border: 'var(--line)' };
         
         for (const [key, val] of Object.entries(SECTION_STYLES)) {
           if (lowerTitle.includes(key)) {
@@ -68,30 +68,35 @@ export default function ExecutiveReport({ markdown }: { markdown: string }) {
         return (
           <div key={idx} style={{
             background: style.bg,
-            border: `1px solid ${style.border}`,
-            borderRadius: '16px',
-            padding: '24px',
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
+            border: `2px solid ${style.border}`,
+            borderLeft: `5px solid ${style.border}`,
+            borderRadius: 'var(--r-sm)',
+            padding: '20px',
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
               <div style={{
+                width: '32px', height: '32px',
                 background: '#fff',
-                padding: '8px',
-                borderRadius: '50%',
+                borderRadius: '8px',
+                border: `2px solid ${style.border}`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                color: style.color
+                color: style.color,
+                flexShrink: 0,
               }}>
-                <Icon size={20} />
+                <Icon size={16} />
               </div>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', color: style.color, fontFamily: 'var(--font-display)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <h3 style={{
+                margin: 0, fontSize: 'var(--text-base)', fontWeight: 700,
+                color: 'var(--ink)', fontFamily: 'var(--font-body)',
+                lineHeight: 1.3,
+              }}>
                 {section.title || 'Analysis'}
               </h3>
             </div>
             
-            <div style={{ color: '#334155', fontSize: '15px', lineHeight: '1.6', fontFamily: 'var(--font-body)' }}
+            <div style={{ color: 'var(--ink)', fontSize: '13.5px', lineHeight: '1.75', fontFamily: 'var(--font-body)' }}
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(
                   section.content
