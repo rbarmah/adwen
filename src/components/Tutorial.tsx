@@ -11,6 +11,7 @@ export interface TourStep {
   tip?: string;
   position?: 'top' | 'bottom' | 'left' | 'right' | 'auto';
   navigateTo?: string;      // URL to navigate to before showing this step
+  openMobileSidebar?: boolean; // Open mobile sidebar drawer before this step
 }
 
 // Build tour steps dynamically — courseId injected at runtime
@@ -59,6 +60,7 @@ export function buildTourSteps(courseId?: string): TourStep[] {
         tip: 'The readiness estimate updates every time you take a quiz.',
         position: 'right',
         navigateTo: base,
+        openMobileSidebar: true,
       },
       {
         target: 'tour-course-nav-study',
@@ -66,6 +68,7 @@ export function buildTourSteps(courseId?: string): TourStep[] {
         body: 'Upload lecture notes, past exams, and textbook chapters as PDFs. Adwen\'s AI extracts key concepts and builds a knowledge graph from your materials.',
         tip: 'Past exam papers are gold — they teach Adwen exactly what your lecturers test on.',
         position: 'right',
+        openMobileSidebar: true,
       },
       {
         target: 'tour-course-nav-quiz',
@@ -73,6 +76,7 @@ export function buildTourSteps(courseId?: string): TourStep[] {
         body: 'AI-generated questions from YOUR study materials. Each question adapts to your ability level using Item Response Theory (IRT) — too easy gets harder, too hard gets easier.',
         tip: 'Don\'t rush! Your response time is factored into the difficulty calibration.',
         position: 'right',
+        openMobileSidebar: true,
       },
       {
         target: 'tour-course-nav-analysis',
@@ -80,6 +84,7 @@ export function buildTourSteps(courseId?: string): TourStep[] {
         body: 'Deep AI analysis of your entire course — topic breakdown, difficulty mapping, exam pattern detection, and learning path recommendations.',
         tip: 'Run this after uploading at least 3 documents for the best results.',
         position: 'right',
+        openMobileSidebar: true,
       },
       {
         target: 'tour-course-nav-insights',
@@ -87,6 +92,7 @@ export function buildTourSteps(courseId?: string): TourStep[] {
         body: 'YOUR unique learning fingerprint — tracks which topics you struggle with, confidence calibration, response speed trends, and cognitive strengths over time.',
         tip: 'Check this regularly to see which topics need more revision.',
         position: 'right',
+        openMobileSidebar: true,
       },
       {
         target: 'tour-course-nav-outcome',
@@ -94,6 +100,7 @@ export function buildTourSteps(courseId?: string): TourStep[] {
         body: 'Tracks predicted vs actual exam results. After entering your real grade, Adwen recalibrates everything using Bayesian updating — difficulty estimates, ability level, and study recommendations.',
         tip: 'Always log your actual exam results. This is how Adwen learns to predict more accurately.',
         position: 'right',
+        openMobileSidebar: true,
       },
     );
   }
@@ -199,23 +206,37 @@ export default function GuidedTour({
   // Find and measure the target element, with retries for navigation delays
   const measureTarget = useCallback(() => {
     if (!step) return;
-    const el = document.querySelector(`[data-tour="${step.target}"]`);
+
+    // On mobile, open the sidebar drawer if the step requires it
+    if (step.openMobileSidebar && window.innerWidth < 768) {
+      window.dispatchEvent(new Event('tour-open-mobile-sidebar'));
+    }
+
+    // Find target — check all matching elements and pick the first visible one
+    const els = document.querySelectorAll(`[data-tour="${step.target}"]`);
+    let el: Element | null = null;
+    els.forEach(candidate => {
+      if (el) return;
+      const rect = candidate.getBoundingClientRect();
+      // Check if the element is actually visible (not hidden by desktop-only/mobile-only)
+      if (rect.width > 0 && rect.height > 0) {
+        el = candidate;
+      }
+    });
+
     if (el) {
       retryCountRef.current = 0;
-      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      // Small delay for scroll to settle
+      (el as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       setTimeout(() => {
-        const rect = el.getBoundingClientRect();
+        const rect = (el as HTMLElement).getBoundingClientRect();
         setTargetRect(rect);
         setIsVisible(true);
         setIsNavigating(false);
       }, 300);
     } else if (retryCountRef.current < 15) {
-      // Element might not be rendered yet after navigation — retry
       retryCountRef.current++;
       setTimeout(measureTarget, 300);
     } else {
-      // Give up after retries — show fallback centered tooltip
       retryCountRef.current = 0;
       setTargetRect(null);
       setIsVisible(true);

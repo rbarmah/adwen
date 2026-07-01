@@ -57,6 +57,13 @@ export default function CourseLayout({ children }: { children: React.ReactNode }
   const [sidebarOpen,    setSidebarOpen]    = useState(true);
   const [mobileOpen,     setMobileOpen]     = useState(false);
 
+  // Allow the guided tour to open the mobile sidebar programmatically
+  useEffect(() => {
+    const handler = () => setMobileOpen(true);
+    window.addEventListener('tour-open-mobile-sidebar', handler);
+    return () => window.removeEventListener('tour-open-mobile-sidebar', handler);
+  }, []);
+
   useEffect(() => {
     if (!courseId) return;
     const supabase = createClient();
@@ -234,7 +241,7 @@ export default function CourseLayout({ children }: { children: React.ReactNode }
           <div key={g.section} style={{ marginBottom: 12 }}>
             <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '.14em', textTransform: 'uppercase', color: '#8389C5', marginBottom: 6, paddingLeft: 10 }}>{g.section}</div>
             {g.items.map(item => (
-              <button key={item.key} onClick={() => { router.push(`/courses/${courseId}${item.sub}`); setMobileOpen(false); }} style={navBtnStyle(activeKey === item.key)}>
+              <button key={item.key} data-tour={`tour-course-nav-${item.key}`} onClick={() => { router.push(`/courses/${courseId}${item.sub}`); setMobileOpen(false); }} style={navBtnStyle(activeKey === item.key)}>
                 <Icon name={item.icon} size={15} />
                 <span>{item.label}</span>
               </button>
