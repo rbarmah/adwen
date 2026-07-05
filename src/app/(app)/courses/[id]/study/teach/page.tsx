@@ -564,8 +564,9 @@ export default function TeachItBackRoom() {
             position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50,
             background: 'linear-gradient(to top, var(--paper) 80%, transparent)',
             padding: '12px 16px 16px',
-            display: 'flex', flexDirection: 'column', gap: '10px'
+            display: 'flex', flexDirection: 'column', gap: '10px',
           }}>
+            <div style={{ maxWidth: '800px', width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
             
             {evalError && (
               <div style={{ background: 'var(--magenta)', color: '#fff', padding: '8px 16px', borderRadius: '8px', fontSize: '13px', textAlign: 'center' }}>
@@ -662,7 +663,7 @@ export default function TeachItBackRoom() {
                 </button>
               )}
             </div>
-
+            </div>
           </div>
         </div>
       )}
