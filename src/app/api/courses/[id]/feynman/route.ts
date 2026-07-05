@@ -22,6 +22,7 @@ RULES:
 4. ideal_explanation: Write a model answer that covers everything correctly in 150-200 words. This is the most valuable part.
 5. follow_up_question: Ask ONE targeted question about the specific gap in their explanation. Make it answerable but challenging.
 6. encouragement: One warm, honest, specific sentence. Reference something they actually did well.
+7. When writing any math equations or chemical formulas in your response fields, use LaTeX notation: $E = mc^2$, $\\ce{H2SO4}$. NEVER write equations as plain text.
 
 Return ONLY valid JSON. No prose outside the JSON object.`;
 

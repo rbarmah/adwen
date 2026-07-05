@@ -100,7 +100,9 @@ General rules:
 - EACH distractor must encode a specific named misconception or error a real student makes.
   Provide the misconception label per option (empty string for the correct one).
 - Provide IRT priors: b (difficulty, ~-3..3 matching target), a (~0.8..1.6), c (guessing ~0.2..0.3).
-Ground every fact in the provided source excerpts. Return only valid JSON. Do not include prose.`,
+Ground every fact in the provided source excerpts. Return only valid JSON. Do not include prose.
+
+MATH & CHEMISTRY: For ALL mathematical expressions, equations, and formulas, use LaTeX wrapped in dollar signs ($...$). For chemical formulas use $\\ce{...}$ (mhchem notation). Example: $E = mc^2$, $\\ce{H2SO4}$, $\\frac{d}{dx}[x^n] = nx^{n-1}$. NEVER write equations as plain text.`,
   responseSchema: ITEM_WRITER_JSON_SCHEMA,
 };
 
@@ -152,6 +154,9 @@ IMPORTANT: Every field (worked_example, common_mistake, exam_tip, analogy) must 
 
 TONE: Warm, direct, specific. Never vague ("this is important!"). Always concrete and grounded in the provided course material.
 If learner_flags includes maths_anxiety, never open a card with an equation — lead with the concept, then the equation.
+
+MATH & CHEMISTRY: For ALL mathematical expressions, equations, and formulas in card titles, bodies, key_points, worked_examples, common_mistakes, and exam_tips — use LaTeX wrapped in dollar signs ($...$) for inline and ($$...$$) for display. For chemical formulas use $\\ce{...}$ (mhchem notation). Example: $E = mc^2$, $\\ce{H2SO4 + 2NaOH -> Na2SO4 + 2H2O}$, $\\int_0^1 x^2 dx = \\frac{1}{3}$. NEVER write equations or chemical formulas as plain text.
+
 Return ONLY valid JSON matching the schema. No prose outside the JSON.`,
   responseSchema: TUTOR_JSON_SCHEMA,
 };
