@@ -9,6 +9,7 @@ import { selectNextItem, shouldStop, getDefaultStopCriteria } from '@/lib/engine
 import { estimateTheta, estimateMultidimensionalTheta } from '@/lib/engine/irt';
 import { updateMastery, propagatePrerequisites, predictForgetTime } from '@/lib/engine/bkt';
 import type { Item } from '@/types/database.types';
+import MathText from '@/components/ui/MathText';
 
 export default function QuizPage() {
   const params = useParams();
@@ -515,7 +516,7 @@ export default function QuizPage() {
         </div>
 
         <h2 style={{ fontSize: 'var(--text-lg)', fontWeight: 700, lineHeight: 1.6, marginBottom: '28px' }}>
-          {currentItem.stem}
+          <MathText text={currentItem.stem} />
         </h2>
 
         {/* Options */}
@@ -558,10 +559,10 @@ export default function QuizPage() {
                 }}>
                   {isCorrect ? '✓' : isWrong ? '✗' : String.fromCharCode(65 + i)}
                 </div>
-                <span style={{ flex: 1 }}>{option}</span>
+                <span style={{ flex: 1 }}><MathText text={option} /></span>
                 {showFeedback && currentItem.options_misconception?.[i] && (
-                  <span style={{ fontSize: '11.5px', color: 'var(--muted)', fontStyle: 'italic' }}>
-                    {currentItem.options_misconception[i]}
+                   <span style={{ fontSize: '11.5px', color: 'var(--muted)', fontStyle: 'italic' }}>
+                    <MathText text={currentItem.options_misconception[i]} />
                   </span>
                 )}
               </button>

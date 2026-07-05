@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import MathText from '@/components/ui/MathText';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 type Phase = 'topic_select' | 'briefing' | 'conversation' | 'thinking' | 'feedback' | 'challenge';
@@ -525,7 +526,7 @@ export default function TeachItBackRoom() {
                     lineHeight: 1.6,
                     boxShadow: 'var(--shadow)'
                   }}>
-                    {msg.content}
+                    <MathText text={msg.content} />
                   </div>
                 </div>
               );

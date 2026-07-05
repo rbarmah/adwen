@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import Button from '@/components/ui/Button';
+import MathText from '@/components/ui/MathText';
 
 type Message = { role: 'user' | 'assistant'; content: string; streaming?: boolean };
 
@@ -252,7 +253,7 @@ function InlineFormat({ text }: { text: string }) {
           return <strong key={i} style={{ fontWeight: 800, color: 'var(--ink)' }}>{part.slice(2, -2)}</strong>;
         if (part.startsWith('*') && part.endsWith('*') && !part.startsWith('**'))
           return <em key={i} style={{ fontStyle: 'italic', color: 'var(--muted)' }}>{part.slice(1, -1)}</em>;
-        return <span key={i}>{part}</span>;
+        return <MathText key={i} text={part} />;
       })}
     </>
   );

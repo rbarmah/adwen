@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { STUDY_DEPTHS } from '@/lib/constants';
 import { createClient } from '@/lib/supabase/client';
 import { CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
+import MathText from '@/components/ui/MathText';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 type Rating  = 'know' | 'shaky' | 'no-idea' | null;
@@ -520,7 +521,7 @@ export default function StudyCardsPage() {
                         {topicName}
                       </div>
                       <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.3rem, 3vw, 2rem)', textTransform: 'uppercase', letterSpacing: '0.02em', marginBottom: '24px', lineHeight: 1.15 }}>
-                        {card.title}
+                        <MathText text={card.title} />
                       </h2>
                       <p style={{ color: 'var(--muted)', fontSize: 'var(--text-sm)', marginBottom: '28px', maxWidth: '300px', lineHeight: 1.7 }}>
                         Think about it first — then click to reveal
@@ -543,14 +544,14 @@ export default function StudyCardsPage() {
                       <span className="slide-count">{deckPos + 1} / {deck.length}</span>
                     </div>
                     <div className="slide-body" style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '24px 20px' }} onClick={e => e.stopPropagation()}>
-                      <h2 style={{ marginBottom: '14px', fontSize: 'var(--text-xl)', lineHeight: 1.3 }}>{card.title}</h2>
-                      <p style={{ lineHeight: 1.85, marginBottom: '20px' }}>{card.body}</p>
+                      <h2 style={{ marginBottom: '14px', fontSize: 'var(--text-xl)', lineHeight: 1.3 }}><MathText text={card.title} /></h2>
+                      <p style={{ lineHeight: 1.85, marginBottom: '20px' }}><MathText text={card.body} /></p>
 
                       {card.key_points?.length > 0 && (
                         <div style={{ background: 'var(--cobalt-soft)', border: '2px solid var(--ink)', borderLeft: '6px solid var(--cobalt)', borderRadius: '0 12px 12px 0', padding: '14px 18px', marginBottom: '14px' }}>
                           <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', letterSpacing: '0.1em', fontWeight: 700, color: 'var(--cobalt-ink)', textTransform: 'uppercase', marginBottom: '8px' }}>📌 Key Points</div>
                           <ul style={{ margin: 0, paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                            {card.key_points.map((pt: string, i: number) => <li key={i} style={{ fontSize: '13.5px', lineHeight: 1.7 }}>{pt}</li>)}
+                            {card.key_points.map((pt: string, i: number) => <li key={i} style={{ fontSize: '13.5px', lineHeight: 1.7 }}><MathText text={pt} /></li>)}
                           </ul>
                         </div>
                       )}
@@ -558,7 +559,7 @@ export default function StudyCardsPage() {
                       {card.worked_example && (
                         <div style={{ background: 'var(--green-soft)', border: '2px solid var(--ink)', borderLeft: '6px solid var(--green)', borderRadius: '0 12px 12px 0', padding: '14px 18px', marginBottom: '14px' }}>
                           <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', letterSpacing: '0.1em', fontWeight: 700, color: 'var(--green)', textTransform: 'uppercase', marginBottom: '8px' }}>📐 Worked Example</div>
-                          <pre style={{ fontSize: '13px', lineHeight: 1.8, fontFamily: 'var(--font-mono)', whiteSpace: 'pre-wrap', margin: 0 }}>{card.worked_example}</pre>
+                          <pre style={{ fontSize: '13px', lineHeight: 1.8, fontFamily: 'var(--font-mono)', whiteSpace: 'pre-wrap', margin: 0 }}><MathText text={card.worked_example} /></pre>
                         </div>
                       )}
 
@@ -567,20 +568,20 @@ export default function StudyCardsPage() {
                           {card.common_mistake && (
                             <div style={{ background: '#FFF0EE', border: '2px solid var(--ink)', borderLeft: '6px solid var(--tangerine)', borderRadius: '0 10px 10px 0', padding: '12px 14px' }}>
                               <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700, color: 'var(--tangerine)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '5px' }}>⚠️ Common Mistake</div>
-                              <p style={{ fontSize: '12.5px', lineHeight: 1.6, margin: 0 }}>{card.common_mistake}</p>
+                              <p style={{ fontSize: '12.5px', lineHeight: 1.6, margin: 0 }}><MathText text={card.common_mistake} /></p>
                             </div>
                           )}
                           {card.exam_tip && (
                             <div style={{ background: '#FDFDE0', border: '2px solid var(--ink)', borderLeft: '6px solid var(--lime-deep)', borderRadius: '0 10px 10px 0', padding: '12px 14px' }}>
                               <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700, color: '#6b7a00', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '5px' }}>🎯 Exam Tip</div>
-                              <p style={{ fontSize: '12.5px', lineHeight: 1.6, margin: 0 }}>{card.exam_tip}</p>
+                              <p style={{ fontSize: '12.5px', lineHeight: 1.6, margin: 0 }}><MathText text={card.exam_tip} /></p>
                             </div>
                           )}
                         </div>
                       )}
 
                       {card.analogy && (
-                        <div className="analogy">{card.analogy}</div>
+                        <div className="analogy"><MathText text={card.analogy} /></div>
                       )}
 
                       {/* Rating buttons */}
