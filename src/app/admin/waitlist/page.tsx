@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import Icon from '@/components/ui/Icon';
@@ -208,16 +209,28 @@ export default function AdminWaitlistPage() {
           <span style={{ fontFamily: 'var(--font-display)', fontSize: 18, color: 'var(--ink)' }}>Adwen</span>
           <Badge variant="cobalt" size="sm">Admin</Badge>
         </div>
-        <button
-          onClick={() => { localStorage.removeItem('adwen_admin_secret'); setAuthed(false); }}
-          style={{
-            padding: '6px 14px', border: '2px solid var(--ink)', borderRadius: 'var(--pill)',
-            background: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer',
-            fontFamily: 'var(--font-body)',
-          }}
-        >
-          Sign out
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Link
+            href="/admin/analytics"
+            style={{
+              padding: '6px 14px', border: '2px solid var(--cobalt)', borderRadius: 'var(--pill)',
+              background: 'var(--cobalt-soft)', fontSize: 12, fontWeight: 700, cursor: 'pointer',
+              fontFamily: 'var(--font-body)', color: 'var(--cobalt)', textDecoration: 'none',
+            }}
+          >
+            📊 Analytics
+          </Link>
+          <button
+            onClick={() => { localStorage.removeItem('adwen_admin_secret'); setAuthed(false); }}
+            style={{
+              padding: '6px 14px', border: '2px solid var(--ink)', borderRadius: 'var(--pill)',
+              background: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer',
+              fontFamily: 'var(--font-body)',
+            }}
+          >
+            Sign out
+          </button>
+        </div>
       </header>
 
       <div style={{ maxWidth: 800, margin: '0 auto', padding: '28px 16px' }}>
