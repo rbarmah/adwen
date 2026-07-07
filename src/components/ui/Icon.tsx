@@ -123,6 +123,22 @@ const icons: Record<string, (p: { color?: string }) => React.ReactNode> = {
       <path d="M9 4l8 8-8 8" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   ),
+  // Social
+  team: ({ color = 'currentColor' }) => (
+    <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+      <circle cx="9" cy="7" r="3" stroke={color} strokeWidth="2"/>
+      <path d="M2 20c0-3.5 3-6 7-6s7 2.5 7 6" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+      <circle cx="17" cy="8" r="2.5" stroke={color} strokeWidth="1.8"/>
+      <path d="M18.5 14.5c1.5.7 3.5 2 3.5 5.5" stroke={color} strokeWidth="1.8" strokeLinecap="round"/>
+    </svg>
+  ),
+  swords: ({ color = 'currentColor' }) => (
+    <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+      <path d="M5 3l6.5 6.5M14.5 14.5L19 19M19 3l-6.5 6.5M9.5 14.5L5 19" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+      <path d="M3 5l2-2 2 2M19 5l2-2M21 5l-2-2M3 19l2 2 2-2M19 19l2 2M21 19l-2 2" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx="12" cy="12" r="2" stroke={color} strokeWidth="1.8"/>
+    </svg>
+  ),
 };
 
 interface IconProps {

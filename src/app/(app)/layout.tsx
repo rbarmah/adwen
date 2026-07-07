@@ -189,17 +189,25 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </button>
 
         {/* Nav links */}
-        <nav style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-          {[
-            { label: '📚 Courses', href: '/courses' },
-            { label: '👥 Teams', href: '/teams' },
-            { label: '⚔️ Duels', href: '/duels' },
-          ].map(item => (
+        <nav style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+          {([
+            { label: 'Courses', href: '/courses', icon: 'book' as const, bg: 'var(--lime)', borderColor: 'var(--ink)' },
+            { label: 'Teams', href: '/teams', icon: 'team' as const, bg: 'var(--cobalt-soft)', borderColor: 'var(--cobalt)' },
+            { label: 'Duels', href: '/duels', icon: 'swords' as const, bg: '#FFF0F5', borderColor: 'var(--magenta)' },
+          ]).map(item => (
             <button key={item.href} onClick={() => router.push(item.href)} style={{
-              padding: '5px 12px', borderRadius: 'var(--pill)', border: '2px solid transparent',
-              background: 'none', fontSize: 12, fontWeight: 700, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: 5,
+              padding: '5px 14px', borderRadius: 'var(--pill)',
+              border: `1.5px solid ${item.borderColor}`,
+              background: item.bg, fontSize: 12, fontWeight: 700, cursor: 'pointer',
               fontFamily: 'var(--font-body)', color: 'var(--ink)',
-            }}>
+              transition: 'box-shadow 0.15s, transform 0.1s',
+              boxShadow: `0 1px 0 ${item.borderColor}`,
+            }}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow = `0 2px 0 ${item.borderColor}`; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.boxShadow = `0 1px 0 ${item.borderColor}`; e.currentTarget.style.transform = 'none'; }}
+            >
+              <Icon name={item.icon} size={14} color={item.borderColor} />
               {item.label}
             </button>
           ))}
