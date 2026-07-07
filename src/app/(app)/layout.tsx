@@ -159,7 +159,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
 
       {/* ── Global top bar ── */}
-      <header className="mobile-header" style={{
+      <header className="app-header" style={{
         height: 52,
         borderBottom: '2px solid var(--ink)',
         display: 'flex',
@@ -185,17 +185,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           }}>
             <Icon name="bulb" size={16} color="var(--ink)" />
           </div>
-          <span className="hide-on-mobile" style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: 'var(--ink)', lineHeight: 1 }}>Adwen</span>
+          <span className="app-header-label" style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: 'var(--ink)', lineHeight: 1 }}>Adwen</span>
         </button>
 
         {/* Nav links */}
-        <nav className="mobile-nav" style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+        <nav className="app-nav" style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
           {([
             { label: 'Courses', href: '/courses', icon: 'book' as const, bg: 'var(--lime)', borderColor: 'var(--ink)' },
             { label: 'Teams', href: '/teams', icon: 'team' as const, bg: 'var(--cobalt-soft)', borderColor: 'var(--cobalt)' },
             { label: 'Duels', href: '/duels', icon: 'swords' as const, bg: '#FFF0F5', borderColor: 'var(--magenta)' },
           ]).map(item => (
-            <button key={item.href} className="mobile-nav-btn" onClick={() => router.push(item.href)} style={{
+            <button key={item.href} className="app-nav-btn" onClick={() => router.push(item.href)} style={{
               display: 'flex', alignItems: 'center', gap: 5,
               padding: '5px 14px', borderRadius: 'var(--pill)',
               border: `1.5px solid ${item.borderColor}`,
@@ -208,15 +208,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               onMouseLeave={e => { e.currentTarget.style.boxShadow = `0 1px 0 ${item.borderColor}`; e.currentTarget.style.transform = 'none'; }}
             >
               <Icon name={item.icon} size={14} color={item.borderColor} />
-              <span className="hide-on-mobile">{item.label}</span>
+              <span className="app-header-label">{item.label}</span>
             </button>
           ))}
         </nav>
 
         {/* Right controls */}
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <div className="app-right-controls" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           {/* Telemetry */}
           <button
+            className="app-tele-btn"
             data-tour="tour-telemetry"
             onClick={() => setTeleOpen(true)}
             style={{
@@ -228,7 +229,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               boxShadow: '0 2px 0 var(--ink)',
             }}
           >
-            <span className="hide-on-mobile">Telemetry</span>
+            <span className="app-header-label">Telemetry</span>
             <Icon name="chart" size={14} color="var(--ink)" />
             <span style={{ fontFamily: 'var(--font-mono)', background: 'var(--magenta)', color: '#fff', borderRadius: 99, padding: '1px 7px', fontSize: 10 }}>
               {dbEvents.length}

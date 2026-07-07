@@ -1195,3 +1195,31 @@ input[type=range]::-webkit-slider-thumb {
     justify-content: center;
   }
 }
+
+/* ---------- App Header: Mobile Responsive ---------- */
+.app-header-label {
+  display: inline;
+}
+
+@media (max-width: 640px) {
+  .app-header-label {
+    display: none !important;
+  }
+  .app-header {
+    padding: 0 10px !important;
+  }
+  .app-nav {
+    gap: 4px !important;
+  }
+  .app-nav-btn {
+    padding: 6px 8px !important;
+    gap: 0 !important;
+  }
+  .app-right-controls {
+    gap: 4px !important;
+  }
+  .app-tele-btn {
+    padding: 5px 8px !important;
+    gap: 4px !important;
+  }
+}
