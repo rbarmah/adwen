@@ -1,5 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createClient as createServiceClient } from '@supabase/supabase-js';
+
+function getServiceSupabase() {
+  return createServiceClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+}
 
 // POST /api/duels/[id]/accept — accept a duel challenge
 export async function POST(
@@ -11,17 +19,18 @@ export async function POST(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { data: duel } = await (supabase.from('duels').select('*').eq('id', duelId).single() as any);
+  const admin = getServiceSupabase();
+  const { data: duel } = await admin.from('duels').select('*').eq('id', duelId).single();
   if (!duel) return NextResponse.json({ error: 'Duel not found' }, { status: 404 });
-  if (duel.opponent_id !== user.id) return NextResponse.json({ error: 'Only the opponent can accept' }, { status: 403 });
-  if (duel.status !== 'pending') return NextResponse.json({ error: 'Duel is not pending' }, { status: 400 });
+  if ((duel as any).opponent_id !== user.id) return NextResponse.json({ error: 'Only the opponent can accept' }, { status: 403 });
+  if ((duel as any).status !== 'pending') return NextResponse.json({ error: 'Duel is not pending' }, { status: 400 });
 
   // Check if expired
-  if (new Date(duel.expires_at) < new Date()) {
-    await (supabase.from('duels') as any).update({ status: 'expired' }).eq('id', duelId);
+  if (new Date((duel as any).expires_at) < new Date()) {
+    await admin.from('duels').update({ status: 'expired' } as any).eq('id', duelId);
     return NextResponse.json({ error: 'Duel has expired' }, { status: 400 });
   }
 
-  await (supabase.from('duels') as any).update({ status: 'accepted' }).eq('id', duelId);
+  await admin.from('duels').update({ status: 'accepted' } as any).eq('id', duelId);
   return NextResponse.json({ success: true });
 }

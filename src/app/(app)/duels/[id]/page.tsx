@@ -150,11 +150,13 @@ export default function DuelPlayPage() {
       const res = await fetch(`/api/duels/${duelId}/play`);
       const data = await res.json();
       if (data.error) {
-        alert(data.error);
+        setErrorMsg(data.error);
+        setPhase('error');
         return;
       }
       if (!data.items || data.items.length === 0) {
-        alert('No questions available for this duel.');
+        setErrorMsg('No questions available for this duel.');
+        setPhase('error');
         return;
       }
       setItems(data.items);
@@ -166,7 +168,8 @@ export default function DuelPlayPage() {
       setPhase('playing');
     } catch (err) {
       console.error('Failed to start duel:', err);
-      alert('Failed to start duel. Please try again.');
+      setErrorMsg('Failed to start duel. Please try again.');
+      setPhase('error');
     }
   };
 

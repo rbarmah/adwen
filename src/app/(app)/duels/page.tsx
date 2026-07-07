@@ -32,6 +32,7 @@ export default function DuelsPage() {
   const [selectedOpponent, setSelectedOpponent] = useState<{ id: string; email: string } | null>(null);
   const [myCourses, setMyCourses] = useState<{ id: string; name: string }[]>([]);
   const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState('');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   const fetchDuels = useCallback(async () => {
@@ -81,6 +82,7 @@ export default function DuelsPage() {
   const handleCreateDuel = async (courseId: string) => {
     if (!selectedOpponent) return;
     setCreating(true);
+    setCreateError('');
     const res = await fetch('/api/duels', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -93,9 +95,10 @@ export default function DuelsPage() {
       setStep('opponent');
       setSelectedOpponent(null);
       setSearchQ('');
+      setCreateError('');
       fetchDuels();
     } else {
-      alert(data.error || 'Failed to create duel');
+      setCreateError(data.error || 'Failed to create duel');
     }
   };
 
@@ -321,6 +324,11 @@ export default function DuelsPage() {
                 <p style={{ color: 'var(--muted)', fontSize: 11, marginBottom: 16 }}>
                   Pick one of your courses. 20 random questions will be used.
                 </p>
+                {createError && (
+                  <div style={{ padding: '10px 14px', borderRadius: 10, background: '#FEE2E2', border: '2px solid var(--magenta)', marginBottom: 14, fontSize: 13, color: 'var(--magenta)', fontWeight: 600 }}>
+                    ⚠️ {createError}
+                  </div>
+                )}
                 {myCourses.length === 0 ? (
                   <p style={{ color: 'var(--muted)', fontSize: 13 }}>No ready courses to duel with. Upload and analyze a course first.</p>
                 ) : (

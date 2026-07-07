@@ -1,5 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createClient as createServiceClient } from '@supabase/supabase-js';
+
+function getServiceSupabase() {
+  return createServiceClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+}
 
 // POST /api/duels/[id]/submit — submit duel answers
 export async function POST(
@@ -11,20 +19,20 @@ export async function POST(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { data: duel } = await (supabase.from('duels').select('*').eq('id', duelId).single() as any);
+  const admin = getServiceSupabase();
+
+  const { data: duel } = await admin.from('duels').select('*').eq('id', duelId).single();
   if (!duel) return NextResponse.json({ error: 'Duel not found' }, { status: 404 });
-  if (duel.challenger_id !== user.id && duel.opponent_id !== user.id) {
+  if ((duel as any).challenger_id !== user.id && (duel as any).opponent_id !== user.id) {
     return NextResponse.json({ error: 'Not a participant' }, { status: 403 });
   }
 
   const { answers, totalTimeMs } = await request.json();
-  // answers: Array<{ itemId, chosenIndex, isCorrect, latencyMs, questionNumber }>
-
   if (!Array.isArray(answers) || answers.length === 0) {
     return NextResponse.json({ error: 'No answers provided' }, { status: 400 });
   }
 
-  // Insert duel responses
+  // Insert duel responses (service role to bypass RLS)
   const rows = answers.map((a: any) => ({
     duel_id: duelId,
     user_id: user.id,
@@ -35,11 +43,15 @@ export async function POST(
     question_number: a.questionNumber,
   }));
 
-  await (supabase.from('duel_responses') as any).insert(rows);
+  const { error: insertErr } = await admin.from('duel_responses').insert(rows as any);
+  if (insertErr) {
+    console.error('Error inserting duel responses:', insertErr);
+    return NextResponse.json({ error: 'Failed to save responses' }, { status: 500 });
+  }
 
   // Update duel scores
   const correctCount = answers.filter((a: any) => a.isCorrect).length;
-  const isChallenger = duel.challenger_id === user.id;
+  const isChallenger = (duel as any).challenger_id === user.id;
 
   const update: any = {};
   if (isChallenger) {
@@ -50,32 +62,28 @@ export async function POST(
     update.opponent_time_ms = totalTimeMs || 0;
   }
 
-  await (supabase.from('duels') as any).update(update).eq('id', duelId);
+  await admin.from('duels').update(update).eq('id', duelId);
 
   // Check if both players have finished — if so, determine winner
-  const { data: updatedDuel } = await (supabase.from('duels').select('*').eq('id', duelId).single() as any);
+  const { data: updatedDuel } = await admin.from('duels').select('*').eq('id', duelId).single();
 
-  if (updatedDuel.challenger_correct !== null && updatedDuel.opponent_correct !== null) {
-    // Both finished — determine winner
+  if ((updatedDuel as any)?.challenger_correct !== null && (updatedDuel as any)?.opponent_correct !== null) {
     let winnerId: string | null = null;
-    if (updatedDuel.challenger_correct > updatedDuel.opponent_correct) {
-      winnerId = updatedDuel.challenger_id;
-    } else if (updatedDuel.opponent_correct > updatedDuel.challenger_correct) {
-      winnerId = updatedDuel.opponent_id;
+    const d = updatedDuel as any;
+    if (d.challenger_correct > d.opponent_correct) {
+      winnerId = d.challenger_id;
+    } else if (d.opponent_correct > d.challenger_correct) {
+      winnerId = d.opponent_id;
     } else {
       // Tie — faster player wins
-      if ((updatedDuel.challenger_time_ms || Infinity) < (updatedDuel.opponent_time_ms || Infinity)) {
-        winnerId = updatedDuel.challenger_id;
-      } else if ((updatedDuel.opponent_time_ms || Infinity) < (updatedDuel.challenger_time_ms || Infinity)) {
-        winnerId = updatedDuel.opponent_id;
+      if ((d.challenger_time_ms || Infinity) < (d.opponent_time_ms || Infinity)) {
+        winnerId = d.challenger_id;
+      } else if ((d.opponent_time_ms || Infinity) < (d.challenger_time_ms || Infinity)) {
+        winnerId = d.opponent_id;
       }
-      // If still tied, winnerId stays null (draw)
     }
 
-    await (supabase.from('duels') as any).update({
-      status: 'completed',
-      winner_id: winnerId,
-    }).eq('id', duelId);
+    await admin.from('duels').update({ status: 'completed', winner_id: winnerId } as any).eq('id', duelId);
   }
 
   return NextResponse.json({
