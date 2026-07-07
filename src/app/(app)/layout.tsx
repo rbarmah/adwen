@@ -132,6 +132,23 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <span style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: 'var(--ink)', lineHeight: 1 }}>Adwen</span>
         </button>
 
+        {/* Nav links */}
+        <nav style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+          {[
+            { label: '📚 Courses', href: '/courses' },
+            { label: '👥 Teams', href: '/teams' },
+            { label: '⚔️ Duels', href: '/duels' },
+          ].map(item => (
+            <button key={item.href} onClick={() => router.push(item.href)} style={{
+              padding: '5px 12px', borderRadius: 'var(--pill)', border: '2px solid transparent',
+              background: 'none', fontSize: 12, fontWeight: 700, cursor: 'pointer',
+              fontFamily: 'var(--font-body)', color: 'var(--ink)',
+            }}>
+              {item.label}
+            </button>
+          ))}
+        </nav>
+
         {/* Right controls */}
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           {/* Telemetry */}

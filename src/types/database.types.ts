@@ -236,6 +236,77 @@ export interface ChatMessage {
 }
 
 /* ============================================================
+   Teams
+   ============================================================ */
+export interface Team {
+  id: string;
+  name: string;
+  description: string | null;
+  owner_id: string;
+  visibility: 'open' | 'invite_only';
+  created_at: string;
+}
+
+export interface TeamMember {
+  id: string;
+  team_id: string;
+  user_id: string;
+  role: 'owner' | 'member';
+  joined_at: string;
+}
+
+export interface TeamInvite {
+  id: string;
+  team_id: string;
+  invited_user_id: string;
+  status: 'pending' | 'accepted' | 'declined';
+  created_at: string;
+}
+
+export interface TeamCourse {
+  id: string;
+  team_id: string;
+  course_id: string;
+  added_by: string;
+  added_at: string;
+}
+
+/* ============================================================
+   Duels
+   ============================================================ */
+export interface Duel {
+  id: string;
+  challenger_id: string;
+  opponent_id: string;
+  course_id: string;
+  item_ids: string[];
+  status: DuelStatus;
+  challenger_correct: number | null;
+  challenger_total: number;
+  challenger_time_ms: number | null;
+  opponent_correct: number | null;
+  opponent_total: number;
+  opponent_time_ms: number | null;
+  winner_id: string | null;
+  created_at: string;
+  expires_at: string;
+}
+
+export type DuelStatus = 'pending' | 'accepted' | 'declined' | 'in_progress' | 'completed' | 'expired';
+
+export interface DuelResponse {
+  id: string;
+  duel_id: string;
+  user_id: string;
+  item_id: string;
+  chosen_index: number;
+  is_correct: boolean;
+  latency_ms: number;
+  question_number: number;
+  created_at: string;
+}
+
+/* ============================================================
    Supabase Database type helper
    ============================================================ */
 export interface Database {
@@ -257,6 +328,13 @@ export interface Database {
       agent_runs: { Row: AgentRun; Insert: Omit<AgentRun, 'id' | 'created_at'>; Update: never };
       visual_note_generations: { Row: VisualNoteGeneration; Insert: Omit<VisualNoteGeneration, 'id' | 'created_at'>; Update: never };
       chat_messages: { Row: ChatMessage; Insert: Omit<ChatMessage, 'id' | 'created_at'>; Update: never };
+      teams: { Row: Team; Insert: Omit<Team, 'id' | 'created_at'>; Update: Partial<Team> };
+      team_members: { Row: TeamMember; Insert: Omit<TeamMember, 'id' | 'joined_at'>; Update: never };
+      team_invites: { Row: TeamInvite; Insert: Omit<TeamInvite, 'id' | 'created_at'>; Update: Partial<TeamInvite> };
+      team_courses: { Row: TeamCourse; Insert: Omit<TeamCourse, 'id' | 'added_at'>; Update: never };
+      duels: { Row: Duel; Insert: Omit<Duel, 'id' | 'created_at' | 'expires_at'>; Update: Partial<Duel> };
+      duel_responses: { Row: DuelResponse; Insert: Omit<DuelResponse, 'id' | 'created_at'>; Update: never };
     };
   };
 }
+
