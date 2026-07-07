@@ -9,40 +9,84 @@ function getServiceSupabase() {
   );
 }
 
-// GET /api/users/search?q=query — search users by email or username
+// University ID → name mapping (same as onboarding data)
+const UNIVERSITY_NAMES: Record<string, string> = {
+  knust: 'KNUST',
+  ug: 'University of Ghana',
+  ucc: 'UCC',
+  uds: 'UDS',
+  uew: 'UEW',
+  upsa: 'UPSA',
+  gimpa: 'GIMPA',
+  ashesi: 'Ashesi University',
+  central: 'Central University',
+  presbyu: 'Presbyterian University',
+  methodist: 'Methodist University',
+  valley_view: 'Valley View University',
+  regent: 'Regent University',
+  pentecost: 'Pentecost University',
+  spirit_catholic: 'Catholic University',
+  uhas: 'UHAS',
+  umat: 'UMaT',
+  atu: 'ATU',
+  ktu: 'KTU',
+  ttu: 'TTU',
+  stu: 'STU',
+  htu: 'HTU',
+  btu: 'BTU',
+  uenr: 'UENR',
+  wiuc: 'Wisconsin Int. University',
+  lancaster: 'Lancaster University Ghana',
+  webster: 'Webster University Ghana',
+  academic_city: 'Academic City University',
+  other: 'Other',
+};
+
+// GET /api/users/search?q=query — search/list users with profile info
 export async function GET(request: NextRequest) {
-  const q = request.nextUrl.searchParams.get('q')?.trim().toLowerCase();
-  if (!q || q.length < 1) {
-    return NextResponse.json({ users: [] });
-  }
+  const q = request.nextUrl.searchParams.get('q')?.trim().toLowerCase() || '';
+  const mode = request.nextUrl.searchParams.get('mode'); // 'browse' = return all with profile info
 
   const supabase = getServiceSupabase();
 
-  // Get all users and their profiles (for usernames)
+  // Get all users
   const { data: authUsers } = await supabase.auth.admin.listUsers({ perPage: 500 });
   const allUsers = authUsers?.users || [];
 
-  // Get all profiles with usernames
-  const { data: profiles } = await supabase.from('profiles').select('id, username');
-  const usernameMap: Record<string, string> = {};
+  // Get all profiles
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, username, programme, level, university');
+
+  const profileMap: Record<string, any> = {};
   for (const p of (profiles || []) as any[]) {
-    if (p.username) usernameMap[p.id] = p.username;
+    profileMap[p.id] = p;
   }
 
-  // Filter by email or username match
-  const users = allUsers
-    .filter(u => {
+  // Filter
+  let filtered = allUsers;
+  if (q && q.length >= 1) {
+    filtered = allUsers.filter(u => {
       const email = u.email?.toLowerCase() || '';
-      const username = (usernameMap[u.id] || '').toLowerCase();
-      return email.includes(q) || username.includes(q);
-    })
-    .slice(0, 20)
-    .map(u => ({
+      const username = (profileMap[u.id]?.username || '').toLowerCase();
+      const programme = (profileMap[u.id]?.programme || '').toLowerCase();
+      return email.includes(q) || username.includes(q) || programme.includes(q);
+    });
+  }
+
+  const users = filtered.slice(0, 50).map(u => {
+    const p = profileMap[u.id] || {};
+    const uniId = p.university || '';
+    return {
       id: u.id,
-      email: u.email || 'unknown',
-      username: usernameMap[u.id] || null,
+      email: mode === 'browse' ? undefined : (u.email || 'unknown'), // hide email in browse mode
+      username: p.username || null,
+      programme: p.programme || null,
+      level: p.level || null,
+      university: UNIVERSITY_NAMES[uniId] || uniId || null,
       created_at: u.created_at,
-    }));
+    };
+  });
 
   return NextResponse.json({ users });
 }

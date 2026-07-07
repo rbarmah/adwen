@@ -28,8 +28,9 @@ export default function DuelsPage() {
   const [showChallenge, setShowChallenge] = useState(false);
   const [step, setStep] = useState<'opponent' | 'course'>('opponent');
   const [searchQ, setSearchQ] = useState('');
-  const [searchResults, setSearchResults] = useState<{ id: string; email: string; username: string | null }[]>([]);
-  const [selectedOpponent, setSelectedOpponent] = useState<{ id: string; email: string; username: string | null } | null>(null);
+  const [allStudents, setAllStudents] = useState<{ id: string; username: string | null; programme: string | null; level: number | null; university: string | null }[]>([]);
+  const [studentsLoading, setStudentsLoading] = useState(false);
+  const [selectedOpponent, setSelectedOpponent] = useState<{ id: string; username: string | null; programme: string | null; university: string | null } | null>(null);
   const [myCourses, setMyCourses] = useState<{ id: string; name: string }[]>([]);
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState('');
@@ -62,15 +63,27 @@ export default function DuelsPage() {
 
   const getEmail = (uid: string) => emailMap[uid] || uid.slice(0, 8) + '...';
 
-  const handleSearch = async (q: string) => {
-    setSearchQ(q);
-    if (q.length < 2) { setSearchResults([]); return; }
-    const res = await fetch(`/api/users/search?q=${encodeURIComponent(q)}`);
-    const d = await res.json();
-    setSearchResults((d.users || []).filter((u: any) => u.id !== userId));
+  // Load all students when challenge modal opens
+  const loadStudents = async () => {
+    setStudentsLoading(true);
+    try {
+      const res = await fetch('/api/users/search?q=@&mode=browse');
+      const d = await res.json();
+      setAllStudents((d.users || []).filter((u: any) => u.id !== userId));
+    } catch { /* ignore */ }
+    setStudentsLoading(false);
   };
 
-  const selectOpponent = async (user: { id: string; email: string; username: string | null }) => {
+  const filteredStudents = searchQ.trim()
+    ? allStudents.filter(u => {
+        const q = searchQ.toLowerCase();
+        return (u.username || '').toLowerCase().includes(q)
+          || (u.programme || '').toLowerCase().includes(q)
+          || (u.university || '').toLowerCase().includes(q);
+      })
+    : allStudents;
+
+  const selectOpponent = async (user: { id: string; username: string | null; programme: string | null; university: string | null }) => {
     setSelectedOpponent(user);
     setStep('course');
     // Fetch my courses
@@ -215,7 +228,7 @@ export default function DuelsPage() {
             Challenge classmates to timed quiz battles
           </p>
         </div>
-        <button onClick={() => { setShowChallenge(true); setStep('opponent'); }} className="btn btn-primary" style={{ fontSize: 13, padding: '10px 20px' }}>
+        <button onClick={() => { setShowChallenge(true); setStep('opponent'); loadStudents(); }} className="btn btn-primary" style={{ fontSize: 13, padding: '10px 20px' }}>
           ⚔️ Challenge
         </button>
       </div>
@@ -290,30 +303,81 @@ export default function DuelsPage() {
       {/* Challenge Modal */}
       {showChallenge && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
-          onClick={() => { setShowChallenge(false); setStep('opponent'); setSelectedOpponent(null); }}>
-          <div className="card" style={{ maxWidth: 440, width: '100%', padding: '28px 24px' }} onClick={e => e.stopPropagation()}>
+          onClick={() => { setShowChallenge(false); setStep('opponent'); setSelectedOpponent(null); setSearchQ(''); }}>
+          <div className="card" style={{ maxWidth: 520, width: '100%', padding: '28px 24px', maxHeight: '85vh', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
             {step === 'opponent' ? (
               <>
                 <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-xl)', textTransform: 'uppercase', margin: '0 0 6px' }}>
                   STEP 1: <span style={{ fontFamily: 'var(--font-accent)', textTransform: 'none', color: 'var(--magenta)' }}>Pick Opponent</span>
                 </h2>
-                <p style={{ color: 'var(--muted)', fontSize: 12, marginBottom: 16 }}>Search by username or email</p>
-                <input value={searchQ} onChange={e => handleSearch(e.target.value)} placeholder="Type a username or email..."
-                  style={{ width: '100%', padding: '12px 14px', border: '2px solid var(--ink)', borderRadius: 10, fontSize: 14, boxSizing: 'border-box', marginBottom: 12, outline: 'none' }}
+                <p style={{ color: 'var(--muted)', fontSize: 12, marginBottom: 12 }}>Browse students and pick your challenger</p>
+
+                {/* Filter bar */}
+                <input value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder="Filter by username, programme, or university..."
+                  style={{ width: '100%', padding: '10px 14px', border: '2px solid var(--line)', borderRadius: 10, fontSize: 13, boxSizing: 'border-box', marginBottom: 12, outline: 'none', background: 'var(--paper-2)' }}
                 />
-                <div style={{ maxHeight: 250, overflowY: 'auto' }}>
-                  {searchResults.map(u => (
-                    <button key={u.id} onClick={() => selectOpponent(u)} style={{
-                      display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '10px 0',
-                      borderBottom: '1px solid var(--line)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
-                    }}>
-                      <div>
-                        <div style={{ fontSize: 13, fontWeight: 600 }}>{u.username || u.email}</div>
-                        {u.username && <div style={{ fontSize: 10, color: 'var(--muted)' }}>{u.email}</div>}
-                      </div>
-                      <span style={{ fontSize: 11, color: 'var(--cobalt)', fontWeight: 700 }}>Select →</span>
-                    </button>
-                  ))}
+
+                {/* Student directory */}
+                <div style={{ flex: 1, overflowY: 'auto', maxHeight: 380 }}>
+                  {studentsLoading ? (
+                    <div style={{ textAlign: 'center', padding: '30px 0', color: 'var(--muted)' }}>
+                      <div style={{ width: 28, height: 28, border: '3px solid var(--line)', borderTop: '3px solid var(--magenta)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 8px' }} />
+                      Loading students...
+                    </div>
+                  ) : filteredStudents.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '30px 0', color: 'var(--muted)', fontSize: 13 }}>
+                      {searchQ ? 'No students match your filter' : 'No other students found'}
+                    </div>
+                  ) : (
+                    <div style={{ display: 'grid', gap: 6 }}>
+                      {filteredStudents.map(u => (
+                        <button key={u.id} onClick={() => selectOpponent(u)} style={{
+                          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                          width: '100%', padding: '12px 14px', borderRadius: 12,
+                          border: '1.5px solid var(--line)', background: '#fff',
+                          cursor: 'pointer', textAlign: 'left', transition: 'border-color 0.15s, background 0.15s',
+                        }}
+                          onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--magenta)'; e.currentTarget.style.background = '#FFF8FA'; }}
+                          onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--line)'; e.currentTarget.style.background = '#fff'; }}
+                        >
+                          <div style={{ display: 'flex', gap: 10, alignItems: 'center', minWidth: 0 }}>
+                            {/* Avatar */}
+                            <div style={{
+                              width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
+                              background: 'var(--cobalt-soft)', border: '1.5px solid var(--cobalt)',
+                              display: 'grid', placeItems: 'center',
+                              fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 800, color: 'var(--cobalt)',
+                            }}>
+                              {u.username ? u.username.slice(0, 2).toUpperCase() : '??'}
+                            </div>
+                            <div style={{ minWidth: 0 }}>
+                              <div style={{ fontSize: 14, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {u.username || 'No username'}
+                              </div>
+                              <div style={{ display: 'flex', gap: 6, marginTop: 2, flexWrap: 'wrap' }}>
+                                {u.programme && (
+                                  <span style={{ fontSize: 10, color: 'var(--muted)', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
+                                    {u.programme}
+                                  </span>
+                                )}
+                                {u.university && (
+                                  <span style={{ fontSize: 10, color: 'var(--cobalt)', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
+                                    · {u.university}
+                                  </span>
+                                )}
+                                {u.level && (
+                                  <span style={{ fontSize: 10, color: 'var(--muted)', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
+                                    · L{u.level}00
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          <span style={{ fontSize: 11, color: 'var(--magenta)', fontWeight: 700, flexShrink: 0, marginLeft: 8 }}>Challenge →</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </>
             ) : (
@@ -321,10 +385,23 @@ export default function DuelsPage() {
                 <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-xl)', textTransform: 'uppercase', margin: '0 0 6px' }}>
                   STEP 2: <span style={{ fontFamily: 'var(--font-accent)', textTransform: 'none', color: 'var(--magenta)' }}>Pick Course</span>
                 </h2>
-                <p style={{ color: 'var(--muted)', fontSize: 12, marginBottom: 4 }}>
-                  Challenging <strong>{selectedOpponent?.username || selectedOpponent?.email}</strong>
-                </p>
-                <p style={{ color: 'var(--muted)', fontSize: 11, marginBottom: 16 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, padding: '10px 14px', background: 'var(--paper-2)', borderRadius: 10 }}>
+                  <div style={{
+                    width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
+                    background: 'var(--cobalt-soft)', border: '1.5px solid var(--cobalt)',
+                    display: 'grid', placeItems: 'center',
+                    fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 800, color: 'var(--cobalt)',
+                  }}>
+                    {selectedOpponent?.username ? selectedOpponent.username.slice(0, 2).toUpperCase() : '??'}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700 }}>{selectedOpponent?.username || 'Unknown'}</div>
+                    <div style={{ fontSize: 10, color: 'var(--muted)', fontFamily: 'var(--font-mono)' }}>
+                      {[selectedOpponent?.programme, selectedOpponent?.university].filter(Boolean).join(' · ') || 'Student'}
+                    </div>
+                  </div>
+                </div>
+                <p style={{ color: 'var(--muted)', fontSize: 11, marginBottom: 14 }}>
                   Pick one of your courses. 20 random questions will be used.
                 </p>
                 {createError && (
@@ -353,8 +430,8 @@ export default function DuelsPage() {
                 </button>
               </>
             )}
-            <button onClick={() => { setShowChallenge(false); setStep('opponent'); setSelectedOpponent(null); }}
-              style={{ marginTop: 16, width: '100%', padding: '10px', borderRadius: 'var(--pill)', border: '2px solid var(--ink)', background: '#fff', fontWeight: 700, cursor: 'pointer' }}>
+            <button onClick={() => { setShowChallenge(false); setStep('opponent'); setSelectedOpponent(null); setSearchQ(''); }}
+              style={{ marginTop: 16, width: '100%', padding: '10px', borderRadius: 'var(--pill)', border: '2px solid var(--ink)', background: '#fff', fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}>
               Cancel
             </button>
           </div>
