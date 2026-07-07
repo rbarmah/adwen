@@ -44,10 +44,17 @@ export async function POST(request: NextRequest) {
 
   // Verify course exists and belongs to challenger
   const { data: course } = await (supabase
-    .from('courses').select('id, user_id, status').eq('id', courseId).single() as any);
+    .from('courses').select('id, name, user_id, status').eq('id', courseId).single() as any);
   if (!course) return NextResponse.json({ error: 'Course not found' }, { status: 404 });
   if (course.user_id !== user.id) return NextResponse.json({ error: 'You can only duel on your own courses' }, { status: 403 });
   if (course.status !== 'ready') return NextResponse.json({ error: 'Course must be fully analyzed first' }, { status: 400 });
+
+  // Reject courses with placeholder/invalid names
+  const BAD_NAMES = ['unknown course', 'unknown', 'anonymous', 'untitled', 'test', 'n/a', 'none', ''];
+  const courseName = (course.name || '').trim().toLowerCase();
+  if (!courseName || BAD_NAMES.includes(courseName) || courseName.length < 3) {
+    return NextResponse.json({ error: 'Please give your course a clear, descriptive name before dueling with it.' }, { status: 400 });
+  }
 
   // Select 20 random items from this course
   const { data: items } = await (supabase
