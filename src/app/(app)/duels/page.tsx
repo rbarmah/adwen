@@ -28,8 +28,8 @@ export default function DuelsPage() {
   const [showChallenge, setShowChallenge] = useState(false);
   const [step, setStep] = useState<'opponent' | 'course'>('opponent');
   const [searchQ, setSearchQ] = useState('');
-  const [searchResults, setSearchResults] = useState<{ id: string; email: string }[]>([]);
-  const [selectedOpponent, setSelectedOpponent] = useState<{ id: string; email: string } | null>(null);
+  const [searchResults, setSearchResults] = useState<{ id: string; email: string; username: string | null }[]>([]);
+  const [selectedOpponent, setSelectedOpponent] = useState<{ id: string; email: string; username: string | null } | null>(null);
   const [myCourses, setMyCourses] = useState<{ id: string; name: string }[]>([]);
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState('');
@@ -42,7 +42,7 @@ export default function DuelsPage() {
     setDuels(data.duels || []);
     setUserId(data.userId || '');
 
-    // Collect all user IDs to resolve emails
+    // Collect all user IDs to resolve display names
     const ids = new Set<string>();
     for (const d of (data.duels || [])) {
       ids.add(d.challenger_id);
@@ -52,7 +52,7 @@ export default function DuelsPage() {
       const res2 = await fetch('/api/users/search?q=@');
       const d2 = await res2.json();
       const map: Record<string, string> = {};
-      for (const u of (d2.users || [])) map[u.id] = u.email;
+      for (const u of (d2.users || [])) map[u.id] = u.username || u.email;
       setEmailMap(map);
     }
     setLoading(false);
@@ -70,7 +70,7 @@ export default function DuelsPage() {
     setSearchResults((d.users || []).filter((u: any) => u.id !== userId));
   };
 
-  const selectOpponent = async (user: { id: string; email: string }) => {
+  const selectOpponent = async (user: { id: string; email: string; username: string | null }) => {
     setSelectedOpponent(user);
     setStep('course');
     // Fetch my courses
@@ -297,8 +297,8 @@ export default function DuelsPage() {
                 <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-xl)', textTransform: 'uppercase', margin: '0 0 6px' }}>
                   STEP 1: <span style={{ fontFamily: 'var(--font-accent)', textTransform: 'none', color: 'var(--magenta)' }}>Pick Opponent</span>
                 </h2>
-                <p style={{ color: 'var(--muted)', fontSize: 12, marginBottom: 16 }}>Search for a classmate by email</p>
-                <input value={searchQ} onChange={e => handleSearch(e.target.value)} placeholder="Type an email..."
+                <p style={{ color: 'var(--muted)', fontSize: 12, marginBottom: 16 }}>Search by username or email</p>
+                <input value={searchQ} onChange={e => handleSearch(e.target.value)} placeholder="Type a username or email..."
                   style={{ width: '100%', padding: '12px 14px', border: '2px solid var(--ink)', borderRadius: 10, fontSize: 14, boxSizing: 'border-box', marginBottom: 12, outline: 'none' }}
                 />
                 <div style={{ maxHeight: 250, overflowY: 'auto' }}>
@@ -307,7 +307,10 @@ export default function DuelsPage() {
                       display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '10px 0',
                       borderBottom: '1px solid var(--line)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
                     }}>
-                      <span style={{ fontSize: 13, fontWeight: 600 }}>{u.email}</span>
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 600 }}>{u.username || u.email}</div>
+                        {u.username && <div style={{ fontSize: 10, color: 'var(--muted)' }}>{u.email}</div>}
+                      </div>
                       <span style={{ fontSize: 11, color: 'var(--cobalt)', fontWeight: 700 }}>Select →</span>
                     </button>
                   ))}
@@ -319,7 +322,7 @@ export default function DuelsPage() {
                   STEP 2: <span style={{ fontFamily: 'var(--font-accent)', textTransform: 'none', color: 'var(--magenta)' }}>Pick Course</span>
                 </h2>
                 <p style={{ color: 'var(--muted)', fontSize: 12, marginBottom: 4 }}>
-                  Challenging <strong>{selectedOpponent?.email}</strong>
+                  Challenging <strong>{selectedOpponent?.username || selectedOpponent?.email}</strong>
                 </p>
                 <p style={{ color: 'var(--muted)', fontSize: 11, marginBottom: 16 }}>
                   Pick one of your courses. 20 random questions will be used.

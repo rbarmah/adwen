@@ -5,6 +5,7 @@
 
 export interface Profile {
   id: string;
+  username: string | null;
   age_band: string | null;
   programme: string | null;
   level: number | null;

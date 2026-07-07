@@ -10,6 +10,7 @@ import { createClient } from '@/lib/supabase/client';
 
 export default function SignupPage() {
   const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [agreedToTerms, setAgreedToTerms] = useState(false);
@@ -41,6 +42,23 @@ export default function SignupPage() {
       return;
     }
 
+    const trimmedUsername = username.trim();
+    if (!trimmedUsername || trimmedUsername.length < 3) {
+      setError('Username must be at least 3 characters');
+      setLoading(false);
+      return;
+    }
+    if (trimmedUsername.length > 24) {
+      setError('Username must be 24 characters or less');
+      setLoading(false);
+      return;
+    }
+    if (!/^[a-zA-Z0-9_.\- ]+$/.test(trimmedUsername)) {
+      setError('Username can only contain letters, numbers, spaces, underscores, dots, and hyphens');
+      setLoading(false);
+      return;
+    }
+
     try {
       const supabase = createClient();
 
@@ -60,6 +78,9 @@ export default function SignupPage() {
       const { data, error: authError } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: { username: trimmedUsername },
+        },
       });
 
       if (authError) {
@@ -132,6 +153,15 @@ export default function SignupPage() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <Input
+                label="Username"
+                type="text"
+                placeholder="e.g. Kwame_A"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                id="signup-username"
+              />
               <Input
                 label="Email"
                 type="email"

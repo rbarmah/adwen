@@ -43,15 +43,14 @@ export default function TeamDashboardPage() {
       const d = await res.json();
       setData(d);
 
-      // Build email map from user search
+      // Build display name map from user search
       const memberIds = (d.members || []).map((m: any) => m.user_id);
       if (memberIds.length > 0) {
-        // Fetch emails for members (search each)
         const res2 = await fetch(`/api/users/search?q=@`);
         const d2 = await res2.json();
         const map: Record<string, string> = {};
         for (const u of (d2.users || [])) {
-          map[u.id] = u.email;
+          map[u.id] = u.username || u.email;
         }
         setEmailMap(map);
       }

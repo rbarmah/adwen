@@ -15,8 +15,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any>(null);
   const [showTour, setShowTour] = useState(false);
   const [tourSteps, setTourSteps] = useState(buildTourSteps());
+  const [profileUsername, setProfileUsername] = useState<string | null>(null);
+  const [showUsernameModal, setShowUsernameModal] = useState(false);
+  const [newUsername, setNewUsername] = useState('');
+  const [usernameError, setUsernameError] = useState('');
+  const [usernameLoading, setUsernameLoading] = useState(false);
 
-  const initials = user?.email ? user.email.slice(0, 2).toUpperCase() : '?';
+  const displayName = profileUsername || user?.email?.split('@')[0] || 'Student';
+  const initials = profileUsername
+    ? profileUsername.slice(0, 2).toUpperCase()
+    : user?.email ? user.email.slice(0, 2).toUpperCase() : '?';
 
   const handleSignOut = async () => {
     const supabase = createClient();
@@ -97,6 +105,54 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     init();
     return () => { if (channel) supabase.removeChannel(channel); };
   }, []);
+
+  // Fetch username
+  useEffect(() => {
+    if (!user) return;
+    fetch('/api/username').then(r => r.json()).then(d => {
+      if (d.username) {
+        setProfileUsername(d.username);
+      } else {
+        // No username — show prompt
+        setShowUsernameModal(true);
+      }
+    }).catch(() => {});
+  }, [user]);
+
+  const handleSetUsername = async () => {
+    const trimmed = newUsername.trim();
+    if (!trimmed || trimmed.length < 3) {
+      setUsernameError('Username must be at least 3 characters');
+      return;
+    }
+    if (trimmed.length > 24) {
+      setUsernameError('Username must be 24 characters or less');
+      return;
+    }
+    if (!/^[a-zA-Z0-9_.\- ]+$/.test(trimmed)) {
+      setUsernameError('Only letters, numbers, spaces, underscores, dots, and hyphens');
+      return;
+    }
+    setUsernameLoading(true);
+    setUsernameError('');
+    try {
+      const res = await fetch('/api/username', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: trimmed }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        setUsernameError(data.error);
+      } else {
+        setProfileUsername(data.username);
+        setShowUsernameModal(false);
+      }
+    } catch {
+      setUsernameError('Something went wrong. Try again.');
+    }
+    setUsernameLoading(false);
+  };
 
   return (
     <>
@@ -198,7 +254,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--lime)', border: '2px solid rgba(255,255,255,.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: 12, color: 'var(--ink)', marginBottom: 7 }}>
                     {initials}
                   </div>
-                  <div style={{ fontWeight: 700, fontSize: 13, color: '#fff', marginBottom: 2 }}>{user?.email?.split('@')[0] || 'Student'}</div>
+                  <div style={{ fontWeight: 700, fontSize: 13, color: '#fff', marginBottom: 2 }}>{displayName}</div>
                   <div style={{ fontSize: 11, color: '#9499E0', fontFamily: 'var(--font-mono)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.email || ''}</div>
                 </div>
                 {[
@@ -285,6 +341,56 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
     {/* Guided Tour */}
     {showTour && <GuidedTour steps={tourSteps} onComplete={() => setShowTour(false)} />}
+
+    {/* Username Modal — shown to existing users who haven't set a username */}
+    {showUsernameModal && (
+      <div style={{
+        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', zIndex: 200,
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16,
+      }}>
+        <div className="card" style={{ maxWidth: 420, width: '100%', padding: '32px 28px', textAlign: 'center' }}>
+          <div style={{ fontSize: 40, marginBottom: 12 }}>👤</div>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-xl)', textTransform: 'uppercase', margin: '0 0 8px' }}>
+            SET YOUR <span style={{ fontFamily: 'var(--font-accent)', textTransform: 'none', color: 'var(--cobalt)' }}>Username</span>
+          </h2>
+          <p style={{ color: 'var(--muted)', fontSize: 13, lineHeight: 1.5, marginBottom: 20 }}>
+            Choose a username so your classmates can find you in <strong>Teams</strong> and <strong>Duels</strong>.
+          </p>
+          <input
+            value={newUsername}
+            onChange={e => setNewUsername(e.target.value)}
+            placeholder="e.g. Kwame_A"
+            maxLength={24}
+            onKeyDown={e => { if (e.key === 'Enter') handleSetUsername(); }}
+            style={{
+              width: '100%', padding: '14px 16px', border: '2px solid var(--ink)',
+              borderRadius: 12, fontSize: 16, boxSizing: 'border-box', outline: 'none',
+              fontFamily: 'var(--font-body)', textAlign: 'center', fontWeight: 600,
+            }}
+          />
+          <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 6, fontFamily: 'var(--font-mono)' }}>
+            3–24 characters · letters, numbers, spaces, _ . -
+          </div>
+          {usernameError && (
+            <div style={{
+              marginTop: 12, padding: '8px 14px', borderRadius: 10,
+              background: '#FEE2E2', border: '2px solid var(--magenta)',
+              fontSize: 13, color: 'var(--magenta)', fontWeight: 600,
+            }}>
+              ⚠️ {usernameError}
+            </div>
+          )}
+          <button
+            onClick={handleSetUsername}
+            disabled={usernameLoading}
+            className="btn btn-primary"
+            style={{ width: '100%', marginTop: 16, padding: '14px', fontSize: 15 }}
+          >
+            {usernameLoading ? 'Saving...' : 'Set Username'}
+          </button>
+        </div>
+      </div>
+    )}
 
     </>
   );

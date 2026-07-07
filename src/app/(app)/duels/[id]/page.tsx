@@ -56,14 +56,14 @@ export default function DuelPlayPage() {
       setIsChallenger(data.isChallenger);
       setHasPlayed(data.hasPlayed);
 
-      // Get emails
+      // Get display names (username or email)
       try {
         const res2 = await fetch('/api/users/search?q=@');
         const d2 = await res2.json();
         const map: Record<string, string> = {};
-        for (const u of (d2.users || [])) map[u.id] = u.email;
+        for (const u of (d2.users || [])) map[u.id] = u.username || u.email;
         setEmailMap(map);
-      } catch { /* email lookup is best-effort */ }
+      } catch { /* lookup is best-effort */ }
 
       const status = data.duel?.status;
       if (status === 'completed' || data.hasPlayed) {

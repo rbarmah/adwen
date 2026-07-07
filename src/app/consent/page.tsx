@@ -21,12 +21,14 @@ export default function ConsentPage() {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        // Save consent choices to the profiles table
+        // Save consent choices + username to the profiles table
+        const usernameFromMeta = user.user_metadata?.username || null;
         await (supabase.from('profiles') as any).upsert({
           id: user.id,
           consent_measure: consentMeasure,
           consent_data: consentData,
           is_minor: isMinor,
+          ...(usernameFromMeta ? { username: usernameFromMeta } : {}),
         }, { onConflict: 'id' });
       }
       router.push('/onboarding');
